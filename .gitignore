@@ -1,8 +1,0 @@
-.idea/
-.gradle
-build
-target/
-gradle
-.gitattributes
-gradlew
-gradlew.bat
