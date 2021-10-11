@@ -1,1 +1,19 @@
+plugins {
+    id "com.github.sahara3.tomcat-runner" version "0.2.1"
+    id "war"
+}
+
 version 'unspecified'
+
+dependencies {
+    implementation project (':dao')
+}
+
+tomcat {
+    version = 9.0
+    port = 8080
+
+    webapp(project(':controller')) {
+        contextPath = '/GiftCertificates'
+    }
+}
