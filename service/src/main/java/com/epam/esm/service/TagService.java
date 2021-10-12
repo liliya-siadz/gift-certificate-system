@@ -1,7 +1,5 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.ClientModel;
-
-public interface TagService<T extends ClientModel> {
+public interface TagService<T> {
     T findById(long id);
 }

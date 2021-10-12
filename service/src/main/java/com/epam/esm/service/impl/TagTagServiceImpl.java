@@ -1,25 +1,22 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.TagDao;
-import com.epam.esm.mapper.impl.TagClientEntityModelMapperImpl;
+import com.epam.esm.dao.impl.TagDaoImpl;
+import com.epam.esm.mapper.TagClientEntityModelMapper;
 import com.epam.esm.model.TagClientModel;
 import com.epam.esm.model.TagEntityModel;
 import com.epam.esm.service.TagService;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Data
-@NoArgsConstructor
 @Service
-public class TagTagServiceImpl implements TagService<TagClientModel> {
+public class TagTagServiceImpl
+        implements TagService<TagClientModel> {
 
     @Autowired
-    private TagDao tagDao;
+    private TagDaoImpl tagDao;
 
     @Autowired
-    private TagClientEntityModelMapperImpl tagClientEntityModelMapper;
+    private TagClientEntityModelMapper tagClientEntityModelMapper;
 
     @Override
     public TagClientModel findById(long id) {
