@@ -1,15 +1,14 @@
-package com.epam.esm.dao;
+package com.epam.esm.dao.impl;
 
+import com.epam.esm.dao.TagDao;
 import com.epam.esm.mapper.TagRowMapper;
 import com.epam.esm.model.TagEntityModel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TagDao {
+public class TagDaoImpl implements TagDao<TagEntityModel> {
     private static final String FIND_TAG_BY_ID_QUERY =
             "SELECT id, name from tag where id = ?";
 
