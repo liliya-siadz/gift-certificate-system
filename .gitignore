@@ -6,6 +6,4 @@ gradle
 .gitattributes
 gradlew
 gradlew.bat
-dao/src/main/java/com/epam/esm/Main.java
 dao/src/test/java/com/epam/esm/*
-/service/src/main/java/com/epam/esm/Main.java
