@@ -1,19 +1,19 @@
 plugins {
-    id "com.github.sahara3.tomcat-runner" version "0.2.1"
-    id "war"
+    id 'com.github.sahara3.tomcat-runner' version '0.2.1'
 }
 
 version 'unspecified'
 
 dependencies {
-    implementation project (':dao')
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation project (':service')
 }
 
 tomcat {
     version = 9.0
     port = 8080
-
     webapp(project(':controller')) {
-        contextPath = '/GiftCertificates'
+        contextPath = 'gcs'
     }
 }
