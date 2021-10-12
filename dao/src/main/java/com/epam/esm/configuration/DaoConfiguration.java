@@ -14,11 +14,10 @@ import javax.sql.DataSource;
 @ComponentScan (
         basePackages = {
                 "com.epam.esm.dao",
-                "com.epam.esm.mapper",
-                "com.epam.esm.configuration"
+                "com.epam.esm.mapper"
         }
 )
-public class ConnectionConfiguration {
+public class DaoConfiguration {
 
     @Bean
     public JdbcTemplate jdbcTemplate() {
@@ -34,11 +33,5 @@ public class ConnectionConfiguration {
     public HikariConfig hikariConfig() {
         String propertyFileName = "/hikari.properties";
         return new HikariConfig(propertyFileName);
-    }
-
-    @PreDestroy
-    public void close() {
-        HikariDataSource hikariDataSource = (HikariDataSource) dataSource();
-        hikariDataSource.close();
     }
 }
