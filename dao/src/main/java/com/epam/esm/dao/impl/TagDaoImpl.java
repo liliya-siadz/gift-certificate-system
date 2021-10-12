@@ -9,9 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@Data
-@NoArgsConstructor
-public class TagDao implements Dao<TagEntityModel> {
+public class TagDao {
     private static final String FIND_TAG_BY_ID_QUERY =
             "SELECT id, name from tag where id = ?";
 

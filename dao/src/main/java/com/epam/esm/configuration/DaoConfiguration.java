@@ -11,7 +11,7 @@ import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 @Configuration
-@ComponentScan(
+@ComponentScan (
         basePackages = {
                 "com.epam.esm.dao",
                 "com.epam.esm.mapper",
