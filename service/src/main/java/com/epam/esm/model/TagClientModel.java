@@ -1,13 +1,19 @@
 package com.epam.esm.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
-@AllArgsConstructor
-public class TagClientModel implements ClientModel {
-    private long id;
+public class TagClientModel extends AbstractClientModel {
     private String name;
+
+    public TagClientModel(long id, String name) {
+        super(id);
+        this.name = name;
+    }
 }
