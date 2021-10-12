@@ -1,12 +1,15 @@
 package com.epam.esm.model;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
-public class GiftCertificatesTagsEntityModel {
-    private long id;
+public class GiftCertificatesTagsEntityModel extends AbstractEntityModel {
     private long giftCertificateId;
     private long tagId;
 }

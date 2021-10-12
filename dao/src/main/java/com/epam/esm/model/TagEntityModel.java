@@ -1,11 +1,19 @@
 package com.epam.esm.model;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
-public class TagEntityModel implements EntityModel {
-    private long id;
+public class TagEntityModel extends AbstractEntityModel {
     private String name;
+
+    public TagEntityModel(long id, String name) {
+        super(id);
+        this.name = name;
+    }
 }
