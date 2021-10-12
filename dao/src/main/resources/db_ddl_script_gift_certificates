@@ -20,7 +20,7 @@ CREATE TABLE gift_certificates_tags (
 );
 
 ALTER TABLE gift_certificates_tags
-ADD CONSTRAINT gift_certificate_id_fk FOREIGN KEY
+ ADD CONSTRAINT gift_certificate_id_fk FOREIGN KEY
 (gift_certificate_id)  REFERENCES gift_certificate(id),
 ADD CONSTRAINT tag_id_fk FOREIGN KEY
 (tag_id) REFERENCES tag(id);
