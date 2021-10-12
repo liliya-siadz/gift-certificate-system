@@ -15,9 +15,7 @@ public class TagRowMapper implements RowMapper<TagEntityModel> {
             throws SQLException {
         int id = resultSet.getInt("id");
         String name = resultSet.getString("name");
-        TagEntityModel tagEntityModel = new TagEntityModel();
-        tagEntityModel.setId(id);
-        tagEntityModel.setName(name);
+        TagEntityModel tagEntityModel = new TagEntityModel(id, name);
         return tagEntityModel;
     }
 }
