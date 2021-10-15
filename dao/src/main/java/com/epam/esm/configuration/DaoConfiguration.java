@@ -7,16 +7,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 @Configuration
-@ComponentScan (
-        basePackages = {
-                "com.epam.esm.dao",
-                "com.epam.esm.mapper"
-        }
-)
+@ComponentScan(basePackages = {"com.epam.esm.dao", "com.epam.esm.mapper"})
 public class DaoConfiguration {
 
     @Bean

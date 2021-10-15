@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractClientModel {
-    private long id;
+    private Long id;
 }

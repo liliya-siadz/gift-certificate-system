@@ -4,8 +4,8 @@ CREATE TABLE gift_certificate (
 	description varchar(2000),
 	price decimal not null, 
 	duration smallint not null, 
-	create_date timestamptz not null, 
-	last_update_date timestamptz not null
+	create_date timestamp not null,
+	last_update_date timestamp not null
 );
 
 CREATE TABLE tag (
@@ -20,7 +20,11 @@ CREATE TABLE gift_certificates_tags (
 );
 
 ALTER TABLE gift_certificates_tags
- ADD CONSTRAINT gift_certificate_id_fk FOREIGN KEY
-(gift_certificate_id)  REFERENCES gift_certificate(id),
-ADD CONSTRAINT tag_id_fk FOREIGN KEY
-(tag_id) REFERENCES tag(id);
+ADD CONSTRAINT gift_certificate_id_fk
+FOREIGN KEY (gift_certificate_id)
+REFERENCES gift_certificate(id)
+ ON DELETE CASCADE,
+ ADD CONSTRAINT tag_id_fk
+FOREIGN KEY (tag_id)
+REFERENCES tag(id)
+ ON DELETE CASCADE;

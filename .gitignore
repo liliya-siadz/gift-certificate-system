@@ -3,7 +3,10 @@
 build
 target/
 gradle
+generated
+out
 .gitattributes
 gradlew
+GiftCertificatesSystem.untitled
 gradlew.bat
 dao/src/test/java/com/epam/esm/*
