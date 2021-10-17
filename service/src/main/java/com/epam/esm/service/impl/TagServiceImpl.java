@@ -29,18 +29,20 @@ public class TagServiceImpl implements TagService {
     public TagClientModel findById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Id of tag is null!");
+        } else {
+            TagEntityModel entityModel = tagDao.findById(id);
+            return tagClientEntityModelMapper.entityToClient(entityModel);
         }
-        TagEntityModel entityModel = tagDao.findById(id);
-        return tagClientEntityModelMapper.entityToClient(entityModel);
     }
 
     @Override
     public TagClientModel delete(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Id of tag is null!");
+        } else {
+            TagEntityModel tagEntityModel = tagDao.delete(id);
+            return tagClientEntityModelMapper.entityToClient(tagEntityModel);
         }
-        TagEntityModel tagEntityModel = tagDao.delete(id);
-        return tagClientEntityModelMapper.entityToClient(tagEntityModel);
     }
 
     @Override
@@ -54,12 +56,12 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagClientModel create(TagClientModel clientModel) {
         if ((clientModel == null) || (clientModel.getName() == null)) {
-            throw new IllegalArgumentException(
-                    "Tag's model or tag's name is null!");
+            throw new IllegalArgumentException("Tag's model or tag's name is null!");
+        } else {
+            long tagGeneratedId = tagDao.create(
+                    tagClientEntityModelMapper.clientToEntity(clientModel));
+            clientModel.setId(tagGeneratedId);
+            return clientModel;
         }
-        long tagGeneratedId = tagDao.create(
-                tagClientEntityModelMapper.clientToEntity(clientModel));
-        clientModel.setId(tagGeneratedId);
-        return clientModel;
     }
 }

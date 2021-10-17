@@ -42,8 +42,12 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public TagEntityModel findById(long id) {
-        return jdbcTemplate.queryForObject(FIND_TAG_BY_ID_QUERY,
-                tagRowMapper, id);
+        if (isExist(id)) {
+            return jdbcTemplate.queryForObject(FIND_TAG_BY_ID_QUERY,
+                    tagRowMapper, id);
+        } else {
+            throw new EntityNotFoundException("Tag with id= " + id + "not found!");
+        }
     }
 
     @Override

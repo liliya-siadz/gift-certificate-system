@@ -11,17 +11,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-@ComponentScan(basePackages = {"com.epam.esm"})
+@ComponentScan("com.epam.esm")
 public class DaoConfiguration {
-    @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        return new HikariDataSource(hikariConfig());
-    }
 
     @Value("hikariCP")
     private String poolName;
@@ -40,6 +31,16 @@ public class DaoConfiguration {
 
     @Value("jdbc:postgresql://localhost:5432/gift_certificates")
     private String jdbcUrl;
+
+    @Bean
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        return new HikariDataSource(hikariConfig());
+    }
 
     @Bean
     public HikariConfig hikariConfig() {

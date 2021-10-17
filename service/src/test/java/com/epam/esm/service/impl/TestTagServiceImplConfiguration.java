@@ -1,10 +1,9 @@
-package com.epam.esm.configuration;
+package com.epam.esm.service.impl;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan("com.epam.esm")
-public class ServiceConfiguration {
-
+public class TestTagServiceImplConfiguration {
 }
