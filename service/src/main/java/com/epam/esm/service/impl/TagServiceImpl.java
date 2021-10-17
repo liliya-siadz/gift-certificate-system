@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.exception.UnableToDeleteEntityException;
 import com.epam.esm.mapper.TagClientEntityModelMapper;
 import com.epam.esm.model.TagClientModel;
 import com.epam.esm.model.TagEntityModel;
@@ -15,11 +14,16 @@ import java.util.stream.Collectors;
 @Service
 public class TagServiceImpl implements TagService {
 
-    @Autowired
-    private TagDao tagDao;
+    private final TagDao tagDao;
+
+    private final TagClientEntityModelMapper tagClientEntityModelMapper;
 
     @Autowired
-    private TagClientEntityModelMapper tagClientEntityModelMapper;
+    public TagServiceImpl(TagDao tagDao,
+                          TagClientEntityModelMapper tagClientEntityModelMapper) {
+        this.tagDao = tagDao;
+        this.tagClientEntityModelMapper = tagClientEntityModelMapper;
+    }
 
     @Override
     public TagClientModel findById(Long id) {
@@ -35,11 +39,8 @@ public class TagServiceImpl implements TagService {
         if (id == null) {
             throw new IllegalArgumentException("Id of tag is null!");
         }
-        if (tagDao.delete(id)) {
-            return findById(id);
-        } else {
-            throw new UnableToDeleteEntityException("Unable to delete tag with id = " + id);
-        }
+        TagEntityModel tagEntityModel = tagDao.delete(id);
+        return tagClientEntityModelMapper.entityToClient(tagEntityModel);
     }
 
     @Override
@@ -53,9 +54,11 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagClientModel create(TagClientModel clientModel) {
         if ((clientModel == null) || (clientModel.getName() == null)) {
-            throw new IllegalArgumentException("Tag's model or tag's name is null!");
+            throw new IllegalArgumentException(
+                    "Tag's model or tag's name is null!");
         }
-        long tagGeneratedId = tagDao.create(tagClientEntityModelMapper.clientToEntity(clientModel));
+        long tagGeneratedId = tagDao.create(
+                tagClientEntityModelMapper.clientToEntity(clientModel));
         clientModel.setId(tagGeneratedId);
         return clientModel;
     }

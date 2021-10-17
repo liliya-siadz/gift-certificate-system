@@ -4,5 +4,7 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.4.2.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
     testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
+    testImplementation 'org.mockito:mockito-core:4.0.0'
     implementation project (':dao')
 }

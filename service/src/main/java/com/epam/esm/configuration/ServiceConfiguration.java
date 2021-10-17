@@ -4,9 +4,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackages = {
-        "com.epam.esm.mapper",
-        "com.epam.esm.service"}
+@ComponentScan(basePackages = {"com.epam.esm"}
 )
 public class ServiceConfiguration {
 

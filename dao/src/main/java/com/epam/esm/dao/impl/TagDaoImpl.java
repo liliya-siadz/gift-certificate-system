@@ -8,14 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 
-@Component
 @Repository
 public class TagDaoImpl implements TagDao {
     private static final String FIND_TAG_BY_ID_QUERY =
@@ -27,19 +25,25 @@ public class TagDaoImpl implements TagDao {
     private static final String DELETE_TAG_QUERY =
             "DELETE FROM tag WHERE id = ?";
     private static final String COUNT_TAG_BOUNDS =
-            "SELECT count(id) from gift_certificate_tags where tag_id = ? ";
+            "SELECT count(id) from gift_certificates_tags where tag_id = ? ";
     private static final String GET_IS_TAG_EXIST_QUERY =
             "SELECT EXISTS(SELECT 1 FROM tag WHERE id = ?)";
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    private final TagRowMapper tagRowMapper;
 
     @Autowired
-    private TagRowMapper tagRowMapper;
+    public TagDaoImpl(JdbcTemplate jdbcTemplate,
+                      TagRowMapper tagRowMapper) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.tagRowMapper = tagRowMapper;
+    }
 
     @Override
     public TagEntityModel findById(long id) {
-        return jdbcTemplate.queryForObject(FIND_TAG_BY_ID_QUERY, tagRowMapper, id);
+        return jdbcTemplate.queryForObject(FIND_TAG_BY_ID_QUERY,
+                tagRowMapper, id);
     }
 
     @Override
@@ -54,21 +58,25 @@ public class TagDaoImpl implements TagDao {
         }
         KeyHolder newTagRecordKeyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement preparedStatement = con.prepareStatement(CREATE_TAG_QUERY);
+            PreparedStatement preparedStatement =
+                    con.prepareStatement(CREATE_TAG_QUERY, new String[]{"id"});
             preparedStatement.setString(1, entityModel.getName());
             return preparedStatement;
         }, newTagRecordKeyHolder);
-        long tagGeneratedId = Objects.requireNonNull(newTagRecordKeyHolder.getKey()).longValue();
+        long tagGeneratedId = Objects.requireNonNull(
+                newTagRecordKeyHolder.getKey()).longValue();
         return tagGeneratedId;
     }
 
     @Override
-    public boolean delete(long id) {
+    public TagEntityModel delete(long id) {
         if (isExist(id)) {
-            int quantityOfRowAffected = jdbcTemplate.update(DELETE_TAG_QUERY, id);
-            return (quantityOfRowAffected >= 1);
+            TagEntityModel tagEntityModel = findById(id);
+            jdbcTemplate.update(DELETE_TAG_QUERY, id);
+            return tagEntityModel;
         } else {
-            throw new EntityNotFoundException("Tag with id = " + id + " wasn't found!");
+            throw new EntityNotFoundException(
+                    "Tag with id = " + id + " wasn't found!");
         }
     }
 
@@ -81,6 +89,7 @@ public class TagDaoImpl implements TagDao {
     }
 
     private Boolean isExist(long id) {
-        return jdbcTemplate.queryForObject(GET_IS_TAG_EXIST_QUERY, Boolean.class, id);
+        return jdbcTemplate.queryForObject(
+                GET_IS_TAG_EXIST_QUERY, Boolean.class, id);
     }
 }
