@@ -55,10 +55,10 @@ public class GiftCertificateController {
 
     @GetMapping("/search")
     public List<GiftCertificateClientModel> search(
-            @RequestParam(required = false, name = "tagName") String tagName,
-            @RequestParam(required = false, name = "name") String name,
-            @RequestParam(required = false, name = "description") String description,
-            @RequestParam(required = false, name = "sort") String sort) {
+            @RequestParam(required = false) String tagName,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String sort) {
         return service.search(tagName, name, description, sort);
     }
 }

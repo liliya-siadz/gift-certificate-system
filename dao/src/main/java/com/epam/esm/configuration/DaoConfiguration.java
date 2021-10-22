@@ -2,7 +2,6 @@ package com.epam.esm.configuration;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -13,24 +12,6 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan("com.epam.esm")
 public class DaoConfiguration {
-
-    @Value("hikariCP")
-    private String poolName;
-
-    @Value("postgres")
-    private String userName;
-
-    @Value("rMB232:P")
-    private String password;
-
-    @Value("student")
-    private String schema;
-
-    @Value("org.postgresql.Driver")
-    private String driverClassName;
-
-    @Value("jdbc:postgresql://localhost:5432/gift_certificates")
-    private String jdbcUrl;
 
     @Bean
     public JdbcTemplate jdbcTemplate() {
@@ -45,12 +26,12 @@ public class DaoConfiguration {
     @Bean
     public HikariConfig hikariConfig() {
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setPoolName(poolName);
-        hikariConfig.setUsername(userName);
-        hikariConfig.setPassword(password);
-        hikariConfig.setSchema(schema);
-        hikariConfig.setDriverClassName(driverClassName);
-        hikariConfig.setJdbcUrl(jdbcUrl);
+        hikariConfig.setPoolName("hikariCP");
+        hikariConfig.setUsername("postgres");
+        hikariConfig.setPassword("rMB232:P");
+        hikariConfig.setSchema("student");
+        hikariConfig.setDriverClassName("org.postgresql.Driver");
+        hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/gift_certificates");
         return hikariConfig;
     }
 }

@@ -6,9 +6,6 @@ import com.epam.esm.mapper.TagModelMapper;
 import com.epam.esm.model.TagClientModel;
 import com.epam.esm.model.TagEntityModel;
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.change_predicate.BoundTagPredicate;
-import com.epam.esm.service.change_predicate.CreateAndBoundTagPredicate;
-import com.epam.esm.service.change_predicate.UnboundTagPredicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,22 +20,10 @@ public class TagServiceImpl implements TagService {
 
     private final TagModelMapper modelMapper;
 
-    private final BoundTagPredicate boundTagPredicate;
-
-    private final UnboundTagPredicate unboundTagPredicate;
-
-    private final CreateAndBoundTagPredicate createAndBoundTagPredicate;
-
     @Autowired
-    public TagServiceImpl(TagDao tagDao, TagModelMapper modelMapper,
-                          BoundTagPredicate boundTagPredicate,
-                          UnboundTagPredicate unboundTagPredicate,
-                          CreateAndBoundTagPredicate createAndBoundTagPredicate) {
+    public TagServiceImpl(TagDao tagDao, TagModelMapper modelMapper) {
         this.tagDao = tagDao;
         this.modelMapper = modelMapper;
-        this.boundTagPredicate = boundTagPredicate;
-        this.unboundTagPredicate = unboundTagPredicate;
-        this.createAndBoundTagPredicate = createAndBoundTagPredicate;
     }
 
     @Override
@@ -105,11 +90,12 @@ public class TagServiceImpl implements TagService {
         }
         tags.forEach(tag -> {
             Long tagId = tag.getId();
-            if (boundTagPredicate.test(tag)) {
+            String tagName = tag.getName();
+            if ((tagId != null) && (tagName != null)) {
                 boundTagToGiftCertificate(tagId, giftCertificateId);
-            } else if (unboundTagPredicate.test(tag)) {
+            } else if (tagId != null) {
                 unboundTagFromGiftCertificate(tagId, giftCertificateId);
-            } else if (createAndBoundTagPredicate.test(tag)) {
+            } else if (tagName != null) {
                 create(tag);
                 boundTagToGiftCertificate(tag.getId(), giftCertificateId);
             }
@@ -128,9 +114,10 @@ public class TagServiceImpl implements TagService {
         }
         tags.forEach(tag -> {
             Long tagId = tag.getId();
-            if (boundTagPredicate.test(tag)) {
+            String tagName = tag.getName();
+            if ((tagId != null) && (tagName != null)) {
                 boundTagToGiftCertificate(tagId, giftCertificateId);
-            } else if (createAndBoundTagPredicate.test(tag)) {
+            } else if (tagName != null) {
                 create(tag);
                 boundTagToGiftCertificate(tag.getId(), giftCertificateId);
             }
