@@ -14,4 +14,13 @@ public interface TagService {
     List<TagClientModel> findAll();
 
     TagClientModel create(TagClientModel tagClientModel);
+
+    List<TagClientModel> findAllTagsBoundToGiftCertificate(Long giftCertificateId);
+
+    List<TagClientModel> updateExistingGiftCertificateTags(
+            Long giftCertificateId, List<TagClientModel> tags);
+
+    List<TagClientModel> updateNewGiftCertificateTags(Long giftCertificateId, List<TagClientModel> tags);
+
+    boolean isExist(Long id);
 }

@@ -1,18 +1,20 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.mapper.TagRowMapper;
 import com.epam.esm.model.TagEntityModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class TagDaoImpl implements TagDao {
@@ -24,76 +26,100 @@ public class TagDaoImpl implements TagDao {
             "INSERT INTO tag (name) VALUES (?)";
     private static final String DELETE_TAG_QUERY =
             "DELETE FROM tag WHERE id = ?";
-    private static final String COUNT_TAG_BOUNDS =
-            "SELECT count(id) from gift_certificates_tags where tag_id = ? ";
     private static final String GET_IS_TAG_EXIST_QUERY =
             "SELECT EXISTS(SELECT 1 FROM tag WHERE id = ?)";
+    private static final String GET_IS_TAG_BOUND_TO_GIFT_CERTIFICATE_QUERY =
+            "SELECT EXISTS(SELECT 1 FROM gift_certificates_tags"
+                    + " WHERE  tag_id = ? AND  gift_certificate_id = ?);";
+    private static final String BOUND_TAG_TO_GIFT_CERTIFICATE_QUERY =
+            "INSERT INTO gift_certificates_tags (tag_id, gift_certificate_id)"
+                    + " VALUES (?, ?)";
+    private static final String UNBOUND_TAG_FROM_GIFT_CERTIFICATE_QUERY =
+            "DELETE FROM gift_certificates_tags WHERE tag_id = ? AND  gift_certificate_id = ?";
+    private static final String FIND_ALL_TAGS_BOUND_WITH_GIFT_CERTIFICATE_QUERY =
+            "SELECT student.tag.id, student.tag.name"
+                    + " FROM student.gift_certificates_tags"
+                    + " JOIN student.tag"
+                    + " ON gift_certificates_tags.tag_id = tag.id"
+                    + " WHERE gift_certificates_tags.gift_certificate_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final TagRowMapper tagRowMapper;
+    private final TagRowMapper rowMapper;
 
     @Autowired
     public TagDaoImpl(JdbcTemplate jdbcTemplate,
-                      TagRowMapper tagRowMapper) {
+                      TagRowMapper rowMapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.tagRowMapper = tagRowMapper;
+        this.rowMapper = rowMapper;
     }
 
     @Override
-    public TagEntityModel findById(long id) {
-        if (isExist(id)) {
-            return jdbcTemplate.queryForObject(FIND_TAG_BY_ID_QUERY,
-                    tagRowMapper, id);
-        } else {
-            throw new EntityNotFoundException("Tag with id= " + id + "not found!");
+    public Optional<TagEntityModel> findById(long id) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    FIND_TAG_BY_ID_QUERY, rowMapper, id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
         }
     }
 
     @Override
     public List<TagEntityModel> findAll() {
-        return jdbcTemplate.query(FIND_ALL_TAGS_QUERY, tagRowMapper);
+        return jdbcTemplate.query(FIND_ALL_TAGS_QUERY, rowMapper);
     }
 
     @Override
-    public long create(TagEntityModel entityModel) {
-        if ((entityModel == null) || (entityModel.getName() == null)) {
-            throw new IllegalArgumentException("Entity of tag or name of tag is null!");
+    public List<TagEntityModel> findAllTagsBoundToGiftCertificate(long certificateId) {
+        return jdbcTemplate.query(FIND_ALL_TAGS_BOUND_WITH_GIFT_CERTIFICATE_QUERY,
+                preparedStatement -> preparedStatement.setLong(1, certificateId), rowMapper);
+    }
+
+    @Override
+    public long create(TagEntityModel entity) {
+        if (entity == null) {
+            throw new IllegalArgumentException("Tag entity is null!");
         }
-        KeyHolder newTagRecordKeyHolder = new GeneratedKeyHolder();
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement =
                     con.prepareStatement(CREATE_TAG_QUERY, new String[]{"id"});
-            preparedStatement.setString(1, entityModel.getName());
+            preparedStatement.setString(1, entity.getName());
             return preparedStatement;
-        }, newTagRecordKeyHolder);
-        long tagGeneratedId = Objects.requireNonNull(
-                newTagRecordKeyHolder.getKey()).longValue();
-        return tagGeneratedId;
+        }, keyHolder);
+        long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return generatedId;
     }
 
     @Override
-    public TagEntityModel delete(long id) {
-        if (isExist(id)) {
-            TagEntityModel tagEntityModel = findById(id);
-            jdbcTemplate.update(DELETE_TAG_QUERY, id);
-            return tagEntityModel;
-        } else {
-            throw new EntityNotFoundException(
-                    "Tag with id = " + id + " wasn't found!");
-        }
+    public boolean delete(long id) {
+        int quantityOfRowsAffected = jdbcTemplate.update(DELETE_TAG_QUERY, id);
+        return quantityOfRowsAffected >= 1;
     }
 
-    private boolean isBound(long id) {
-        return quantityOfBounds(id) > 0;
+    @Override
+    public boolean isExist(long id) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                GET_IS_TAG_EXIST_QUERY, Boolean.class, id));
     }
 
-    private Long quantityOfBounds(long id) {
-        return jdbcTemplate.queryForObject(COUNT_TAG_BOUNDS, Long.class, id);
+    @Override
+    public boolean boundTagToGiftCertificate(long id, long giftCertificateId) {
+        int quantityOfRowsAffected = jdbcTemplate.update(BOUND_TAG_TO_GIFT_CERTIFICATE_QUERY,
+                new Object[]{id, giftCertificateId}, new int[]{Types.INTEGER, Types.INTEGER});
+        return quantityOfRowsAffected >= 1;
     }
 
-    private Boolean isExist(long id) {
-        return jdbcTemplate.queryForObject(
-                GET_IS_TAG_EXIST_QUERY, Boolean.class, id);
+    @Override
+    public boolean unboundTagFromGiftCertificate(long id, long giftCertificateId) {
+        int quantityOfRowsAffected = jdbcTemplate.update(UNBOUND_TAG_FROM_GIFT_CERTIFICATE_QUERY,
+                new Object[]{id, giftCertificateId}, new int[]{Types.INTEGER, Types.INTEGER});
+        return quantityOfRowsAffected >= 1;
+    }
+
+    @Override
+    public boolean isTagBoundToGiftCertificate(long id, long giftCertificateId) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                GET_IS_TAG_BOUND_TO_GIFT_CERTIFICATE_QUERY, Boolean.class, id, giftCertificateId));
     }
 }

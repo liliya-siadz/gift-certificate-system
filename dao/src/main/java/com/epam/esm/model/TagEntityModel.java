@@ -19,7 +19,7 @@ public class TagEntityModel extends AbstractEntityModel {
     public String toString() {
         return "TagEntityModel{"
                 + "id='" + getId() + '\''
-                + "name='" + name + '\''
+                + ", name='" + name + '\''
                 + '}';
     }
 }

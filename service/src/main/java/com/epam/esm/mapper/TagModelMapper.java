@@ -5,8 +5,8 @@ import com.epam.esm.model.TagEntityModel;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface TagClientEntityModelMapper {
-    TagClientModel entityToClient(TagEntityModel tagEntityModel);
+public interface TagModelMapper {
+    TagClientModel toClientModel(TagEntityModel entity);
 
-    TagEntityModel clientToEntity(TagClientModel tagClientModel);
+    TagEntityModel toEntity(TagClientModel clientModel);
 }

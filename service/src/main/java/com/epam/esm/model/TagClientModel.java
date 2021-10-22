@@ -8,9 +8,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TagClientModel extends AbstractClientModel {
+
     private String name;
 
-    public TagClientModel(long id, String name) {
+    public TagClientModel(Long id, String name) {
         super(id);
         this.name = name;
     }
@@ -19,7 +20,7 @@ public class TagClientModel extends AbstractClientModel {
     public String toString() {
         return "TagClientModel{"
                 + "id='" + getId() + '\''
-                + "name='" + name + '\''
+                + ", name='" + name + '\''
                 + '}';
     }
 }

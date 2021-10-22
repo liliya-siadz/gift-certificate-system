@@ -3,30 +3,33 @@ package com.epam.esm.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@SuperBuilder
 public class GiftCertificateEntityModel extends AbstractEntityModel {
     private String name;
     private String description;
-    private double price;
+    private BigDecimal price;
     private int duration;
-    private Date createDate;
-    private Date lastUpdateDate;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
 
     @Override
     public String toString() {
         return "GiftCertificateEntityModel{"
                 + "id='" + getId() + '\''
-                + "name='" + name + '\''
+                + ", name='" + name + '\''
                 + ", description='" + description + '\''
-                + ", price=" + price
-                + ", duration=" + duration
-                + ", createDate=" + createDate
-                + ", lastUpdateDate=" + lastUpdateDate
+                + ", price=" + price + '\''
+                + ", duration=" + duration + '\''
+                + ", createDate=" + createDate + '\''
+                + ", lastUpdateDate=" + lastUpdateDate + '\''
                 + '}';
     }
 }

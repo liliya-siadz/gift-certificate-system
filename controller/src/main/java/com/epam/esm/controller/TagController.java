@@ -17,26 +17,30 @@ import java.util.List;
 @RequestMapping("/tags")
 public class TagController {
 
+    private final TagServiceImpl service;
+
     @Autowired
-    private TagServiceImpl tagService;
+    public TagController(TagServiceImpl service) {
+        this.service = service;
+    }
 
     @GetMapping
-    public List<TagClientModel> getTags() {
-        return tagService.findAll();
+    public List<TagClientModel> getAll() {
+        return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public TagClientModel getTag(@PathVariable Long id) {
-        return tagService.findById(id);
+    public TagClientModel getById(@PathVariable(value = "id") Long id) {
+        return service.findById(id);
     }
 
     @PostMapping
-    public TagClientModel createTag(@RequestBody TagClientModel tag) {
-        return tagService.create(tag);
+    public TagClientModel create(@RequestBody TagClientModel tag) {
+        return service.create(tag);
     }
 
     @DeleteMapping("/{id}")
-    public TagClientModel deleteTag(@PathVariable Long id) {
-        return tagService.delete(id);
+    public TagClientModel deleteById(@PathVariable Long id) {
+        return service.delete(id);
     }
 }

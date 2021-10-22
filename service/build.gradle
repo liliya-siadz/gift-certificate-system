@@ -8,5 +8,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.0.0'
     testImplementation 'org.springframework:spring-mock:2.0.8'
     testImplementation 'org.springframework:spring-test:5.3.11'
-    implementation project (':dao')
+    implementation 'org.springframework:spring-tx:5.3.11'
+    implementation project(':dao')
 }

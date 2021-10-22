@@ -9,5 +9,4 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 @ComponentScan("com.epam.esm")
 public class ControllerConfiguration implements WebMvcConfigurer {
-
 }
