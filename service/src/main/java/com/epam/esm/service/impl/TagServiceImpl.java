@@ -41,7 +41,6 @@ public class TagServiceImpl implements TagService {
         this.createAndBoundTagPredicate = createAndBoundTagPredicate;
     }
 
-    //TODO: add Optional
     @Override
     public TagClientModel findById(Long id) {
         if (id == null) {
