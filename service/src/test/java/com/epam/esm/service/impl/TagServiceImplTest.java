@@ -1,5 +1,6 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.configuration.TestServiceConfiguration;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.mapper.TagModelMapper;
 import com.epam.esm.model.TagClientModel;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ContextConfiguration(classes = {TestTagServiceImplConfiguration.class})
+@ContextConfiguration(classes = {TestServiceConfiguration.class})
 class TagServiceImplTest {
 
     @Mock

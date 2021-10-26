@@ -1,5 +1,6 @@
 package com.epam.esm.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class TagClientModel extends AbstractClientModel {
-
     private String name;
 
     public TagClientModel(Long id, String name) {

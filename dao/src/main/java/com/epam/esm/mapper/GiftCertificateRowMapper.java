@@ -8,15 +8,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
-import static com.epam.esm.util.DateTimeUtil.convertToDateTimeIso8601;
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 @Component
 public class GiftCertificateRowMapper implements RowMapper<GiftCertificateEntityModel> {
+    private static final String ISO_8601_DATE_TIME_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
 
     @Override
     public GiftCertificateEntityModel mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
-        LocalDateTime createDate = convertToDateTimeIso8601(resultSet.getTimestamp("create_date"));
-        LocalDateTime lastUpdateDate = convertToDateTimeIso8601(resultSet.getTimestamp("last_update_date"));
+        LocalDateTime createDate =  resultSet.getTimestamp("create_date").toLocalDateTime();
+        createDate.format(ofPattern(ISO_8601_DATE_TIME_FORMAT_PATTERN));
+        LocalDateTime lastUpdateDate =  resultSet.getTimestamp("last_update_date").toLocalDateTime();
+        createDate.format(ofPattern(ISO_8601_DATE_TIME_FORMAT_PATTERN));
         return GiftCertificateEntityModel.builder()
                 .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
@@ -28,3 +31,4 @@ public class GiftCertificateRowMapper implements RowMapper<GiftCertificateEntity
                 .build();
     }
 }
+

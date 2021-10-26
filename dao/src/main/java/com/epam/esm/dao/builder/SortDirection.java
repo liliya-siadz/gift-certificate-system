@@ -5,7 +5,6 @@ import java.util.Optional;
 enum SortDirection {
     ASC("1"),
     DESC("0");
-
     private final String directionFlag;
 
     SortDirection(String directionFlag) {

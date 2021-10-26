@@ -1,13 +1,15 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.GiftCertificateModelMapper;
 import com.epam.esm.model.GiftCertificateClientModel;
 import com.epam.esm.model.TagClientModel;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.TagService;
+import com.epam.esm.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,25 +18,26 @@ import java.util.stream.Collectors;
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
-
     private final GiftCertificateDao dao;
-
     private final TagService tagService;
-
     private final GiftCertificateModelMapper modelMapper;
+    private final Validator<GiftCertificateClientModel> validator;
 
     @Autowired
     public GiftCertificateServiceImpl(
             GiftCertificateDao dao,
-            TagService tagService, GiftCertificateModelMapper modelMapper) {
+            TagService tagService, GiftCertificateModelMapper modelMapper,
+            @Qualifier("giftCertificateValidator") Validator<GiftCertificateClientModel> validator) {
         this.dao = dao;
         this.tagService = tagService;
         this.modelMapper = modelMapper;
+        this.validator = validator;
     }
 
     @Override
     @Transactional
     public GiftCertificateClientModel create(GiftCertificateClientModel clientModel) {
+        validator.isValidForCreate(clientModel);
         long generatedId = dao.create(modelMapper.toEntity(clientModel));
         tagService.updateNewGiftCertificateTags(generatedId, clientModel.getTags());
         return findById(generatedId);
@@ -60,7 +63,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             clientModel.setTags(tagService.findAllTagsBoundToGiftCertificate(id));
             return clientModel;
         } else {
-            throw new EntityNotFoundException("Gift certificate with id= " + id + " is not found!");
+            throw new ResourceWithIdNotFoundException("Gift certificate", id);
         }
     }
 
@@ -74,7 +77,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             dao.delete(id);
             return clientModel;
         } else {
-            throw new EntityNotFoundException("Gift certificate with id= " + id + " is not found!");
+            throw new ResourceWithIdNotFoundException("Gift certificate", id);
         }
     }
 
@@ -85,6 +88,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new IllegalArgumentException("Gift certificate's id is null!");
         }
         if (dao.isExist(id)) {
+            validator.isValidForUpdate(clientModel);
             dao.update(id, modelMapper.toEntity(clientModel));
             List<TagClientModel> tagsForUpdate = clientModel.getTags();
             if (tagsForUpdate != null) {
@@ -93,7 +97,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             clientModel = findById(id);
             return clientModel;
         } else {
-            throw new EntityNotFoundException("Gift certificate with id= " + id + " is not found!");
+            throw new ResourceWithIdNotFoundException("Gift certificate", id);
         }
     }
 

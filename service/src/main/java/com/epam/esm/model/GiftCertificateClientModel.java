@@ -16,7 +16,7 @@ public class GiftCertificateClientModel extends AbstractClientModel {
     private String name;
     private String description;
     private BigDecimal price;
-    private int duration;
+    private Integer duration;
     private String createDate;
     private String lastUpdateDate;
     private List<TagClientModel> tags;

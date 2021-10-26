@@ -1,29 +1,33 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.TagModelMapper;
 import com.epam.esm.model.TagClientModel;
 import com.epam.esm.model.TagEntityModel;
 import com.epam.esm.service.TagService;
+import com.epam.esm.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl implements TagService {
-
     private final TagDao tagDao;
-
     private final TagModelMapper modelMapper;
+    private final Validator<TagClientModel> validator;
 
     @Autowired
-    public TagServiceImpl(TagDao tagDao, TagModelMapper modelMapper) {
+    public TagServiceImpl(TagDao tagDao, TagModelMapper modelMapper,
+                          @Qualifier("tagValidator") Validator<TagClientModel> validator) {
         this.tagDao = tagDao;
         this.modelMapper = modelMapper;
+        this.validator = validator;
     }
 
     @Override
@@ -31,8 +35,12 @@ public class TagServiceImpl implements TagService {
         if (id == null) {
             throw new IllegalArgumentException("Id of tag is null!");
         } else {
-            return modelMapper.toClientModel(tagDao.findById(id)
-                    .orElseThrow(EntityNotFoundException::new));
+            Optional<TagEntityModel> entity = tagDao.findById(id);
+            if (entity.isPresent()) {
+                return modelMapper.toClientModel(entity.get());
+            } else {
+                throw new ResourceWithIdNotFoundException("Tag", id);
+            }
         }
     }
 
@@ -46,7 +54,7 @@ public class TagServiceImpl implements TagService {
             tagDao.delete(id);
             return modelMapper.toClientModel(tagEntity);
         } else {
-            throw new EntityNotFoundException("Tag with id is not found!");
+            throw new ResourceWithIdNotFoundException("Tag", id);
         }
     }
 
@@ -60,11 +68,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagClientModel create(TagClientModel clientModel) {
-        if ((clientModel == null) || (clientModel.getName() == null)) {
+        if (clientModel == null) {
             throw new IllegalArgumentException("Tag's model or tag's name is null!");
         } else {
-            long tagGeneratedId = tagDao.create(
-                    modelMapper.toEntity(clientModel));
+            validator.isValidForCreate(clientModel);
+            long tagGeneratedId = tagDao.create(modelMapper.toEntity(clientModel));
             clientModel.setId(tagGeneratedId);
             return clientModel;
         }
@@ -92,10 +100,13 @@ public class TagServiceImpl implements TagService {
             Long tagId = tag.getId();
             String tagName = tag.getName();
             if ((tagId != null) && (tagName != null)) {
+                validator.isValidForUpdate(tag);
                 boundTagToGiftCertificate(tagId, giftCertificateId);
             } else if (tagId != null) {
+                validator.isValidForUpdate(tag);
                 unboundTagFromGiftCertificate(tagId, giftCertificateId);
             } else if (tagName != null) {
+                validator.isValidForCreate(tag);
                 create(tag);
                 boundTagToGiftCertificate(tag.getId(), giftCertificateId);
             }
@@ -116,8 +127,10 @@ public class TagServiceImpl implements TagService {
             Long tagId = tag.getId();
             String tagName = tag.getName();
             if ((tagId != null) && (tagName != null)) {
+                validator.isValidForUpdate(tag);
                 boundTagToGiftCertificate(tagId, giftCertificateId);
             } else if (tagName != null) {
+                validator.isValidForCreate(tag);
                 create(tag);
                 boundTagToGiftCertificate(tag.getId(), giftCertificateId);
             }
@@ -138,7 +151,7 @@ public class TagServiceImpl implements TagService {
                 tagDao.boundTagToGiftCertificate(id, giftCertificateId);
             }
         } else {
-            throw new EntityNotFoundException("Tag with id=" + id + " is not found!");
+            throw new ResourceWithIdNotFoundException("Tag", id);
         }
     }
 
@@ -148,7 +161,7 @@ public class TagServiceImpl implements TagService {
                 tagDao.unboundTagFromGiftCertificate(id, giftCertificateId);
             }
         } else {
-            throw new EntityNotFoundException("Tag with id=" + id + " is not found!");
+            throw new ResourceWithIdNotFoundException("Tag", id);
         }
     }
 

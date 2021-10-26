@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,7 +25,6 @@ import java.util.Optional;
 import static com.epam.esm.dao.builder.GiftCertificateQueryBuilder.EMPTY_STRING;
 import static com.epam.esm.dao.builder.GiftCertificateQueryBuilder.buildUpdateQuery;
 import static com.epam.esm.dao.builder.GiftCertificateQueryBuilder.extractUpdateParams;
-import static com.epam.esm.util.DateTimeUtil.getCurrentDateTimeIso8601;
 
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
@@ -41,9 +41,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             "DELETE FROM gift_certificate WHERE id = ?";
     private static final String GET_IS_GIFT_CERTIFICATE_EXIST_QUERY =
             "SELECT EXISTS(SELECT 1 FROM gift_certificate WHERE id = ?)";
-
     private JdbcTemplate jdbcTemplate;
-
     private GiftCertificateRowMapper rowMapper;
 
     @Autowired
@@ -94,20 +92,19 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             throw new IllegalArgumentException("Gift certificate entity is null!");
         }
         String updateQuery = buildUpdateQuery(id, entity);
-        if (updateQuery.equals(EMPTY_STRING)) {
-            return findById(id).get();
+        if (!updateQuery.equals(EMPTY_STRING)) {
+            entity.setLastUpdateDate(LocalDateTime.now());
+            Map<String, FieldDescription> paramsForUpdate = extractUpdateParams(entity);
+            Object[] args = paramsForUpdate.values()
+                    .stream()
+                    .map(FieldDescription::getValue)
+                    .toArray();
+            int[] argsTypes = paramsForUpdate.values()
+                    .stream()
+                    .mapToInt(FieldDescription::getSqlTypeCode)
+                    .toArray();
+            jdbcTemplate.update(updateQuery, args, argsTypes);
         }
-        entity.setLastUpdateDate(LocalDateTime.now());
-        Map<String, FieldDescription> paramsForUpdate = extractUpdateParams(entity);
-        Object[] args = paramsForUpdate.values()
-                .stream()
-                .map(FieldDescription::getValue)
-                .toArray();
-        int[] argsTypes = paramsForUpdate.values()
-                .stream()
-                .mapToInt(FieldDescription::getSqlTypeCode)
-                .toArray();
-        jdbcTemplate.update(updateQuery, args, argsTypes);
         return findById(id).get();
     }
 
@@ -134,7 +131,9 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         preparedStatement.setInt(4, entity.getDuration());
         LocalDateTime createDate = entity.getCreateDate();
         if (entity.getCreateDate() == null) {
-            createDate = getCurrentDateTimeIso8601();
+            LocalDateTime now = LocalDateTime.now();
+            now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            createDate = now;
         }
         Timestamp createDateTimestamp = Timestamp.valueOf(createDate);
         preparedStatement.setTimestamp(5, createDateTimestamp);

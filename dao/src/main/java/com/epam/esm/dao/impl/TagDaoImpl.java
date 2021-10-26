@@ -42,9 +42,7 @@ public class TagDaoImpl implements TagDao {
                     + " JOIN student.tag"
                     + " ON gift_certificates_tags.tag_id = tag.id"
                     + " WHERE gift_certificates_tags.gift_certificate_id = ?";
-
     private final JdbcTemplate jdbcTemplate;
-
     private final TagRowMapper rowMapper;
 
     @Autowired
