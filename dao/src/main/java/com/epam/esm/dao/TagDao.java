@@ -18,9 +18,9 @@ public interface TagDao {
 
     boolean isExist(long id);
 
-    boolean boundTagToGiftCertificate(long id, long giftCertificateId);
+    void boundTagToGiftCertificate(long id, long giftCertificateId);
 
-    boolean unboundTagFromGiftCertificate(long id, long giftCertificateId);
+    void unboundTagFromGiftCertificate(long id, long giftCertificateId);
 
     boolean isTagBoundToGiftCertificate(long id, long giftCertificateId);
 }

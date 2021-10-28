@@ -26,3 +26,6 @@ ALTER TABLE gift_certificates_tags
     ADD CONSTRAINT gift_certificate_id_fk FOREIGN KEY (gift_certificate_id) REFERENCES gift_certificate (id) ON DELETE CASCADE;
 ALTER TABLE gift_certificates_tags
 ADD CONSTRAINT tag_id_fk FOREIGN KEY (tag_id) REFERENCES tag (id) ON DELETE CASCADE;
+
+ALTER TABLE gift_certificates_tags
+    ADD UNIQUE (gift_certificate_id, tag_id);

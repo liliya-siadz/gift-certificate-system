@@ -37,9 +37,9 @@ public class TagDaoImpl implements TagDao {
     private static final String UNBOUND_TAG_FROM_GIFT_CERTIFICATE_QUERY =
             "DELETE FROM gift_certificates_tags WHERE tag_id = ? AND  gift_certificate_id = ?";
     private static final String FIND_ALL_TAGS_BOUND_WITH_GIFT_CERTIFICATE_QUERY =
-            "SELECT student.tag.id, student.tag.name"
-                    + " FROM student.gift_certificates_tags"
-                    + " JOIN student.tag"
+            "SELECT tag.id, tag.name"
+                    + " FROM gift_certificates_tags"
+                    + " JOIN tag"
                     + " ON gift_certificates_tags.tag_id = tag.id"
                     + " WHERE gift_certificates_tags.gift_certificate_id = ?";
 
@@ -103,17 +103,15 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public boolean boundTagToGiftCertificate(long id, long giftCertificateId) {
+    public void boundTagToGiftCertificate(long id, long giftCertificateId) {
         int quantityOfRowsAffected = jdbcTemplate.update(BOUND_TAG_TO_GIFT_CERTIFICATE_QUERY,
                 new Object[]{id, giftCertificateId}, new int[]{Types.INTEGER, Types.INTEGER});
-        return quantityOfRowsAffected >= 1;
     }
 
     @Override
-    public boolean unboundTagFromGiftCertificate(long id, long giftCertificateId) {
+    public void unboundTagFromGiftCertificate(long id, long giftCertificateId) {
         int quantityOfRowsAffected = jdbcTemplate.update(UNBOUND_TAG_FROM_GIFT_CERTIFICATE_QUERY,
                 new Object[]{id, giftCertificateId}, new int[]{Types.INTEGER, Types.INTEGER});
-        return quantityOfRowsAffected >= 1;
     }
 
     @Override

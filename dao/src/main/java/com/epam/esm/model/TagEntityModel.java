@@ -1,5 +1,6 @@
 package com.epam.esm.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=true)
 public class TagEntityModel extends AbstractEntityModel {
     private String name;
 

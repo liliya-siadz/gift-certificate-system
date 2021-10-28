@@ -1,4 +1,8 @@
-INSERT INTO tag (id, name) values (1, 'Best friend'), (2, 'From Colleagues'), (3, 'New year 3000'), (4, 'The Power of idea');
+INSERT INTO tag (id, name)
+values (1, 'Best friend'),
+       (2, 'From Colleagues'),
+       (3, 'New year 3000'),
+       (4, 'The Power of idea');
 
 INSERT INTO gift_certificate (id, name, description, price, duration, create_date,last_update_date)
 values

@@ -104,7 +104,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-
     @Override
     public List<GiftCertificateClientModel> search(
             String tagName, String name, String description, String sort) {

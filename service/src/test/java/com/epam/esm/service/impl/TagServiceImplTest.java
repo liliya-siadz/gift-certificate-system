@@ -201,8 +201,7 @@ class TagServiceImplTest {
                 .thenReturn(Boolean.TRUE);
         when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
                 .thenReturn(Boolean.FALSE);
-        when(tagDao.boundTagToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
-                .thenReturn(Boolean.TRUE);
+        doNothing().when(tagDao).boundTagToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
         List<TagClientModel> actual = tagService.updateExistingGiftCertificateTags(
                 GIFT_CERTIFICATE_ID, clientModels);
         assertEquals(clientModels, actual);
@@ -219,8 +218,7 @@ class TagServiceImplTest {
                 .thenReturn(Boolean.TRUE);
         when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
                 .thenReturn(Boolean.TRUE);
-        when(tagDao.unboundTagFromGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
-                .thenReturn(Boolean.TRUE);
+        doNothing().when(tagDao).unboundTagFromGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
         List<TagClientModel> actual = tagService.updateExistingGiftCertificateTags(
                 GIFT_CERTIFICATE_ID, tagsForUnbound);
         List<TagClientModel> expected = Collections.emptyList();

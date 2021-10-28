@@ -1,5 +1,6 @@
 package com.epam.esm.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper=true)
 public class GiftCertificateEntityModel extends AbstractEntityModel {
     private String name;
     private String description;

@@ -23,10 +23,10 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
             "SELECT distinct gift_certificate.create_date,  gift_certificate.id,"
                     + " gift_certificate.name, gift_certificate.description, gift_certificate.price,"
                     + " gift_certificate.duration, gift_certificate.last_update_date"
-                    + " FROM student.gift_certificates_tags"
-                    + " JOIN student.tag"
+                    + " FROM gift_certificates_tags"
+                    + " JOIN tag"
                     + " ON gift_certificates_tags.tag_id = tag.id"
-                    + " JOIN student.gift_certificate"
+                    + " JOIN gift_certificate"
                     + " ON gift_certificates_tags.gift_certificate_id = gift_certificate.id ";
     private static final String SEARCH_PREDICATE_PARAMS_DELIMITER = " AND ";
 
@@ -85,8 +85,7 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
                     : sortParamValue;
             if (Arrays.stream(SortField.values()).anyMatch(
                     value -> value.name().toLowerCase().equals(sortFieldName))) {
-                return " ORDER BY " + sortFieldName + " "
-                        + (sortDirection.map(Enum::name).orElseGet(SortDirection.ASC::name));
+                return " ORDER BY " + sortFieldName + " " + (sortDirection.map(Enum::name).orElseGet(SortDirection.ASC::name));
             }
         }
         return EMPTY_STRING;

@@ -55,7 +55,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public long create(GiftCertificateEntityModel entity) {
-        if ((entity == null)) {
+        if (entity == null) {
             throw new IllegalArgumentException("Entity of tag or name of tag is null!");
         }
         KeyHolder keyHolder = new GeneratedKeyHolder();
