@@ -37,6 +37,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public GiftCertificateClientModel create(GiftCertificateClientModel clientModel) {
+        if (clientModel == null) {
+            throw new IllegalArgumentException("Parameter 'clientModel' is null!");
+        }
         validator.isValidForCreate(clientModel);
         long generatedId = dao.create(modelMapper.toEntity(clientModel));
         tagService.updateNewGiftCertificateTags(generatedId, clientModel.getTags());
@@ -101,10 +104,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    @Override
-    public boolean isExist(Long id) {
-        return ((id != null) && (dao.isExist(id)));
-    }
 
     @Override
     public List<GiftCertificateClientModel> search(

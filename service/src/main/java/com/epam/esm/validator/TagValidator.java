@@ -4,8 +4,7 @@ import com.epam.esm.exception.InvalidFieldValueException;
 import com.epam.esm.model.TagClientModel;
 import org.springframework.stereotype.Component;
 
-import static com.epam.esm.validator.ValidatorUtil.AT_LEAST_ONE_LETTER_SET_REGEX_PATTERN;
-import static com.epam.esm.validator.ValidatorUtil.isMatchToRegex;
+import static com.epam.esm.validator.Validator.isMatchToRegex;
 
 @Component("tagValidator")
 public class TagValidator implements Validator<TagClientModel> {
@@ -14,25 +13,29 @@ public class TagValidator implements Validator<TagClientModel> {
 
     @Override
     public void isValidForUpdate(TagClientModel tag) {
-        String name = tag.getName();
-        Long id = tag.getId();
-        if (name != null) {
-            validateName(name);
-        }
-        if (id != null) {
-            validateId(id);
+        if (tag != null) {
+            String name = tag.getName();
+            Long id = tag.getId();
+            if (name != null) {
+                validateName(name);
+            }
+            if (id != null) {
+                validateId(id);
+            }
         }
     }
 
     @Override
     public void isValidForCreate(TagClientModel tag) {
-        validateForNullables(tag);
-        validateName(tag.getName());
+        if (tag != null) {
+            validateForNullables(tag);
+            validateName(tag.getName());
+        }
     }
 
     public void validateName(String name) {
         if (!((isMatchToRegex(name, AT_LEAST_ONE_LETTER_SET_REGEX_PATTERN))
-                && (name.length() < NAME_MAX_LENGTH))) {
+                && (name.length() <= NAME_MAX_LENGTH))) {
             throw new InvalidFieldValueException("name");
         }
     }

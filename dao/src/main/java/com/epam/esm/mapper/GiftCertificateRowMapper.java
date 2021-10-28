@@ -16,9 +16,9 @@ public class GiftCertificateRowMapper implements RowMapper<GiftCertificateEntity
 
     @Override
     public GiftCertificateEntityModel mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
-        LocalDateTime createDate =  resultSet.getTimestamp("create_date").toLocalDateTime();
+        LocalDateTime createDate = resultSet.getTimestamp("create_date").toLocalDateTime();
         createDate.format(ofPattern(ISO_8601_DATE_TIME_FORMAT_PATTERN));
-        LocalDateTime lastUpdateDate =  resultSet.getTimestamp("last_update_date").toLocalDateTime();
+        LocalDateTime lastUpdateDate = resultSet.getTimestamp("last_update_date").toLocalDateTime();
         createDate.format(ofPattern(ISO_8601_DATE_TIME_FORMAT_PATTERN));
         return GiftCertificateEntityModel.builder()
                 .id(resultSet.getLong("id"))

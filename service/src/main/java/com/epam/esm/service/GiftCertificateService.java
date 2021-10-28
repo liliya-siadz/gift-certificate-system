@@ -15,7 +15,5 @@ public interface GiftCertificateService {
 
     GiftCertificateClientModel update(Long id, GiftCertificateClientModel clientModel);
 
-    boolean isExist(Long id);
-
     List<GiftCertificateClientModel> search(String tagName, String name, String description, String sort);
 }

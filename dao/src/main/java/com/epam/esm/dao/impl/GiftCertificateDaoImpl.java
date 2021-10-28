@@ -23,8 +23,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.epam.esm.dao.builder.GiftCertificateQueryBuilder.EMPTY_STRING;
-import static com.epam.esm.dao.builder.GiftCertificateQueryBuilder.buildUpdateQuery;
-import static com.epam.esm.dao.builder.GiftCertificateQueryBuilder.extractUpdateParams;
 
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
@@ -41,13 +39,18 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             "DELETE FROM gift_certificate WHERE id = ?";
     private static final String GET_IS_GIFT_CERTIFICATE_EXIST_QUERY =
             "SELECT EXISTS(SELECT 1 FROM gift_certificate WHERE id = ?)";
-    private JdbcTemplate jdbcTemplate;
-    private GiftCertificateRowMapper rowMapper;
+
+    private final JdbcTemplate jdbcTemplate;
+    private final GiftCertificateRowMapper rowMapper;
+    private final GiftCertificateQueryBuilder queryBuilder;
 
     @Autowired
-    public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate, GiftCertificateRowMapper rowMapper) {
+    public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate,
+                                  GiftCertificateRowMapper rowMapper,
+                                  GiftCertificateQueryBuilder queryBuilder) {
         this.jdbcTemplate = jdbcTemplate;
         this.rowMapper = rowMapper;
+        this.queryBuilder = queryBuilder;
     }
 
     @Override
@@ -91,10 +94,10 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         if (entity == null) {
             throw new IllegalArgumentException("Gift certificate entity is null!");
         }
-        String updateQuery = buildUpdateQuery(id, entity);
+        String updateQuery = queryBuilder.buildUpdateQuery(id, entity);
         if (!updateQuery.equals(EMPTY_STRING)) {
             entity.setLastUpdateDate(LocalDateTime.now());
-            Map<String, FieldDescription> paramsForUpdate = extractUpdateParams(entity);
+            Map<String, FieldDescription> paramsForUpdate = queryBuilder.findUpdateParams(entity);
             Object[] args = paramsForUpdate.values()
                     .stream()
                     .map(FieldDescription::getValue)
@@ -117,8 +120,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public List<GiftCertificateEntityModel> search(
             String tagName, String name, String description, String sort) {
-        String searchQuery = GiftCertificateQueryBuilder.buildSearchQuery(
-                tagName, name, description, sort);
+        String searchQuery = queryBuilder.buildSearchQuery(tagName, name, description, sort);
         return jdbcTemplate.query(searchQuery, rowMapper);
     }
 

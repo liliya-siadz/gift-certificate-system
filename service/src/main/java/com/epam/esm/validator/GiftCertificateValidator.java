@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-import static com.epam.esm.validator.ValidatorUtil.AT_LEAST_ONE_LETTER_SET_REGEX_PATTERN;
-import static com.epam.esm.validator.ValidatorUtil.isMatchToRegex;
+import static com.epam.esm.validator.Validator.isMatchToRegex;
 
 @Component("giftCertificateValidator")
 public class GiftCertificateValidator implements Validator<GiftCertificateClientModel> {
@@ -20,40 +19,44 @@ public class GiftCertificateValidator implements Validator<GiftCertificateClient
 
     @Override
     public void isValidForUpdate(GiftCertificateClientModel giftCertificate) {
-        String name = giftCertificate.getName();
-        String description = giftCertificate.getDescription();
-        BigDecimal price = giftCertificate.getPrice();
-        Integer duration = giftCertificate.getDuration();
-        String createDate = giftCertificate.getCreateDate();
-        if (!(name == null)) {
-            validateName(name);
-        }
-        if (!(description == null)) {
-            validateDescription(description);
-        }
-        if (!(price == null)) {
-            validatePrice(price);
-        }
-        if (!(duration == null)) {
-            validateDuration(duration);
-        }
-        if (!(createDate == null)) {
-            validateCreateDate(createDate);
+        if (giftCertificate != null) {
+            String name = giftCertificate.getName();
+            String description = giftCertificate.getDescription();
+            BigDecimal price = giftCertificate.getPrice();
+            Integer duration = giftCertificate.getDuration();
+            String createDate = giftCertificate.getCreateDate();
+            if (!(name == null)) {
+                validateName(name);
+            }
+            if (!(description == null)) {
+                validateDescription(description);
+            }
+            if (!(price == null)) {
+                validatePrice(price);
+            }
+            if (!(duration == null)) {
+                validateDuration(duration);
+            }
+            if (!(createDate == null)) {
+                validateCreateDate(createDate);
+            }
         }
     }
 
     @Override
     public void isValidForCreate(GiftCertificateClientModel giftCertificate) {
-        validateForNullables(giftCertificate);
-        validateName(giftCertificate.getName());
-        validateCreateDate(giftCertificate.getCreateDate());
-        validateDescription(giftCertificate.getDescription());
-        validatePrice(giftCertificate.getPrice());
-        validateDuration(giftCertificate.getDuration());
+        if (giftCertificate != null) {
+            validateForNullables(giftCertificate);
+            validateName(giftCertificate.getName());
+            validateCreateDate(giftCertificate.getCreateDate());
+            validateDescription(giftCertificate.getDescription());
+            validatePrice(giftCertificate.getPrice());
+            validateDuration(giftCertificate.getDuration());
+        }
     }
 
     public void validateCreateDate(String createDate) {
-        if (createDate !=null) {
+        if (createDate != null) {
             try {
                 LocalDateTime temp = LocalDateTime.parse(createDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                 if (!(temp.isBefore(LocalDateTime.now()))) {
@@ -66,7 +69,7 @@ public class GiftCertificateValidator implements Validator<GiftCertificateClient
     }
 
     public void validateDuration(Integer duration) {
-        if (!((duration > 0) && (duration < DURATION_MAX_VALUE))) {
+        if (!((duration > 0) && (duration <= DURATION_MAX_VALUE))) {
             throw new InvalidFieldValueException("duration");
         }
     }
@@ -79,14 +82,14 @@ public class GiftCertificateValidator implements Validator<GiftCertificateClient
 
     public void validateName(String name) {
         if (!((isMatchToRegex(name, AT_LEAST_ONE_LETTER_SET_REGEX_PATTERN))
-                && (name.length() < NAME_MAX_LENGTH))) {
+                && (name.length() <= NAME_MAX_LENGTH))) {
             throw new InvalidFieldValueException("name");
         }
     }
 
     public void validateDescription(String description) {
         if (!((isMatchToRegex(description, AT_LEAST_ONE_LETTER_SET_REGEX_PATTERN))
-                && (description.length() < DESCRIPTION_MAX_LENGTH))) {
+                && (description.length() <= DESCRIPTION_MAX_LENGTH))) {
             throw new InvalidFieldValueException("description");
         }
     }

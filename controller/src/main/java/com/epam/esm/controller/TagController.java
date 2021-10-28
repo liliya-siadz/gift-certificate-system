@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/tags")
 public class TagController {
-
     private final TagServiceImpl service;
 
     @Autowired

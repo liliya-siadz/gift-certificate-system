@@ -18,7 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/gift_certificates")
 public class GiftCertificateController {
-
     private final GiftCertificateService service;
 
     @Autowired
