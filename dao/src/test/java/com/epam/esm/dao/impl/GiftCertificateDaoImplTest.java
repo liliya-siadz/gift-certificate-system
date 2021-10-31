@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,10 +27,10 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtendWith({SpringExtension.class})
+@Transactional
 @ContextConfiguration(classes = {TestDaoConfiguration.class})
 @ActiveProfiles("test")
 class GiftCertificateDaoImplTest {
-
     @Autowired
     private GiftCertificateDaoImpl dao;
 
@@ -39,7 +40,8 @@ class GiftCertificateDaoImplTest {
     private GiftCertificateEntityModel certificate3;
     private GiftCertificateEntityModel certificate4;
     private GiftCertificateEntityModel certificate5;
-    private GiftCertificateEntityModel unknownCertificate;
+    private GiftCertificateEntityModel unknownByDbCertificate;
+    private final long unknownByDbCertificateId = 178L;
 
     @BeforeEach
     void setUpCommons() {
@@ -77,7 +79,7 @@ class GiftCertificateDaoImplTest {
         allCertificates.add(certificate4);
         allCertificates.add(certificate5);
 
-        unknownCertificate = GiftCertificateEntityModel.builder()
+        unknownByDbCertificate = GiftCertificateEntityModel.builder()
                 .id(10).name("Katy K").description("Audience with Madonna signer")
                 .price(new BigDecimal(100000)).duration(5).createDate(lastUpdate)
                 .lastUpdateDate(lastUpdate).build();
@@ -90,8 +92,8 @@ class GiftCertificateDaoImplTest {
 
     @Test
     void createShouldTReturnResultBiggerThanZero() {
-        long actual = dao.create(unknownCertificate);
-        assertTrue(actual > 0);
+        long generatedId = dao.create(unknownByDbCertificate);
+        assertTrue(generatedId > 0);
     }
 
     @Test
@@ -103,29 +105,27 @@ class GiftCertificateDaoImplTest {
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L, 4L, 5L})
     void findByIdResultShouldBePresent(long id) {
-        Optional<GiftCertificateEntityModel> actual = dao.findById(id);
-        assertTrue(actual.isPresent());
+        Optional<GiftCertificateEntityModel> findingResult = dao.findById(id);
+        assertTrue(findingResult.isPresent());
     }
 
-    @ParameterizedTest
-    @ValueSource(longs = {12L, 20L, 32L, 178L})
-    void findByIdShouldResultShouldNotBePresent(long id) {
-        Optional<GiftCertificateEntityModel> actual = dao.findById(id);
-        assertFalse(actual.isPresent());
+    @Test
+    void findByIdShouldResultShouldNotBePresent() {
+        Optional<GiftCertificateEntityModel> findingResult = dao.findById(unknownByDbCertificateId);
+        assertFalse(findingResult.isPresent());
     }
 
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L, 4L, 5L})
     void deleteShouldReturnTrue(long id) {
-        boolean actual = dao.delete(id);
-        assertTrue(actual);
+        boolean isDeleted = dao.delete(id);
+        assertTrue(isDeleted);
     }
 
-    @ParameterizedTest
-    @ValueSource(longs = {12L, 20L, 32L, 178L})
-    void deleteShouldReturnFalse(long id) {
-        boolean actual = dao.delete(id);
-        assertFalse(actual);
+    @Test
+    void deleteShouldReturnFalse() {
+        boolean isDeleted = dao.delete(unknownByDbCertificateId);
+        assertFalse(isDeleted);
     }
 
     @Test
@@ -163,14 +163,14 @@ class GiftCertificateDaoImplTest {
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L, 4L, 5L})
     void isExistShouldReturnTrue(long id) {
-        boolean actual = dao.isExist(id);
-        assertTrue(actual);
+        boolean isExist = dao.isExist(id);
+        assertTrue(isExist);
     }
 
     @Test
     void isExistShouldReturnFalse() {
-        boolean actual = dao.isExist(unknownCertificate.getId());
-        assertFalse(actual);
+        boolean isExist = dao.isExist(unknownByDbCertificate.getId());
+        assertFalse(isExist);
     }
 
     @Test

@@ -4,30 +4,26 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan(basePackages = {"com.epam.esm"})
 @Profile("test")
+@EnableTransactionManagement
 public class TestDaoConfiguration {
-
     @Bean
-    public JdbcTemplate jdbcTemplate(EmbeddedDatabase embeddedDatabase) {
-        return new JdbcTemplate(embeddedDatabase);
+    PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(embeddedDatabase());
     }
 
     @Bean
-    PlatformTransactionManager transactionManager(EmbeddedDatabase embeddedDatabase) {
-        return new DataSourceTransactionManager(embeddedDatabase);
-    }
-
-    @Bean
-    public EmbeddedDatabase embeddedDatabase() {
+    public DataSource embeddedDatabase() {
         return new EmbeddedDatabaseBuilder()
                 .generateUniqueName(true)
                 .setType(EmbeddedDatabaseType.H2)

@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -20,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith({SpringExtension.class})
 @ContextConfiguration(classes = {TestServiceConfiguration.class})
+@ActiveProfiles("prod")
 class GiftCertificateValidatorTest {
-
     @Autowired
     private GiftCertificateValidator validator;
 

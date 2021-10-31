@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,7 +31,6 @@ import java.util.stream.Stream;
 @Transactional
 @ActiveProfiles("test")
 class TagDaoImplTest {
-
     @Autowired
     private TagDaoImpl dao;
 
@@ -41,6 +40,7 @@ class TagDaoImplTest {
     private TagEntityModel tag2 = new TagEntityModel(2, "From Colleagues");
     private TagEntityModel tag3 = new TagEntityModel(3, "New year 3000");
     private TagEntityModel tag4 = new TagEntityModel(4, "The Power of idea");
+    private final long unknownByDbTagId = 38L;
 
     @BeforeEach
     void setUpCommons() {
@@ -58,19 +58,14 @@ class TagDaoImplTest {
     @ParameterizedTest
     @MethodSource("idTagsInDb")
     void findByIdResultShouldBePresent(long id) {
-        Optional<TagEntityModel> actual = dao.findById(id);
-        assertTrue(actual.isPresent());
+        Optional<TagEntityModel> findingResult = dao.findById(id);
+        assertTrue(findingResult.isPresent());
     }
 
-    static Stream<Long> idTagsNotInDb() {
-        return Stream.of(5L, 100L, 38L, 14L);
-    }
-
-    @ParameterizedTest
-    @MethodSource("idTagsNotInDb")
-    void findByIdResultShouldNotBePresent(long id) {
-        Optional<TagEntityModel> actual = dao.findById(id);
-        assertFalse(actual.isPresent());
+    @Test
+    void findByIdResultShouldNotBePresent() {
+        Optional<TagEntityModel> findingResult = dao.findById(unknownByDbTagId);
+        assertFalse(findingResult.isPresent());
     }
 
     static Stream<TagEntityModel> tagsInDb() {
@@ -103,8 +98,8 @@ class TagDaoImplTest {
 
     @Test
     void createShouldReturnResultBiggerThanZero() {
-        long actual = dao.create(new TagEntityModel(0, "Another one tag"));
-        assertTrue(actual > 0L);
+        long generatedId = dao.create(new TagEntityModel(0, "Another one tag"));
+        assertTrue(generatedId > 0L);
     }
 
     @Test
@@ -115,73 +110,53 @@ class TagDaoImplTest {
     @ParameterizedTest
     @MethodSource("idTagsInDb")
     void deleteShouldReturnTrue(long id) {
-        boolean actual = dao.isExist(id);
-        assertTrue(actual);
+        boolean isExist = dao.isExist(id);
+        assertTrue(isExist);
     }
 
-    @ParameterizedTest
-    @MethodSource("idTagsNotInDb")
-    void deleteShouldReturnFalse(long id) {
-        boolean actual = dao.isExist(id);
-        assertTrue(actual);
+    @Test
+    void deleteShouldReturnFalse() {
+        boolean isDeleted = dao.delete(unknownByDbTagId);
+        assertFalse(isDeleted);
     }
 
     @ParameterizedTest
     @MethodSource("idTagsInDb")
     void isExistShouldReturnTrue(long id) {
-        boolean actual = dao.isExist(id);
-        assertTrue(actual);
+        boolean isExist = dao.isExist(id);
+        assertTrue(isExist);
     }
 
-    @ParameterizedTest
-    @MethodSource("idTagsNotInDb")
-    void isExistShouldReturnFalse(long id) {
-        boolean actual = dao.isExist(id);
-        assertTrue(actual);
+    @Test
+    void isExistShouldReturnFalse() {
+        boolean isTagInDb = dao.isExist(unknownByDbTagId);
+        assertFalse(isTagInDb);
     }
 
     @Test
     void boundTagToGiftCertificateShouldFail() {
-        try {
-            dao.boundTagToGiftCertificate(3, targetGiftCertificateIdB);
-            fail("Should be failed cause action is constraint violation"
-                    + " (tags are already bounded to gift certificate).");
-        } catch (Throwable throwable) {
-            assertTrue(true);
-        }
+        assertThrows(DuplicateKeyException.class,
+                () -> dao.boundTagToGiftCertificate(3, targetGiftCertificateIdB));
     }
 
     @Test
-    void boundTagToGiftCertificateShouldNotFail() {
-        try {
-            dao.boundTagToGiftCertificate(1, targetGiftCertificateIdB);
-            dao.boundTagToGiftCertificate(3, targetGiftCertificateIdB);
-            assertTrue(true);
-        } catch (Throwable throwable) {
-            fail();
-        }
+    void boundTagToGiftCertificateShouldBoundTags() {
+        dao.boundTagToGiftCertificate(2, targetGiftCertificateIdB);
+        dao.boundTagToGiftCertificate(4, targetGiftCertificateIdB);
+        boolean isTag1Bound = dao.isTagBoundToGiftCertificate(1, targetGiftCertificateIdB);
+        boolean isTag3Bound = dao.isTagBoundToGiftCertificate(3, targetGiftCertificateIdB);
+        assertTrue(isTag1Bound);
+        assertTrue(isTag3Bound);
     }
 
     @Test
-    void unboundTagFromGiftCertificateShouldFail() {
-        try {
-            dao.unboundTagFromGiftCertificate(2, targetGiftCertificateIdB);
-            fail("Should be failed cause action is constraint violation"
-                    + " (tags are already bounded to gift certificate).");
-        } catch (Throwable throwable) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    void unboundTagFromGiftCertificateShouldNotFail() {
-        try {
-            dao.unboundTagFromGiftCertificate(1, targetGiftCertificateIdB);
-            dao.unboundTagFromGiftCertificate(3, targetGiftCertificateIdB);
-            assertTrue(true);
-        } catch (Throwable throwable) {
-            fail();
-        }
+    void unboundTagFromGiftCertificateShouldUnboundTags() {
+        dao.unboundTagFromGiftCertificate(1, targetGiftCertificateIdB);
+        dao.unboundTagFromGiftCertificate(3, targetGiftCertificateIdB);
+        boolean isTag1Bound = dao.isTagBoundToGiftCertificate(1, targetGiftCertificateIdB);
+        boolean isTag3Bound = dao.isTagBoundToGiftCertificate(3, targetGiftCertificateIdB);
+        assertFalse(isTag1Bound);
+        assertFalse(isTag3Bound);
     }
 
     @Test
