@@ -22,7 +22,6 @@ public class DaoConfiguration {
     }
 
     @Bean
-    @Profile("!test")
     public DataSource dataSource(HikariConfig hikariConfig) {
         return new HikariDataSource(hikariConfig);
     }

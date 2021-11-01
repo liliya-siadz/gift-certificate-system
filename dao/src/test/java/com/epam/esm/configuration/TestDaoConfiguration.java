@@ -1,9 +1,6 @@
 package com.epam.esm.configuration;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -19,11 +16,12 @@ import javax.sql.DataSource;
 public class TestDaoConfiguration {
     @Bean
     PlatformTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(embeddedDatabase());
+        return new DataSourceTransactionManager(dataSource());
     }
 
     @Bean
-    public DataSource embeddedDatabase() {
+    @Primary
+    public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
                 .generateUniqueName(true)
                 .setType(EmbeddedDatabaseType.H2)
