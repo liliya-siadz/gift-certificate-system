@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Implementation of interface {@link TagDao}
+ * for presenting access to repository operations with Tag .
+ */
 @Repository
 public class TagDaoImpl implements TagDao {
     private static final String FIND_TAG_BY_ID_QUERY =
@@ -43,9 +47,22 @@ public class TagDaoImpl implements TagDao {
                     + " ON gift_certificates_tags.tag_id = tag.id"
                     + " WHERE gift_certificates_tags.gift_certificate_id = ?";
 
+    /**
+     * JDBC API for processing sql queries .
+     */
     private final JdbcTemplate jdbcTemplate;
+
+    /**
+     * Maps row of database result set to entity model of entity 'tag' .
+     */
     private final TagRowMapper rowMapper;
 
+    /**
+     * Constructs dao for Tag with injected params .
+     *
+     * @param jdbcTemplate {@link #jdbcTemplate}
+     * @param rowMapper    {@link #rowMapper}
+     */
     @Autowired
     public TagDaoImpl(JdbcTemplate jdbcTemplate,
                       TagRowMapper rowMapper) {
@@ -104,13 +121,13 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public void boundTagToGiftCertificate(long id, long giftCertificateId) {
-        int quantityOfRowsAffected = jdbcTemplate.update(BOUND_TAG_TO_GIFT_CERTIFICATE_QUERY,
+        jdbcTemplate.update(BOUND_TAG_TO_GIFT_CERTIFICATE_QUERY,
                 new Object[]{id, giftCertificateId}, new int[]{Types.INTEGER, Types.INTEGER});
     }
 
     @Override
     public void unboundTagFromGiftCertificate(long id, long giftCertificateId) {
-        int quantityOfRowsAffected = jdbcTemplate.update(UNBOUND_TAG_FROM_GIFT_CERTIFICATE_QUERY,
+        jdbcTemplate.update(UNBOUND_TAG_FROM_GIFT_CERTIFICATE_QUERY,
                 new Object[]{id, giftCertificateId}, new int[]{Types.INTEGER, Types.INTEGER});
     }
 

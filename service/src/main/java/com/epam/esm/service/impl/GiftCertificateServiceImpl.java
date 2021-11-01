@@ -16,13 +16,42 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of {@link GiftCertificateService} interface,
+ * for presenting access to service operations with Gift Certificate .
+ */
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
+
+    /**
+     * Dao for repository operations with table 'gift_certificate' .
+     */
     private final GiftCertificateDao dao;
+
+    /**
+     * Service for operations with Tag .
+     */
     private final TagService tagService;
+
+    /**
+     * Mapper from Gift Certificate entity model
+     * to Gift Certificate client model and otherwise .
+     */
     private final GiftCertificateModelMapper modelMapper;
+
+    /**
+     * Validator for client model of Gift Certificate .
+     */
     private final Validator<GiftCertificateClientModel> validator;
 
+    /**
+     * Constructs service with injected params .
+     *
+     * @param dao {@link #dao}
+     * @param tagService {@link #tagService}
+     * @param modelMapper {@link #modelMapper}
+     * @param validator {@link #validator}
+     */
     @Autowired
     public GiftCertificateServiceImpl(
             GiftCertificateDao dao,

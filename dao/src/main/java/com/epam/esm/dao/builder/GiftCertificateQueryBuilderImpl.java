@@ -12,6 +12,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+/**
+ * Implementation of interface {@link GiftCertificateQueryBuilder}
+ * for building search and update sql queries for Gift Certificate .
+ */
 @Component
 public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuilder {
     private static final String UPDATE_PARAMS_DELIMITER = ",";

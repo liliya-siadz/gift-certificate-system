@@ -5,10 +5,18 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+/**
+ * Class registers dispatcher servlet .
+ * <p>
+ * Uses {@link ControllerConfiguration} for DispatcherServlet context configuration.
+ * Maps DispatcherServlet to root path (/).
+ */
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        servletContext.setInitParameter("spring.profiles.active", "prod");
+
+        /* Sets spring active profile. */
+        servletContext.setInitParameter("spring.profiles.active", "dev");
         super.onStartup(servletContext);
     }
 

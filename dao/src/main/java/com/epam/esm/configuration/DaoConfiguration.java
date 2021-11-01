@@ -10,10 +10,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
+/**
+ * Configuration for repository layer of application .
+ */
 @Configuration
 @ComponentScan("com.epam.esm")
 public class DaoConfiguration {
-
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);

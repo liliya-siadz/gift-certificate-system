@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * Response body object of exception handling mechanism ,
- * is used in class {@link ControllerAdvice} .
+ * Class is used as response body object
+ * of exception handling mechanism in class {@link ControllerAdvice} .
  */
 @Data
 @AllArgsConstructor
-public class CustomResponse {
+public class ErrorResponse {
 
     /**
      * Error code of handled exception .
@@ -17,7 +17,7 @@ public class CustomResponse {
     private int errorCode;
 
     /**
-     * Error message of handled exception (might be parametrized) .
+     * Error message of handled exception (could be parametrized) .
      */
     private String errorMessage;
 }

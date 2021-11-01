@@ -24,6 +24,10 @@ import java.util.Optional;
 
 import static com.epam.esm.dao.builder.GiftCertificateQueryBuilder.EMPTY_STRING;
 
+/**
+ * Implementation of interface {@link GiftCertificateDao}
+ * for presenting access to repository operations with Gift Certificate .
+ */
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private static final String FIND_ALL_GIFT_CERTIFICATES_QUERY =
@@ -40,10 +44,31 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private static final String GET_IS_GIFT_CERTIFICATE_EXIST_QUERY =
             "SELECT EXISTS(SELECT 1 FROM gift_certificate WHERE id = ?)";
 
+    /**
+     * JDBC API for processing sql queries .
+     */
     private final JdbcTemplate jdbcTemplate;
+
+    /**
+     * Maps row of database result set to entity model of entity 'gift_certificate' .
+     */
     private final GiftCertificateRowMapper rowMapper;
+
+    /**
+     * SQL query builder for search and update query .
+     * <p>
+     * {@link #update(long, GiftCertificateEntityModel)}
+     * {@link #search(String, String, String, String)}
+     */
     private final GiftCertificateQueryBuilder queryBuilder;
 
+    /**
+     * Constructs dao for Gift Certificate with injected params .
+     *
+     * @param jdbcTemplate {@link #jdbcTemplate}
+     * @param rowMapper    {@link #rowMapper}
+     * @param queryBuilder {@link #queryBuilder}
+     */
     @Autowired
     public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate,
                                   GiftCertificateRowMapper rowMapper,

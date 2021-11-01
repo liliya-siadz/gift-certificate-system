@@ -10,18 +10,41 @@ import com.epam.esm.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of {@link TagService} interface,
+ * for presenting access to service operations with Tag .
+ */
 @Service
 public class TagServiceImpl implements TagService {
+
+    /**
+     * Dao for repository operations with table 'tag' .
+     */
     private final TagDao tagDao;
+
+    /**
+     * Mapper from Tag entity model to Tag client model and otherwise .
+     */
     private final TagModelMapper modelMapper;
+
+    /**
+     * Validator for client model of Tag .
+     */
     private final Validator<TagClientModel> validator;
 
+    /**
+     * Constructs service with injected params .
+     *
+     * @param modelMapper {@link #modelMapper}
+     * @param validator {@link #validator}
+     */
     @Autowired
     public TagServiceImpl(TagDao tagDao, TagModelMapper modelMapper,
                           @Qualifier("tagValidator") Validator<TagClientModel> validator) {

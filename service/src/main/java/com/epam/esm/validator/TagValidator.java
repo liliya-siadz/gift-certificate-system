@@ -6,6 +6,11 @@ import org.springframework.stereotype.Component;
 
 import static com.epam.esm.validator.Validator.isMatchToRegex;
 
+/**
+ * Implements interface {@link Validator}
+ * typed by {@link com.epam.esm.model.TagClientModel},
+ * validates client model Tag .
+ */
 @Component("tagValidator")
 public class TagValidator implements Validator<TagClientModel> {
     private static final int NAME_MAX_LENGTH = 200;
@@ -33,14 +38,14 @@ public class TagValidator implements Validator<TagClientModel> {
         }
     }
 
-    public void validateName(String name) {
+    void validateName(String name) {
         if (!((isMatchToRegex(name, AT_LEAST_ONE_LETTER_SET_REGEX_PATTERN))
                 && (name.length() <= NAME_MAX_LENGTH))) {
             throw new InvalidFieldValueException("name");
         }
     }
 
-    public void validateId(Long id) {
+    void validateId(Long id) {
         if (!((id > 0) && (id <= ID_MAX_VALUE))) {
             throw new InvalidFieldValueException("id");
         }

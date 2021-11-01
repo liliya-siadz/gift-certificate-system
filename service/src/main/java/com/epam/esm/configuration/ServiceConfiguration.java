@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
+/**
+ * Configuration for service layer of application .
+ */
 @Configuration
 @ComponentScan(basePackages = {"com.epam.esm"})
 @EnableTransactionManagement

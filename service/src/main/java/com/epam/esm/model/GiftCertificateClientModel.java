@@ -10,6 +10,9 @@ import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Client model for model 'gift_certificate' .
+ */
 @Getter
 @Setter
 @SuperBuilder
@@ -17,12 +20,40 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class GiftCertificateClientModel extends AbstractClientModel {
+
+    /**
+     * Represents parameter 'name' .
+     */
     private String name;
+
+    /**
+     * Represents parameter 'description' .
+     */
     private String description;
+
+    /**
+     * Represents parameter 'price' .
+     */
     private BigDecimal price;
+
+    /**
+     * Represents parameter 'duration' .
+     */
     private Integer duration;
+
+    /**
+     * Represents parameter 'createDate' .
+     */
     private String createDate;
+
+    /**
+     * Represents parameter 'lastUpdateDate' .
+     */
     private String lastUpdateDate;
+
+    /**
+     * Represents parameter 'tags', may contain bounded to certificate tags .
+     */
     private List<TagClientModel> tags;
 
     @Override

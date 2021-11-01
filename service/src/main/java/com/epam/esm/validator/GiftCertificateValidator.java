@@ -11,6 +11,11 @@ import java.time.format.DateTimeParseException;
 
 import static com.epam.esm.validator.Validator.isMatchToRegex;
 
+/**
+ * Implements interface {@link Validator}
+ * typed by {@link com.epam.esm.model.GiftCertificateClientModel},
+ * validates client model Gift Certificate .
+ */
 @Component("giftCertificateValidator")
 public class GiftCertificateValidator implements Validator<GiftCertificateClientModel> {
     private static final int DURATION_MAX_VALUE = 32768;
@@ -55,7 +60,7 @@ public class GiftCertificateValidator implements Validator<GiftCertificateClient
         }
     }
 
-    public void validateCreateDate(String createDate) {
+    void validateCreateDate(String createDate) {
         if (createDate != null) {
             try {
                 LocalDateTime temp = LocalDateTime.parse(createDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
@@ -68,26 +73,26 @@ public class GiftCertificateValidator implements Validator<GiftCertificateClient
         }
     }
 
-    public void validateDuration(Integer duration) {
+    void validateDuration(Integer duration) {
         if (!((duration > 0) && (duration <= DURATION_MAX_VALUE))) {
             throw new InvalidFieldValueException("duration");
         }
     }
 
-    public void validatePrice(BigDecimal price) {
+    void validatePrice(BigDecimal price) {
         if (!(price.compareTo(BigDecimal.ZERO) >= 0)) {
             throw new InvalidFieldValueException("price");
         }
     }
 
-    public void validateName(String name) {
+    void validateName(String name) {
         if (!((isMatchToRegex(name, AT_LEAST_ONE_LETTER_SET_REGEX_PATTERN))
                 && (name.length() <= NAME_MAX_LENGTH))) {
             throw new InvalidFieldValueException("name");
         }
     }
 
-    public void validateDescription(String description) {
+    void validateDescription(String description) {
         if (!((isMatchToRegex(description, AT_LEAST_ONE_LETTER_SET_REGEX_PATTERN))
                 && (description.length() <= DESCRIPTION_MAX_LENGTH))) {
             throw new InvalidFieldValueException("description");

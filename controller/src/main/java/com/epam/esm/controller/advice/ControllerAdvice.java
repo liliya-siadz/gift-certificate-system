@@ -11,29 +11,61 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Handles exceptions from {@link com.epam.esm.exception} package
+ * across whole application .
+ * <p>
+ * Uses object of class {@link ErrorResponse} as response body of exception handling result.
+ * Creates response body object with localized message,
+ * that is constructed inside handling methods.
+ */
 @RestControllerAdvice
 public class ControllerAdvice {
 
+    /**
+     * Handles {@link com.epam.esm.exception.InvalidFieldValueException} exception,
+     * ads to the response http status 400 .
+     * <p>
+     * Extracts exception fields 'errorMessageKey' and 'fieldName'
+     * and uses its values while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
     @ExceptionHandler(InvalidFieldValueException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public CustomResponse handleInvalidFieldValueException(
+    public ErrorResponse handleInvalidFieldValueException(
             InvalidFieldValueException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getFieldName()};
         return formCustomResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
+    /**
+     * Handles {@link com.epam.esm.exception.ResourceWithIdNotFoundException} exception,
+     * ads to the response http status 404 .
+     * <p>
+     * Extracts exception fields 'errorMessageKey', 'resourceName','resourceId'
+     * and uses its values while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
     @ExceptionHandler(ResourceWithIdNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public CustomResponse handleResourceWithIdNotFoundException(
+    public ErrorResponse handleResourceWithIdNotFoundException(
             ResourceWithIdNotFoundException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getResourceName(), exception.getResourceId()};
         return formCustomResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
-    private CustomResponse formCustomResponse(String errorMessageKey, Locale locale, Object[] params) {
+    private ErrorResponse formCustomResponse(String errorMessageKey, Locale locale, Object[] params) {
         int errorCode = Integer.parseInt(getErrorMessageResource(errorMessageKey.concat(".code"), locale));
         String errorMessage = getErrorMessageResource(errorMessageKey.concat(".message"), locale, params);
-        return new CustomResponse(errorCode, errorMessage);
+        return new ErrorResponse(errorCode, errorMessage);
     }
 
     private String getErrorMessageResource(String key, Locale locale, Object[] params) {
