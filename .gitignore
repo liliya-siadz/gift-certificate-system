@@ -1,0 +1,13 @@
+.idea/
+.gradle
+build
+target/
+gradle
+generated
+generated_tests
+webapp
+out
+.gitattributes
+gradlew
+GiftCertificatesSystem.untitled
+gradlew.bat
