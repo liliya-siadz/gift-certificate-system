@@ -14,8 +14,6 @@ import javax.servlet.ServletException;
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-
-        /* Sets spring active profile. */
         servletContext.setInitParameter("spring.profiles.active", "dev");
         super.onStartup(servletContext);
     }
