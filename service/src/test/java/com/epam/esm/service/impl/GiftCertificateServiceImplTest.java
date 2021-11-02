@@ -89,7 +89,7 @@ class GiftCertificateServiceImplTest {
     @Test
     void createShouldThrowInvalidFieldValueException() {
         doThrow(InvalidFieldValueException.class)
-                .when(validator).isValidForCreate(clientModel);
+                .when(validator).validateForCreate(clientModel);
         assertThrows(InvalidFieldValueException.class,
                 () -> giftCertificateService.create(clientModel));
     }
@@ -97,7 +97,7 @@ class GiftCertificateServiceImplTest {
     @Test
     void createShouldReturnResult() {
         doNothing()
-                .when(validator).isValidForCreate(clientModel);
+                .when(validator).validateForCreate(clientModel);
         when(modelMapper.toEntity(clientModel))
                 .thenReturn(entityModel);
         when(dao.create(entityModel))
@@ -114,7 +114,7 @@ class GiftCertificateServiceImplTest {
                 .thenReturn(tags);
         GiftCertificateClientModel actual = giftCertificateService.create(clientModel);
         assertEquals(clientModel, actual);
-        verify(validator).isValidForCreate(clientModel);
+        verify(validator).validateForCreate(clientModel);
         verify(modelMapper).toEntity(clientModel);
         verify(tagService).updateNewGiftCertificateTags(ID, tags);
         verify(dao).isExist(ID);
@@ -209,7 +209,7 @@ class GiftCertificateServiceImplTest {
     void updateShouldReturnResult() {
         when(dao.isExist(ID))
                 .thenReturn(Boolean.TRUE);
-        doNothing().when(validator).isValidForUpdate(clientModel);
+        doNothing().when(validator).validateForUpdate(clientModel);
         when(modelMapper.toEntity(clientModel))
                 .thenReturn(entityModel);
         when(dao.update(ID, entityModel))
@@ -227,7 +227,7 @@ class GiftCertificateServiceImplTest {
         GiftCertificateClientModel actual = giftCertificateService.update(ID, clientModel);
         assertEquals(clientModel, actual);
         verify(dao, atLeast(1)).isExist(ID);
-        verify(validator).isValidForUpdate(clientModel);
+        verify(validator).validateForUpdate(clientModel);
         verify(modelMapper).toEntity(clientModel);
         verify(dao).update(ID, entityModel);
         verify(tagService).updateExistingGiftCertificateTags(ID, tags);

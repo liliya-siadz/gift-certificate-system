@@ -1,8 +1,11 @@
 package com.epam.esm.controller.advice;
 
 import com.epam.esm.exception.InvalidFieldValueException;
+import com.epam.esm.exception.ResourceWithNameIsExistException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
+import com.epam.esm.exception.UnknownSortParamException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,8 +29,8 @@ public class ControllerAdvice {
      * Handles {@link com.epam.esm.exception.InvalidFieldValueException} exception,
      * ads to the response http status 400 .
      * <p>
-     * Extracts exception fields 'errorMessageKey' and 'fieldName'
-     * and uses its values while creating response body object .
+     * Extracts exception field 'validationMap'
+     * and this value while creating response body object .
      *
      * @param exception handled exception
      * @param locale    request locale
@@ -38,8 +41,8 @@ public class ControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidFieldValueException(
             InvalidFieldValueException exception, Locale locale) {
-        Object[] messageParams = new Object[]{exception.getFieldName()};
-        return formCustomResponse(exception.getErrorMessageKey(), locale, messageParams);
+        Object[] messageParams = new Object[]{exception.getValidationMap()};
+        return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
     /**
@@ -47,7 +50,7 @@ public class ControllerAdvice {
      * ads to the response http status 404 .
      * <p>
      * Extracts exception fields 'errorMessageKey', 'resourceName','resourceId'
-     * and uses its values while creating response body object .
+     * and uses these values while creating response body object .
      *
      * @param exception handled exception
      * @param locale    request locale
@@ -59,10 +62,92 @@ public class ControllerAdvice {
     public ErrorResponse handleResourceWithIdNotFoundException(
             ResourceWithIdNotFoundException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getResourceName(), exception.getResourceId()};
-        return formCustomResponse(exception.getErrorMessageKey(), locale, messageParams);
+        return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
-    private ErrorResponse formCustomResponse(String errorMessageKey, Locale locale, Object[] params) {
+    /**
+     * Handles {@link ResourceWithNameIsExistException} exception,
+     * ads to the response http status 409 .
+     * <p>
+     * Extracts exception fields 'errorMessageKey', 'resourceName', 'name'
+     * and uses these values while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(ResourceWithNameIsExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleResourceIsAlreadyExistException(
+            ResourceWithNameIsExistException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getResourceName(), exception.getName()};
+        return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
+    }
+
+    /**
+     * Handles {@link UnknownSortParamException} exception,
+     * ads to the response http status 400 .
+     * <p>
+     * Extracts exception fields 'errorMessageKey', 'sortParamValue'
+     * and uses these values while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(UnknownSortParamException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUnknownSortParamException(
+            UnknownSortParamException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getSortParamValue()};
+        return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
+    }
+
+    /**
+     * Handles {@link HttpMessageNotReadableException} exception,
+     * ads to the response http status 422 .
+     * <p>
+     * Extracts exception field 'httpInputMessage'
+     * and uses its values while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getMostSpecificCause().getMessage()};
+        String errorMessageKey = "invalid_request_body_types";
+        return formErrorResponse(errorMessageKey, locale, messageParams);
+    }
+
+    /**
+     * Handles {@link NumberFormatException} exception,
+     * ads to the response http status 400 .
+     * <p>
+     * Extracts exception field 'message'
+     * and uses this value while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(NumberFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNumberFormatException(
+            NumberFormatException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getMessage()};
+        String errorMessageKey = "invalid_path_variable_value";
+        return formErrorResponse(errorMessageKey, locale, messageParams);
+    }
+
+    private ErrorResponse formErrorResponse(String errorMessageKey, Locale locale, Object[] params) {
         int errorCode = Integer.parseInt(getErrorMessageResource(errorMessageKey.concat(".code"), locale));
         String errorMessage = getErrorMessageResource(errorMessageKey.concat(".message"), locale, params);
         return new ErrorResponse(errorCode, errorMessage);

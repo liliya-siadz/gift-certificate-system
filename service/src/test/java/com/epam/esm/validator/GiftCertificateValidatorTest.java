@@ -1,7 +1,6 @@
 package com.epam.esm.validator;
 
 import com.epam.esm.configuration.TestServiceConfiguration;
-import com.epam.esm.exception.InvalidFieldValueException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,8 +15,8 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith({SpringExtension.class})
 @ContextConfiguration(classes = {TestServiceConfiguration.class})
@@ -28,48 +27,38 @@ class GiftCertificateValidatorTest {
 
     @ParameterizedTest()
     @ValueSource(strings = {"", "    ", "3456784657890_", "------_____++__"})
-    void validateNameShouldThrowInvalidFieldException(String name) {
-        assertThrows(InvalidFieldValueException.class, () -> validator.validateName(name));
+    void validateNameShouldReturnFalse(String name) {
+        assertFalse(validator.isNameValid(name));
     }
 
     @ParameterizedTest()
     @ValueSource(strings = {"Katty Blanch", "K12B23", "3456784657890n",
             "------_____++__G<AAAA>RY__++_____------"})
-    void validateNameShouldNotThrowInvalidFieldException(String name) {
-        try {
-            validator.validateName(name);
-        } catch (InvalidFieldValueException exception) {
-            fail("Should not be thrown InvalidFieldValueException, cause data is valid");
-        }
+    void validateNameShouldReturnTrue(String name) {
+        assertTrue(validator.isNameValid(name));
     }
 
     @Test
-    void validateNameShouldThrowInvalidFieldExceptionIfNameTooLong() {
-        assertThrows(InvalidFieldValueException.class, ()
-                -> validator.validateName(String.join("", Collections.nCopies(201, "b"))));
+    void validateNameShouldReturnFalseIfNameTooLong() {
+        assertFalse(validator.isNameValid(String.join("", Collections.nCopies(201, "b"))));
     }
 
     @ParameterizedTest()
     @ValueSource(strings = {"", "    ", "3456784657890_", "------_____++__"})
-    void validateDescriptionShouldThrowInvalidFieldException(String description) {
-        assertThrows(InvalidFieldValueException.class, () -> validator.validateDescription(description));
+    void validateDescriptionShouldReturnFalse(String description) {
+        assertFalse(validator.isDescriptionValid(description));
     }
 
     @ParameterizedTest()
     @ValueSource(strings = {"Jamaica internet-surfing in 2021: all-inclusive!", "Swimming",
             "call 3456784657890 for details", "Enjoooooooooooooooooooooooooooooooooooooooy"})
-    void validateDescriptionNotShouldThrowInvalidFieldException(String description) {
-        try {
-            validator.validateDescription(description);
-        } catch (InvalidFieldValueException exception) {
-            fail("Should not be thrown InvalidFieldValueException, cause data is valid");
-        }
+    void validateDescriptionShouldReturnTrue(String description) {
+        assertTrue(validator.isDescriptionValid(description));
     }
 
     @Test
-    void validateDescriptionShouldThrowInvalidFieldExceptionIfNameTooLong() {
-        assertThrows(InvalidFieldValueException.class,
-                () -> validator.validateName(String.join("", Collections.nCopies(2001, "b"))));
+    void validateDescriptionShouldReturnFalseIfNameTooLong() {
+        assertFalse(validator.isNameValid(String.join("", Collections.nCopies(2001, "b"))));
     }
 
     static Stream<BigDecimal> invalidPrices() {
@@ -80,8 +69,8 @@ class GiftCertificateValidatorTest {
 
     @ParameterizedTest()
     @MethodSource("invalidPrices")
-    void validatePriceShouldThrowInvalidFieldException(BigDecimal price) {
-        assertThrows(InvalidFieldValueException.class, () -> validator.validatePrice(price));
+    void validatePriceShouldReturnFalse(BigDecimal price) {
+        assertFalse(validator.isPriceValid(price));
     }
 
     static Stream<BigDecimal> validPrices() {
@@ -92,46 +81,34 @@ class GiftCertificateValidatorTest {
 
     @ParameterizedTest()
     @MethodSource("validPrices")
-    void validatePriceShouldNotThrowInvalidFieldException(BigDecimal price) {
-        try {
-            validator.validatePrice(price);
-        } catch (InvalidFieldValueException exception) {
-            fail("Should not be thrown InvalidFieldValueException, cause data is valid");
-        }
+    void validatePriceShouldReturnTrue(BigDecimal price) {
+        assertTrue(validator.isPriceValid(price));
     }
 
     @ParameterizedTest()
     @ValueSource(ints = {0, -24324, 327683})
-    void validateDurationShouldThrowInvalidFieldException(int duration) {
-        assertThrows(InvalidFieldValueException.class, () -> validator.validateDuration(duration));
+    void validateDurationShouldReturnFalse(int duration) {
+        assertFalse(validator.isDurationValid(duration));
     }
 
     @ParameterizedTest()
     @ValueSource(ints = {1, 24324, 32768, 10})
-    void validateDurationShouldNotThrowInvalidFieldException(int duration) {
-        try {
-            validator.validateDuration(duration);
-        } catch (InvalidFieldValueException exception) {
-            fail("Should not be thrown InvalidFieldValueException, cause data is valid");
-        }
+    void validateDurationShouldReturnTrue(int duration) {
+        assertTrue(validator.isDurationValid(duration));
     }
 
     @ParameterizedTest()
     @ValueSource(strings = {"2018 08 29T06:12:15.156", "2023-08-29T06:12:15.156",
             "20180829061215156", "2018-08-29T", "2018-08-29T06", "06:12:15.156.",
             "2020-08-29 T06:12:15.156"})
-    void validateCreateDateShouldThrowInvalidFieldException(String createDate) {
-        assertThrows(InvalidFieldValueException.class, () -> validator.validateCreateDate(createDate));
+    void validateCreateDateShouldReturnFalse(String createDate) {
+        assertFalse(validator.isCreateDateValid(createDate));
     }
 
     @ParameterizedTest()
     @ValueSource(strings = {"1999-08-29T06:12:15.156", "1999-08-29T11:12:15.156", "2021-08-29T06:12:15.156",
             "0020-08-29T06:12:15.156"})
-    void validateCreateDateShouldNotThrowInvalidFieldException(String createDate) {
-        try {
-            validator.validateCreateDate(createDate);
-        } catch (InvalidFieldValueException exception) {
-            fail("Should not be thrown InvalidFieldValueException, cause data is valid");
-        }
+    void validateCreateDateShouldReturnTrue(String createDate) {
+        assertTrue(validator.isCreateDateValid(createDate));
     }
 }

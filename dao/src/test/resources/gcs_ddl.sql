@@ -1,7 +1,7 @@
 CREATE TABLE gift_certificate
 (
     id               serial primary key,
-    name             varchar(200) not null,
+    name             varchar(200) not null UNIQUE,
     description      varchar(2000),
     price            decimal      not null,
     duration         smallint     not null,
@@ -9,11 +9,17 @@ CREATE TABLE gift_certificate
     last_update_date timestamp    not null
 );
 
+ALTER TABLE gift_certificate
+    ADD CONSTRAINT gift_certificate_name_uq UNIQUE (name);
+
 CREATE TABLE tag
 (
     id   serial primary key,
     name varchar(200) not null
 );
+
+ALTER TABLE tag
+    ADD CONSTRAINT tag_name_uq UNIQUE (name);
 
 CREATE TABLE gift_certificates_tags
 (

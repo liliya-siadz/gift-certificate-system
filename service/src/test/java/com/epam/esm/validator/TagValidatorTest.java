@@ -1,7 +1,6 @@
 package com.epam.esm.validator;
 
 import com.epam.esm.configuration.TestServiceConfiguration;
-import com.epam.esm.exception.InvalidFieldValueException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,8 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith({SpringExtension.class})
 @ContextConfiguration(classes = {TestServiceConfiguration.class})
@@ -25,40 +24,31 @@ class TagValidatorTest {
 
     @ParameterizedTest()
     @ValueSource(longs = {21474836478L, 100000000000000L, -100008L, 0L})
-    void validateIdShouldThrowInvalidFieldException(Long id) {
-        assertThrows(InvalidFieldValueException.class, () -> validator.validateId(id));
+    void validateIdShouldReturnFalse(Long id) {
+        assertFalse(validator.isIdValid(id));
     }
 
     @ParameterizedTest()
     @ValueSource(longs = {10L, 12, 1L, 123L})
-    void validateIdShouldNotThrowInvalidFieldException(Long id) {
-        try {
-            validator.validateId(id);
-        } catch (InvalidFieldValueException exception) {
-            fail("Should not be thrown InvalidFieldValueException, cause data is valid");
-        }
+    void validateIdShouldReturnTrue(Long id) {
+        assertTrue(validator.isIdValid(id));
     }
 
     @ParameterizedTest()
     @ValueSource(strings = {"", "    ", "3456784657890_", "------_____++__"})
-    void validateNameShouldThrowInvalidFieldException(String name) {
-        assertThrows(InvalidFieldValueException.class, () -> validator.validateName(name));
+    void validateNameShouldReturnFalse(String name) {
+        assertFalse(validator.isNameValid(name));
     }
 
     @ParameterizedTest()
     @ValueSource(strings = {"Helo", "Tag 1", "3456784657890T",
             "Best regards", "Taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaag"})
-    void validateNameShouldNotThrowInvalidFieldException(String name) {
-        try {
-            validator.validateName(name);
-        } catch (InvalidFieldValueException exception) {
-            fail("Should not be thrown InvalidFieldValueException, cause data is valid");
-        }
+    void validateNameShouldReturnTrue(String name) {
+        assertTrue(validator.isNameValid(name));
     }
 
     @Test
-    void validateNameShouldThrowInvalidFieldExceptionIfNameTooLong() {
-        assertThrows(InvalidFieldValueException.class, () -> validator.validateName(
-                String.join("", Collections.nCopies(201, "b"))));
+    void validateNameShouldReturnFalseIfNameTooLong() {
+        assertFalse(validator.isNameValid(String.join("", Collections.nCopies(201, "b"))));
     }
 }

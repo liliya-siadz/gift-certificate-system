@@ -1,0 +1,48 @@
+Using CATALINA_BASE:   "C:\Users\Liliya_Siadelnikava\AppData\Local\JetBrains\IntelliJIdea2021.2\tomcat\034aba84-d217-41bd-9b2f-c4f7583c7e59"
+Using CATALINA_HOME:   "C:\Users\Liliya_Siadelnikava\Documents\apps\apache-tomcat-9.0.54"
+Using CATALINA_TMPDIR: "C:\Users\Liliya_Siadelnikava\Documents\apps\apache-tomcat-9.0.54\temp"
+Using JRE_HOME:        "C:\Program Files\Eclipse Foundation\jdk-8.0.302.8-hotspot"
+Using CLASSPATH:       "C:\Users\Liliya_Siadelnikava\Documents\apps\apache-tomcat-9.0.54\bin\bootstrap.jar;C:\Users\Liliya_Siadelnikava\Documents\apps\apache-tomcat-9.0.54\bin\tomcat-juli.jar"
+Using CATALINA_OPTS:   ""
+02-Nov-2021 20:27:32.987 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/9.0.54
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Sep 28 2021 13:51:49 UTC
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 9.0.54.0
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Windows 10
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            10.0
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             C:\Program Files\Eclipse Foundation\jdk-8.0.302.8-hotspot\jre
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           1.8.0_302-b08
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Temurin
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         C:\Users\Liliya_Siadelnikava\AppData\Local\JetBrains\IntelliJIdea2021.2\tomcat\034aba84-d217-41bd-9b2f-c4f7583c7e59
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         C:\Users\Liliya_Siadelnikava\Documents\apps\apache-tomcat-9.0.54
+02-Nov-2021 20:27:32.989 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=C:\Users\Liliya_Siadelnikava\AppData\Local\JetBrains\IntelliJIdea2021.2\tomcat\034aba84-d217-41bd-9b2f-c4f7583c7e59\conf\logging.properties
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote=
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.port=1099
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.ssl=false
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.password.file=C:\Users\Liliya_Siadelnikava\AppData\Local\JetBrains\IntelliJIdea2021.2\tomcat\034aba84-d217-41bd-9b2f-c4f7583c7e59\jmxremote.password
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.access.file=C:\Users\Liliya_Siadelnikava\AppData\Local\JetBrains\IntelliJIdea2021.2\tomcat\034aba84-d217-41bd-9b2f-c4f7583c7e59\jmxremote.access
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.rmi.server.hostname=127.0.0.1
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dignore.endorsed.dirs=
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=C:\Users\Liliya_Siadelnikava\AppData\Local\JetBrains\IntelliJIdea2021.2\tomcat\034aba84-d217-41bd-9b2f-c4f7583c7e59
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=C:\Users\Liliya_Siadelnikava\Documents\apps\apache-tomcat-9.0.54
+02-Nov-2021 20:27:32.990 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=C:\Users\Liliya_Siadelnikava\Documents\apps\apache-tomcat-9.0.54\temp
+02-Nov-2021 20:27:32.992 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent Loaded Apache Tomcat Native library [1.2.31] using APR version [1.7.0].
+02-Nov-2021 20:27:32.992 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent APR capabilities: IPv6 [true], sendfile [true], accept filters [false], random [true], UDS [true].
+02-Nov-2021 20:27:32.992 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+02-Nov-2021 20:27:32.994 INFO [main] org.apache.catalina.core.AprLifecycleListener.initializeSSL OpenSSL successfully initialized [OpenSSL 1.1.1l  24 Aug 2021]
+02-Nov-2021 20:27:33.135 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+02-Nov-2021 20:27:33.148 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [266] milliseconds
+02-Nov-2021 20:27:33.172 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+02-Nov-2021 20:27:33.173 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.54]
+02-Nov-2021 20:27:33.181 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+02-Nov-2021 20:27:33.191 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [42] milliseconds
+Connected to server
+02-Nov-2021 20:27:34.502 INFO [RMI TCP Connection(3)-127.0.0.1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+02-Nov-2021 20:27:43.185 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [C:\Users\Liliya_Siadelnikava\Documents\apps\apache-tomcat-9.0.54\webapps\manager]
+02-Nov-2021 20:27:43.224 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [C:\Users\Liliya_Siadelnikava\Documents\apps\apache-tomcat-9.0.54\webapps\manager] has finished in [38] ms

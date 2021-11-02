@@ -167,7 +167,7 @@ class TagServiceImplTest {
 
     @Test
     void createShouldReturnResult() {
-        doNothing().when(validator).isValidForCreate(clientModel);
+        doNothing().when(validator).validateForCreate(clientModel);
         doReturn(entityModel)
                 .when(tagModelMapper).toEntity(clientModel);
         doReturn(TAG_ID)
@@ -198,7 +198,7 @@ class TagServiceImplTest {
 
     @Test
     void updateExistingGiftCertificateTagsShouldBoundTags() {
-        doNothing().when(validator).isValidForUpdate(clientModel);
+        doNothing().when(validator).validateForUpdate(clientModel);
         when(tagDao.isExist(TAG_ID))
                 .thenReturn(Boolean.TRUE);
         when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
@@ -207,7 +207,7 @@ class TagServiceImplTest {
         List<TagClientModel> actual = tagService.updateExistingGiftCertificateTags(
                 GIFT_CERTIFICATE_ID, clientModels);
         assertEquals(clientModels, actual);
-        verify(validator, times(LIST_SIZE)).isValidForUpdate(clientModel);
+        verify(validator, times(LIST_SIZE)).validateForUpdate(clientModel);
         verify(tagDao, times(LIST_SIZE)).isExist(TAG_ID);
         verify(tagDao, times(LIST_SIZE)).isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
         verify(tagDao, times(LIST_SIZE)).boundTagToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
@@ -215,7 +215,7 @@ class TagServiceImplTest {
 
     @Test
     void updateExistingGiftCertificateTagsShouldUnboundTags() {
-        doNothing().when(validator).isValidForUpdate(tagForUnbound);
+        doNothing().when(validator).validateForUpdate(tagForUnbound);
         when(tagDao.isExist(TAG_ID))
                 .thenReturn(Boolean.TRUE);
         when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
@@ -225,7 +225,7 @@ class TagServiceImplTest {
                 GIFT_CERTIFICATE_ID, tagsForUnbound);
         List<TagClientModel> expected = Collections.emptyList();
         assertEquals(expected, actual);
-        verify(validator, times(LIST_SIZE)).isValidForUpdate(tagForUnbound);
+        verify(validator, times(LIST_SIZE)).validateForUpdate(tagForUnbound);
         verify(tagDao, times(LIST_SIZE)).isExist(TAG_ID);
         verify(tagDao, times(LIST_SIZE)).isTagBoundToGiftCertificate(
                 TAG_ID, GIFT_CERTIFICATE_ID);
@@ -235,7 +235,7 @@ class TagServiceImplTest {
 
     @Test
     void updateExistingGiftCertificateTagsShouldNotBoundIfAlreadyBound() {
-        doNothing().when(validator).isValidForUpdate(clientModel);
+        doNothing().when(validator).validateForUpdate(clientModel);
         when(tagDao.isExist(TAG_ID))
                 .thenReturn(Boolean.TRUE);
         when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
@@ -251,7 +251,7 @@ class TagServiceImplTest {
 
     @Test
     void updateExistingGiftCertificateTagsShouldNotUnboundIfAlreadyUnbound() {
-        doNothing().when(validator).isValidForUpdate(tagForUnbound);
+        doNothing().when(validator).validateForUpdate(tagForUnbound);
         when(tagDao.isExist(TAG_ID))
                 .thenReturn(Boolean.TRUE);
         when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
@@ -268,7 +268,7 @@ class TagServiceImplTest {
     @Test
     void updateExistingGiftCertificateTagsShouldThrowInvalidFieldException() {
         doThrow(InvalidFieldValueException.class)
-                .when(validator).isValidForUpdate(tagForUnbound);
+                .when(validator).validateForUpdate(tagForUnbound);
         assertThrows(InvalidFieldValueException.class,
                 () -> tagService.updateExistingGiftCertificateTags(GIFT_CERTIFICATE_ID, tagsForUnbound));
     }
@@ -294,7 +294,7 @@ class TagServiceImplTest {
     @Test
     void updateNewGiftCertificateTagsShouldThrowInvalidFieldException() {
         doThrow(InvalidFieldValueException.class)
-                .when(validator).isValidForUpdate(clientModel);
+                .when(validator).validateForUpdate(clientModel);
         assertThrows(InvalidFieldValueException.class,
                 () -> tagService.updateNewGiftCertificateTags(GIFT_CERTIFICATE_ID, clientModels));
     }
