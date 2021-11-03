@@ -1,6 +1,5 @@
 package com.epam.esm.dao.builder;
 
-import com.epam.esm.exception.UnknownSortParamException;
 import com.epam.esm.model.GiftCertificateEntityModel;
 import org.springframework.stereotype.Component;
 
@@ -92,7 +91,7 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
                     value -> value.name().toLowerCase().equals(sortFieldName))) {
                 return " ORDER BY " + sortFieldName + " " + (sortDirection.map(Enum::name).orElseGet(SortDirection.ASC::name));
             } else {
-                throw new UnknownSortParamException(sortFieldName);
+                throw new EnumConstantNotPresentException(SortField.class, sortFieldName);
             }
         }
         return EMPTY_STRING;

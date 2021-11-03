@@ -10,7 +10,6 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.0'
     implementation project(':service')
-    implementation project(':dao')
 }
 
 sourceSets {
