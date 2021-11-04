@@ -1,7 +1,9 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
+import com.epam.esm.exception.ResourceWithNameIsExistException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
+import com.epam.esm.exception.UnknownSortParamException;
 import com.epam.esm.mapper.GiftCertificateModelMapper;
 import com.epam.esm.model.GiftCertificateClientModel;
 import com.epam.esm.model.TagClientModel;
@@ -10,6 +12,7 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,10 +50,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     /**
      * Constructs service with injected params .
      *
-     * @param dao {@link #dao}
-     * @param tagService {@link #tagService}
+     * @param dao         {@link #dao}
+     * @param tagService  {@link #tagService}
      * @param modelMapper {@link #modelMapper}
-     * @param validator {@link #validator}
+     * @param validator   {@link #validator}
      */
     @Autowired
     public GiftCertificateServiceImpl(
@@ -69,10 +72,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (clientModel == null) {
             throw new IllegalArgumentException("Parameter 'clientModel' is null!");
         }
-        validator.isValidForCreate(clientModel);
-        long generatedId = dao.create(modelMapper.toEntity(clientModel));
-        tagService.updateNewGiftCertificateTags(generatedId, clientModel.getTags());
-        return findById(generatedId);
+        validator.validateForCreate(clientModel);
+        try {
+            long generatedId = dao.create(modelMapper.toEntity(clientModel));
+            List<TagClientModel> tags = clientModel.getTags();
+            if (tags != null) {
+                tagService.updateNewGiftCertificateTags(generatedId, tags);
+            }
+            return findById(generatedId);
+        } catch (DuplicateKeyException exception) {
+            throw new ResourceWithNameIsExistException("Gift Certificate", clientModel.getName(), exception);
+        }
     }
 
     @Override
@@ -120,7 +130,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new IllegalArgumentException("Gift certificate's id is null!");
         }
         if (dao.isExist(id)) {
-            validator.isValidForUpdate(clientModel);
+            validator.validateForUpdate(clientModel);
             dao.update(id, modelMapper.toEntity(clientModel));
             List<TagClientModel> tagsForUpdate = clientModel.getTags();
             if (tagsForUpdate != null) {
@@ -136,10 +146,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificateClientModel> search(
             String tagName, String name, String description, String sort) {
-        return dao.search(tagName, name, description, sort).stream()
-                .map(modelMapper::toClientModel)
-                .peek(giftCertificate -> giftCertificate.setTags(
-                        tagService.findAllTagsBoundToGiftCertificate(giftCertificate.getId())))
-                .collect(Collectors.toList());
+        try {
+            return dao.search(tagName, name, description, sort).stream()
+                    .map(modelMapper::toClientModel)
+                    .peek(giftCertificate -> giftCertificate.setTags(
+                            tagService.findAllTagsBoundToGiftCertificate(giftCertificate.getId())))
+                    .collect(Collectors.toList());
+        } catch (EnumConstantNotPresentException exception) {
+            throw new UnknownSortParamException(sort);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.exception.ResourceWithNameIsExistException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.TagModelMapper;
 import com.epam.esm.model.TagClientModel;
@@ -9,8 +10,8 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +44,7 @@ public class TagServiceImpl implements TagService {
      * Constructs service with injected params .
      *
      * @param modelMapper {@link #modelMapper}
-     * @param validator {@link #validator}
+     * @param validator   {@link #validator}
      */
     @Autowired
     public TagServiceImpl(TagDao tagDao, TagModelMapper modelMapper,
@@ -94,10 +95,14 @@ public class TagServiceImpl implements TagService {
         if (clientModel == null) {
             throw new IllegalArgumentException("Tag's model or tag's name is null!");
         } else {
-            validator.isValidForCreate(clientModel);
-            long tagGeneratedId = tagDao.create(modelMapper.toEntity(clientModel));
-            clientModel.setId(tagGeneratedId);
-            return clientModel;
+            validator.validateForCreate(clientModel);
+            try {
+                long tagGeneratedId = tagDao.create(modelMapper.toEntity(clientModel));
+                clientModel.setId(tagGeneratedId);
+                return clientModel;
+            } catch (DuplicateKeyException exception) {
+                throw new ResourceWithNameIsExistException("Tag", clientModel.getName(), exception);
+            }
         }
     }
 
@@ -123,13 +128,13 @@ public class TagServiceImpl implements TagService {
             Long tagId = tag.getId();
             String tagName = tag.getName();
             if ((tagId != null) && (tagName != null)) {
-                validator.isValidForUpdate(tag);
+                validator.validateForUpdate(tag);
                 boundTagToGiftCertificate(tagId, giftCertificateId);
             } else if (tagId != null) {
-                validator.isValidForUpdate(tag);
+                validator.validateForUpdate(tag);
                 unboundTagFromGiftCertificate(tagId, giftCertificateId);
             } else if (tagName != null) {
-                validator.isValidForCreate(tag);
+                validator.validateForCreate(tag);
                 create(tag);
                 boundTagToGiftCertificate(tag.getId(), giftCertificateId);
             }
@@ -150,10 +155,10 @@ public class TagServiceImpl implements TagService {
             Long tagId = tag.getId();
             String tagName = tag.getName();
             if ((tagId != null) && (tagName != null)) {
-                validator.isValidForUpdate(tag);
+                validator.validateForUpdate(tag);
                 boundTagToGiftCertificate(tagId, giftCertificateId);
             } else if (tagName != null) {
-                validator.isValidForCreate(tag);
+                validator.validateForCreate(tag);
                 create(tag);
                 boundTagToGiftCertificate(tag.getId(), giftCertificateId);
             }

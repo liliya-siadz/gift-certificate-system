@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epam.esm.model.TagEntityModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -94,6 +96,15 @@ class GiftCertificateDaoImplTest {
     void createShouldTReturnResultBiggerThanZero() {
         long generatedId = dao.create(unknownByDbCertificate);
         assertTrue(generatedId > 0);
+    }
+
+    @Test
+    void createShouldFail() {
+        GiftCertificateEntityModel certificateWithAlreadyUsedName = GiftCertificateEntityModel.builder()
+                .id(2).name("Sandy Clare").description("abcdefg").duration(60)
+                .price(new BigDecimal("999.99")).createDate(LocalDateTime.of(2020, 8, 29, 22, 12, 15, 156000000))
+                .lastUpdateDate(LocalDateTime.of(2020, 8, 29, 22, 12, 15, 156000000)).build();
+        assertThrows(DuplicateKeyException.class, () -> dao.create(certificateWithAlreadyUsedName));
     }
 
     @Test

@@ -90,6 +90,8 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
             if (Arrays.stream(SortField.values()).anyMatch(
                     value -> value.name().toLowerCase().equals(sortFieldName))) {
                 return " ORDER BY " + sortFieldName + " " + (sortDirection.map(Enum::name).orElseGet(SortDirection.ASC::name));
+            } else {
+                throw new EnumConstantNotPresentException(SortField.class, sortFieldName);
             }
         }
         return EMPTY_STRING;

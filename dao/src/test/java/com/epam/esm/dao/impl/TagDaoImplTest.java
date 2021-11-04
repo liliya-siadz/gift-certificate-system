@@ -107,6 +107,11 @@ class TagDaoImplTest {
         assertThrows(IllegalArgumentException.class, () -> dao.create(null));
     }
 
+    @Test
+    void createShouldFail() {
+        assertThrows(DuplicateKeyException.class, () -> dao.create(new TagEntityModel("Best friend")));
+    }
+
     @ParameterizedTest
     @MethodSource("idTagsInDb")
     void deleteShouldReturnTrue(long id) {
