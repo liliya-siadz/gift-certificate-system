@@ -1,19 +1,7 @@
-version 'unspecified'
+
+group 'com.epam.esm'
+version '0.0.1-SNAPSHOT'
 
 dependencies {
-    compileOnly 'javax.servlet:javax.servlet-api:4.0.0'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.0'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.0'
     implementation project(':service')
-}
-
-sourceSets {
-    main {
-        output.resourcesDir = "build/classes/java/main/com/epam/esm"
-    }
 }
