@@ -1,8 +1,7 @@
 package com.epam.esm.mapper;
 
-import com.epam.esm.configuration.TestServiceConfiguration;
-import com.epam.esm.model.TagClientModel;
-import com.epam.esm.model.TagEntityModel;
+import com.epam.esm.entity.Tag;
+import com.epam.esm.model.TagModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,28 +17,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("prod")
 class TagModelMapperTest {
     @Autowired
-    private TagModelMapper mapper;
+    private TagMapper mapper;
 
-    private TagEntityModel entity;
-    private TagClientModel clientModel;
+    private Tag entity;
+    private TagModel clientModel;
 
     @BeforeEach
     void setUpModels() {
         long id = 10L;
         String name = "Name name name name 1 2 3";
-        entity = new TagEntityModel(id, name);
-        clientModel = new TagClientModel(id, name);
+        entity = new Tag(id, name);
+        clientModel = new TagModel(id, name);
     }
 
     @Test
     void toClientModel() {
-        TagClientModel actual = mapper.toClientModel(entity);
+        TagModel actual = mapper.toModel(entity);
         assertEquals(clientModel, actual);
     }
 
     @Test
     void toEntity() {
-        TagEntityModel actual = mapper.toEntity(clientModel);
+        Tag actual = mapper.toEntity(clientModel);
         assertEquals(entity, actual);
     }
 }

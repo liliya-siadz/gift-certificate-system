@@ -1,6 +1,6 @@
 package com.epam.esm.validator;
 
-import com.epam.esm.model.AbstractClientModel;
+import com.epam.esm.model.AbstractModel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
 /**
  * Validator for client models .
  *
- * @param <T> model that must extends class {@link com.epam.esm.model.AbstractClientModel}
+ * @param <S> model that must extends class {@link AbstractModel}
  */
-public abstract class Validator<T extends AbstractClientModel> {
+public abstract class Validator<S extends AbstractModel> {
     static String AT_LEAST_ONE_LETTER_SET_REGEX_PATTERN = ".*[a-zA-Z]+.*";
 
     /**
@@ -21,12 +21,17 @@ public abstract class Validator<T extends AbstractClientModel> {
      */
     protected Map<String, Object> validationMap;
 
+    /**
+     * Set validation map .
+     *
+     * @param validationMap {@link #validationMap}
+     */
     protected void setValidationMap(Map<String, Object> validationMap) {
         this.validationMap = validationMap;
     }
 
     /**
-     * Retrieves copy of validation map
+     * Retrieves copy of validation map .
      *
      * @return copy of validation map
      */
@@ -39,14 +44,14 @@ public abstract class Validator<T extends AbstractClientModel> {
      *
      * @param clientModel client model to process validation
      */
-    public abstract void validateForUpdate(T clientModel);
+    public abstract void validateForUpdate(S clientModel);
 
     /**
      * Validate client model for create operations .
      *
      * @param clientModel client model to process validation
      */
-    public abstract void validateForCreate(T clientModel);
+    public abstract void validateForCreate(S clientModel);
 
     static boolean isMatchToRegex(String value, String regexPattern) {
         if ((value == null) || (regexPattern == null)) {

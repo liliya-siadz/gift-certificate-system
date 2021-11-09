@@ -1,8 +1,8 @@
 package com.epam.esm.validator;
 
 import com.epam.esm.exception.InvalidFieldValueException;
-import com.epam.esm.model.GiftCertificateClientModel;
-import com.epam.esm.model.TagClientModel;
+import com.epam.esm.model.GiftCertificateModel;
+import com.epam.esm.model.TagModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,25 +12,37 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Extends {@link Validator}, typed by {@link com.epam.esm.model.GiftCertificateClientModel},
- * validates client model Gift Certificate .
+ * Extends {@link Validator}, typed by {@link GiftCertificateModel},
+ * validates client model of Gift Certificate .
  */
 @Component("giftCertificateValidator")
-public class GiftCertificateValidator extends Validator<GiftCertificateClientModel> {
+public class GiftCertificateValidator extends Validator<GiftCertificateModel> {
     private static final int DURATION_MAX_VALUE = 32768;
     private static final int NAME_MAX_LENGTH = 200;
     private static final int DESCRIPTION_MAX_LENGTH = 2000;
 
+    /**
+     * Validator for Tag models .
+     */
+    private final TagValidator tagValidator;
+
+    /**
+     * Constructs <code>GiftCertificateValidator</code> class
+     * with injected validator for tags .
+     *
+     * @param tagValidator {@link #tagValidator}
+     */
     @Autowired
-    private TagValidator tagValidator;
+    public GiftCertificateValidator(TagValidator tagValidator) {
+        this.tagValidator = tagValidator;
+    }
 
     @Override
-    public void validateForUpdate(GiftCertificateClientModel giftCertificate) {
+    public void validateForUpdate(GiftCertificateModel giftCertificate) {
         setValidationMap(new HashMap<>());
         if (giftCertificate != null) {
             String name = giftCertificate.getName();
@@ -53,7 +65,7 @@ public class GiftCertificateValidator extends Validator<GiftCertificateClientMod
             if ((createDate != null) && (!isCreateDateValid(createDate))) {
                 validationMap.put("createDate", createDate);
             }
-            List<TagClientModel> tags = giftCertificate.getTags();
+            Set<TagModel> tags = giftCertificate.getTags();
             if (tags != null) {
                 validateTags(tags);
             }
@@ -64,7 +76,7 @@ public class GiftCertificateValidator extends Validator<GiftCertificateClientMod
     }
 
     @Override
-    public void validateForCreate(GiftCertificateClientModel giftCertificate) {
+    public void validateForCreate(GiftCertificateModel giftCertificate) {
         setValidationMap(new HashMap<>());
         if (giftCertificate != null) {
             String name = giftCertificate.getName();
@@ -88,7 +100,7 @@ public class GiftCertificateValidator extends Validator<GiftCertificateClientMod
             if (!isDescriptionValid(description)) {
                 validationMap.put("description", description);
             }
-            List<TagClientModel> tags = giftCertificate.getTags();
+            Set<TagModel> tags = giftCertificate.getTags();
             if (tags != null) {
                 validateTags(tags);
             }
@@ -130,7 +142,7 @@ public class GiftCertificateValidator extends Validator<GiftCertificateClientMod
                 && (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 
-    private void validateForNullables(GiftCertificateClientModel giftCertificate) {
+    private void validateForNullables(GiftCertificateModel giftCertificate) {
         if (giftCertificate.getName() == null) {
             validationMap.put("name", null);
         }
@@ -143,32 +155,37 @@ public class GiftCertificateValidator extends Validator<GiftCertificateClientMod
         if (giftCertificate.getDuration() == null) {
             validationMap.put("duration", null);
         }
+        if (!validationMap.isEmpty()) {
+            throw new InvalidFieldValueException("Tag", validationMap);
+        }
     }
 
-    private void validateTags(List<TagClientModel> tags) {
+    private void validateTags(Set<TagModel> tags) {
         Set<Object> invalidTagsName = new HashSet<>();
         Set<Object> invalidTagsId = new HashSet<>();
         tags.forEach(tag -> {
             try {
                 tagValidator.validateForUpdate(tag);
             } catch (InvalidFieldValueException exception) {
-                Map<String, Object> validationMap = exception.getValidationMap();
-                if (validationMap.containsKey("name")) {
-                    String invalidTagName = validationMap.get("name").toString();
+                Map<String, Object> tagsValidationMap = exception.getValidationMap();
+                if (tagsValidationMap.containsKey("name")) {
+                    String invalidTagName = tagsValidationMap.get("name").toString();
                     if ((invalidTagName.isEmpty()) || (invalidTagName.trim().isEmpty())) {
                         invalidTagsName.add("[EMPTY OR BLANK]");
                     } else {
                         invalidTagsName.add(invalidTagName);
                     }
                 }
-                if (validationMap.containsKey("id")) {
-                    invalidTagsId.add(validationMap.get("id"));
+                if (tagsValidationMap.containsKey("id")) {
+                    invalidTagsId.add(tagsValidationMap.get("id"));
                 }
+                StringBuilder invalidTagsValues = new StringBuilder("{")
+                        .append(invalidTagsName.isEmpty() ? "" : "names: " + invalidTagsName)
+                        .append(invalidTagsId.isEmpty() ? "" : "ids: " + invalidTagsId)
+                        .append("}");
+                validationMap.put("tags", invalidTagsValues);
             }
         });
-        StringBuilder invalidTagsValues = new StringBuilder("{names: ")
-                .append(invalidTagsName).append(";").append("ids: ").append(invalidTagsId).append("}");
-        validationMap.put("tags", invalidTagsValues);
     }
 }
 

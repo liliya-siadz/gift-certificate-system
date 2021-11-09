@@ -1,6 +1,5 @@
 package com.epam.esm.validator;
 
-import com.epam.esm.configuration.TestServiceConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith({SpringExtension.class})
-@ContextConfiguration(classes = {TestServiceConfiguration.class})
 @ActiveProfiles("prod")
 class TagValidatorTest {
     @Autowired

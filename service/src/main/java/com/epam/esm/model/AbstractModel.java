@@ -12,10 +12,10 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public abstract class AbstractClientModel {
+public abstract class AbstractModel {
 
     /**
-     * Presents 'id' of client model .
+     * Presents property 'id' of client model .
      */
     private Long id;
 }

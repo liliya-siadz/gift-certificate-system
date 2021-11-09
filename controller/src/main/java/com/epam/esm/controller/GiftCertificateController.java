@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.model.GiftCertificateClientModel;
+import com.epam.esm.model.GiftCertificateModel;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Controller for processing REST-api requests for Gift Certificate resource .
@@ -22,7 +23,7 @@ import java.util.List;
  * <p>
  * Maps GET, PUT, POST, DELETE http-requests.
  * As a client model uses object of class
- * {@link com.epam.esm.model.GiftCertificateClientModel} .
+ * {@link GiftCertificateModel} .
  */
 @RestController
 @RequestMapping("/gift_certificates")
@@ -52,7 +53,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was created
      */
     @PostMapping
-    public GiftCertificateClientModel create(@RequestBody GiftCertificateClientModel certificate) {
+    public GiftCertificateModel create(@RequestBody GiftCertificateModel certificate) {
         return service.create(certificate);
     }
 
@@ -64,7 +65,7 @@ public class GiftCertificateController {
      * @return list of all found Gift Certificates
      */
     @GetMapping
-    public List<GiftCertificateClientModel> getAll() {
+    public Set<GiftCertificateModel> getAll() {
         return service.findAll();
     }
 
@@ -77,7 +78,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was found
      */
     @GetMapping("/{id}")
-    public GiftCertificateClientModel getById(@PathVariable Long id) {
+    public GiftCertificateModel getById(@PathVariable Long id) {
         return service.findById(id);
     }
 
@@ -90,7 +91,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was deleted
      */
     @DeleteMapping("/{id}")
-    public GiftCertificateClientModel deleteById(@PathVariable Long id) {
+    public GiftCertificateModel deleteById(@PathVariable Long id) {
         return service.delete(id);
     }
 
@@ -105,34 +106,30 @@ public class GiftCertificateController {
      * @return Gift Certificate with updated and actual values
      */
     @PatchMapping("/{id}")
-    public GiftCertificateClientModel update(@PathVariable Long id,
-                                             @RequestBody GiftCertificateClientModel certificate) {
+    public GiftCertificateModel update(@PathVariable Long id,
+                                       @RequestBody GiftCertificateModel certificate) {
         return service.update(id, certificate);
     }
 
     /**
-     * Searches (also could sort) all Gift Certificate resources
+     * Searches (also could sort) Gift Certificate resources
      * that fits to specified params of search .
      *
-     * @param tagName     full name of Tag that bound to target Gift Certificate
-     * @param name        part of name of target Gift Certificate
-     * @param description part of description of target Gift Certificate
-     * @param sort        specific value of sorting returning Gift Certificate list:
-     *                    <li>'1name' sort ascending by parameter 'name'
-     *                    <li>'name' sort ascending by parameter 'name'
-     *                    <li>'0name' sort descending by parameter 'name'
-     *                    <li>'1create_date' sort ascending by parameter 'create_date'
-     *                    <li>'create_date' sort ascending by parameter 'create_date'
-     *                    <li>'0create_date' sort descending by parameter 'create_date'
-     * @return found and sorted list of Gift Certificates,
+     * @param tagName       full name of Tag that bound to target Gift Certificate
+     * @param name          part of name of target Gift Certificate
+     * @param description   part of description of target Gift Certificate
+     * @param sortField     property of sorting Gift Certificate
+     * @param sortDirection direction of sorting Gift Certificates
+     * @return found and sorted list of Gift Certificates
      * see {@link com.epam.esm.service.GiftCertificateService#search}
      */
     @GetMapping("/search")
-    public List<GiftCertificateClientModel> search(
+    public List<GiftCertificateModel> search(
             @RequestParam(required = false) String tagName,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description,
-            @RequestParam(required = false) String sort) {
-        return service.search(tagName, name, description, sort);
+            @RequestParam(required = false) String sortField,
+            @RequestParam(required = false) String sortDirection) {
+        return service.search(tagName, name, description, sortField, sortDirection);
     }
 }

@@ -1,8 +1,7 @@
 package com.epam.esm.mapper;
 
-import com.epam.esm.configuration.TestServiceConfiguration;
-import com.epam.esm.model.GiftCertificateClientModel;
-import com.epam.esm.model.GiftCertificateEntityModel;
+import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.model.GiftCertificateModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("prod")
 class GiftCertificateModelMapperTest {
     @Autowired
-    private GiftCertificateModelMapper mapper;
+    private GiftCertificateMapper mapper;
 
-    private GiftCertificateClientModel clientModel;
-    private GiftCertificateEntityModel entityModel;
+    private GiftCertificateModel clientModel;
+    private GiftCertificate entityModel;
 
     @BeforeEach
     void setUp() {
@@ -36,12 +35,12 @@ class GiftCertificateModelMapperTest {
         LocalDateTime createDate = LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156);
         String createDateString = createDate.toString();
 
-        clientModel = GiftCertificateClientModel.builder()
+        clientModel = GiftCertificateModel.builder()
                 .id(id).duration(duration).name(name).description(description).price(price)
                 .createDate(createDateString)
                 .lastUpdateDate(createDateString).build();
 
-        entityModel = GiftCertificateEntityModel.builder()
+        entityModel = GiftCertificate.builder()
                 .id(id).duration(duration).name(name).description(description).price(price)
                 .createDate(createDate)
                 .lastUpdateDate(createDate).build();
@@ -49,13 +48,13 @@ class GiftCertificateModelMapperTest {
 
     @Test
     void toClientModelShouldReturnEqualClientModel() {
-        GiftCertificateClientModel actual = mapper.toClientModel(entityModel);
+        GiftCertificateModel actual = mapper.toModel(entityModel);
         assertEquals(clientModel, actual);
     }
 
     @Test
     void toEntityShouldReturnEqualEntity() {
-        GiftCertificateEntityModel actual = mapper.toEntity(clientModel);
+        GiftCertificate actual = mapper.toEntity(clientModel);
         assertEquals(entityModel, actual);
     }
 }

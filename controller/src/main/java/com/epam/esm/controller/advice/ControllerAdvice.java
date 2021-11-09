@@ -1,7 +1,7 @@
 package com.epam.esm.controller.advice;
 
 import com.epam.esm.exception.InvalidFieldValueException;
-import com.epam.esm.exception.ResourceWithNameIsExistException;
+import com.epam.esm.exception.ResourceWithNameExistsException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.exception.UnknownSortParamException;
 import org.springframework.http.HttpStatus;
@@ -41,7 +41,7 @@ public class ControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidFieldValueException(
             InvalidFieldValueException exception, Locale locale) {
-        Object[] messageParams = new Object[]{exception.getValidationMap()};
+        Object[] messageParams = new Object[]{exception.getResourceName(), exception.getValidationMap()};
         return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
@@ -66,7 +66,7 @@ public class ControllerAdvice {
     }
 
     /**
-     * Handles {@link ResourceWithNameIsExistException} exception,
+     * Handles {@link ResourceWithNameExistsException} exception,
      * ads to the response http status 409 .
      * <p>
      * Extracts exception fields 'errorMessageKey', 'resourceName', 'name'
@@ -77,11 +77,11 @@ public class ControllerAdvice {
      * @return response body (with localized and parametrized message)
      * as result of exception handling
      */
-    @ExceptionHandler(ResourceWithNameIsExistException.class)
+    @ExceptionHandler(ResourceWithNameExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleResourceIsAlreadyExistException(
-            ResourceWithNameIsExistException exception, Locale locale) {
-        Object[] messageParams = new Object[]{exception.getResourceName(), exception.getName()};
+            ResourceWithNameExistsException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getResourceName(), exception.getNameValue()};
         return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 

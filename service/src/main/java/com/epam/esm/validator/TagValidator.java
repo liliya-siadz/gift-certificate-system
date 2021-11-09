@@ -1,23 +1,22 @@
 package com.epam.esm.validator;
 
 import com.epam.esm.exception.InvalidFieldValueException;
-import com.epam.esm.model.TagClientModel;
+import com.epam.esm.model.TagModel;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
 /**
- * Implements interface {@link Validator}
- * typed by {@link com.epam.esm.model.TagClientModel},
- * validates client model Tag .
+ * Implements interface {@link Validator} typed by {@link TagModel},
+ * validates client model of Tag .
  */
 @Component("tagValidator")
-public class TagValidator extends Validator<TagClientModel> {
+public class TagValidator extends Validator<TagModel> {
     private static final int NAME_MAX_LENGTH = 200;
     private static final int ID_MAX_VALUE = 2147483647;
 
     @Override
-    public void validateForUpdate(TagClientModel tag) {
+    public void validateForUpdate(TagModel tag) {
         setValidationMap(new HashMap<>());
         if (tag != null) {
             String name = tag.getName();
@@ -35,7 +34,7 @@ public class TagValidator extends Validator<TagClientModel> {
     }
 
     @Override
-    public void validateForCreate(TagClientModel tag) {
+    public void validateForCreate(TagModel tag) {
         setValidationMap(new HashMap<>());
         if (tag != null) {
             validateForNullables(tag);
@@ -58,10 +57,13 @@ public class TagValidator extends Validator<TagClientModel> {
         return (id > 0) && (id <= ID_MAX_VALUE);
     }
 
-    private void validateForNullables(TagClientModel tag) {
+    private void validateForNullables(TagModel tag) {
         String name = tag.getName();
         if (name == null) {
             validationMap.put("name", null);
+        }
+        if (!validationMap.isEmpty()) {
+            throw new InvalidFieldValueException("Tag", validationMap);
         }
     }
 }

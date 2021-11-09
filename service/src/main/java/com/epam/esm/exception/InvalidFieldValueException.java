@@ -3,7 +3,7 @@ package com.epam.esm.exception;
 import java.util.Map;
 
 /**
- * Thrown to indicate that resource client model contains invalid value .
+ * Thrown to indicate that resource model contains invalid value .
  */
 public class InvalidFieldValueException extends RuntimeException {
 
@@ -20,9 +20,9 @@ public class InvalidFieldValueException extends RuntimeException {
 
     /**
      * Constructs an <code>InvalidFieldValueException</code>
-     * with name of field with invalid value .
+     * with name of resource and with it's validation map.
      *
-     * @param resourceName {@link #resourceName}
+     * @param resourceName  {@link #resourceName}
      * @param validationMap {@link #validationMap}
      */
     public InvalidFieldValueException(String resourceName, Map<String, Object> validationMap) {
@@ -51,6 +51,8 @@ public class InvalidFieldValueException extends RuntimeException {
 
     /**
      * Retrieves resource name .
+     *
+     * @return resource name
      */
     public String getResourceName() {
         return resourceName;

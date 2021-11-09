@@ -1,7 +1,7 @@
 package com.epam.esm.exception;
 
 /**
- * Thrown to indicate unknown sort param was used .
+ * Thrown to indicate that unknown sort param value was used .
  */
 public class UnknownSortParamException extends RuntimeException {
 
@@ -11,8 +11,8 @@ public class UnknownSortParamException extends RuntimeException {
     private final String sortParamValue;
 
     /**
-     * Constructs an <code>UnknownSortParamException</code>
-     * with used unknown sort param value .
+     * Constructs an <code>UnknownSortFieldException</code>
+     * with unknown sort param value .
      *
      * @param sortParamValue {@link #sortParamValue}
      */
