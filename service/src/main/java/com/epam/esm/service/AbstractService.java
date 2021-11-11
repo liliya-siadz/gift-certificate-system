@@ -5,8 +5,8 @@ import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.EntityModelMapper;
 import com.epam.esm.model.AbstractModel;
 import com.epam.esm.validator.Validator;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;

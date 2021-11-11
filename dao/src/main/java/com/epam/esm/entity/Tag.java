@@ -30,14 +30,13 @@ public class Tag {
      * Represents column 'id' .
      */
     @Id
-    @Column(table = "tag")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     /**
      * Represents column 'name' .
      */
-    @Column(name = "name", table = "tag",unique = true, nullable = false, length = 200)
+    @Column(name = "name", unique = true, nullable = false, length = 200)
     private String name;
 
     @Override

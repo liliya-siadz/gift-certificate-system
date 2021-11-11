@@ -7,17 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -28,6 +18,7 @@ import java.util.Set;
  * Entity for Gift Certificate, represents table 'gift_certificate' .
  */
 @Entity
+@Table(name = "gift_certificate")
 @Setter
 @Getter
 @ToString
@@ -40,14 +31,13 @@ public class GiftCertificate {
      * Represents column 'id' .
      */
     @Id
-    @Column(table = "gift_certificate")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     /**
      * Represents column 'name' .
      */
-    @Column(table = "gift_certificate", unique = true, nullable = false, length = 200)
+    @Column(unique = true, nullable = false, length = 200)
     private String name;
 
     /**

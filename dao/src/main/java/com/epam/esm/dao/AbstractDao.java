@@ -1,5 +1,7 @@
 package com.epam.esm.dao;
 
+import org.springframework.stereotype.Repository;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
  *
  * @param <T> type of entity that used in class
  */
+@Repository
 public abstract class AbstractDao<T> implements Dao<T> {
 
     /**
