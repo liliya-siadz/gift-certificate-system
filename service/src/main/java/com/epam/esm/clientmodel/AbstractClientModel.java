@@ -1,9 +1,11 @@
-package com.epam.esm.model;
+package com.epam.esm.clientmodel;
 
+import com.epam.esm.validator.group.IdChecks;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.validator.constraints.Range;
 
 /**
  * Abstract base client model .
@@ -12,10 +14,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public abstract class AbstractModel {
+public abstract class AbstractClientModel {
 
     /**
-     * Presents property 'id' of client model .
+     * Id of client model .
      */
+    @Range(min = 1, max = 200, groups = {IdChecks.class})
     private Long id;
 }

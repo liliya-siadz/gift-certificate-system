@@ -6,6 +6,9 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
     testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
     implementation 'org.springframework:spring-tx:5.3.12'
+    implementation 'org.hibernate.validator:hibernate-validator:7.0.1.Final'
+    implementation 'org.hibernate.validator:hibernate-validator-annotation-processor:7.0.1.Final'
+    testImplementation 'org.hibernate.validator:hibernate-validator-test-utils:7.0.1.Final'
     implementation project(':dao')
 }
 

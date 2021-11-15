@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.model.GiftCertificateModel;
+import com.epam.esm.clientmodel.GiftCertificateClientModel;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Controller for processing REST-api requests for Gift Certificate resource .
@@ -23,7 +22,7 @@ import java.util.Set;
  * <p>
  * Maps GET, PUT, POST, DELETE http-requests.
  * As a client model uses object of class
- * {@link GiftCertificateModel} .
+ * {@link GiftCertificateClientModel} .
  */
 @RestController
 @RequestMapping("/gift_certificates")
@@ -53,7 +52,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was created
      */
     @PostMapping
-    public GiftCertificateModel create(@RequestBody GiftCertificateModel certificate) {
+    public GiftCertificateClientModel create(@RequestBody GiftCertificateClientModel certificate) {
         return service.create(certificate);
     }
 
@@ -65,7 +64,7 @@ public class GiftCertificateController {
      * @return list of all found Gift Certificates
      */
     @GetMapping
-    public Set<GiftCertificateModel> getAll() {
+    public List<GiftCertificateClientModel> getAll() {
         return service.findAll();
     }
 
@@ -78,7 +77,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was found
      */
     @GetMapping("/{id}")
-    public GiftCertificateModel getById(@PathVariable Long id) {
+    public GiftCertificateClientModel getById(@PathVariable Long id) {
         return service.findById(id);
     }
 
@@ -91,7 +90,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was deleted
      */
     @DeleteMapping("/{id}")
-    public GiftCertificateModel deleteById(@PathVariable Long id) {
+    public GiftCertificateClientModel deleteById(@PathVariable Long id) {
         return service.delete(id);
     }
 
@@ -106,8 +105,8 @@ public class GiftCertificateController {
      * @return Gift Certificate with updated and actual values
      */
     @PatchMapping("/{id}")
-    public GiftCertificateModel update(@PathVariable Long id,
-                                       @RequestBody GiftCertificateModel certificate) {
+    public GiftCertificateClientModel update(@PathVariable Long id,
+                                             @RequestBody GiftCertificateClientModel certificate) {
         return service.update(id, certificate);
     }
 
@@ -124,7 +123,7 @@ public class GiftCertificateController {
      * see {@link com.epam.esm.service.GiftCertificateService#search}
      */
     @GetMapping("/search")
-    public List<GiftCertificateModel> search(
+    public List<GiftCertificateClientModel> search(
             @RequestParam(required = false) String tagName,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description,

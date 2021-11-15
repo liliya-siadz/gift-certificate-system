@@ -1,20 +1,20 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.TagEntity;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Presents access to repository operations with Tag .
  */
-public interface TagDao extends Dao<Tag> {
+public interface TagDao extends Dao<TagEntity> {
 
     /**
      * Finds all Tag that related Gift Certificate with specified id .
      *
-     * @return set of all entities Tags that related to target Gift Certificate
+     * @return list of all entities Tags that related to target Gift Certificate
      */
-    Set<Tag> findAllTagsBoundToGiftCertificate(long certificateId);
+    List<TagEntity> findAllTagsBoundToGiftCertificate(long certificateId);
 
     /**
      * Creates relation between Tag and Gift Certificate,

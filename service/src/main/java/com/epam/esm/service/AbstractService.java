@@ -1,14 +1,13 @@
 package com.epam.esm.service;
 
+import com.epam.esm.clientmodel.AbstractClientModel;
 import com.epam.esm.dao.Dao;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
-import com.epam.esm.mapper.EntityModelMapper;
-import com.epam.esm.model.AbstractModel;
-import com.epam.esm.validator.Validator;
+import com.epam.esm.mapper.Mapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -16,24 +15,19 @@ import java.util.stream.Collectors;
  *
  * @param <T> type of entity that used in class
  * @param <S> type of model that used in class,
- *            must extend class {@link com.epam.esm.model.AbstractModel}
+ *            must extend class {@link AbstractClientModel}
  */
-public abstract class AbstractService<T, S extends AbstractModel> implements BaseService<S> {
+public abstract class AbstractService<T, S extends AbstractClientModel> implements BaseService<S> {
 
     /**
      * Dao class for repository operations .
      */
-    protected final Dao<T> dao;
+    private final Dao<T> dao;
 
     /**
      * Mapper for mapping from entity to client model and otherwise .
      */
-    protected final EntityModelMapper<T, S> mapper;
-
-    /**
-     * Validator for validating client models .
-     */
-    protected final Validator<S> validator;
+    private final Mapper<T, S> mapper;
 
     /**
      * Constructs <code>AbstractService</code> class
@@ -41,21 +35,18 @@ public abstract class AbstractService<T, S extends AbstractModel> implements Bas
      *
      * @param dao       {@link #dao}
      * @param mapper    {@link #mapper}
-     * @param validator {@link #validator}
      */
-    public AbstractService(Dao dao, EntityModelMapper mapper,
-                           Validator<S> validator) {
+    public AbstractService(Dao dao, Mapper mapper) {
         this.dao = dao;
         this.mapper = mapper;
-        this.validator = validator;
     }
 
     @Override
     public abstract S create(S model);
 
     @Override
-    public Set<S> findAll() {
-        return dao.findAll().stream().map(mapper::toModel).collect(Collectors.toSet());
+    public List<S> findAll() {
+        return dao.findAll().stream().map(mapper::toClientModel).collect(Collectors.toList());
     }
 
     @Override
@@ -65,9 +56,9 @@ public abstract class AbstractService<T, S extends AbstractModel> implements Bas
         } else {
             Optional<T> optionalEntity = dao.findById(id);
             if (optionalEntity.isPresent()) {
-                return mapper.toModel(optionalEntity.get());
+                return mapper.toClientModel(optionalEntity.get());
             } else {
-                throw new ResourceWithIdNotFoundException(dao.retrieveEntityClass().getSimpleName(), id);
+                throw new ResourceWithIdNotFoundException(dao.getEntityClass().getSimpleName(), id);
             }
         }
     }
@@ -77,9 +68,9 @@ public abstract class AbstractService<T, S extends AbstractModel> implements Bas
     public S delete(Long id) {
         Optional<T> optionalEntity = dao.findById(id);
         if (!optionalEntity.isPresent()) {
-            throw new ResourceWithIdNotFoundException(dao.retrieveEntityClass().getSimpleName(), id);
+            throw new ResourceWithIdNotFoundException(dao.getEntityClass().getSimpleName(), id);
         }
-        S model = mapper.toModel(optionalEntity.get());
+        S model = mapper.toClientModel(optionalEntity.get());
         dao.delete(id);
         return model;
     }

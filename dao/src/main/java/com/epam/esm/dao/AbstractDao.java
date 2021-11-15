@@ -4,13 +4,11 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Base abstract class for classes in package {@link com.epam.esm.dao.impl} .
@@ -24,12 +22,7 @@ public abstract class AbstractDao<T> implements Dao<T> {
      * Entity manager for using and operation entities .
      */
     @PersistenceContext
-    protected EntityManager entityManager;
-
-    /**
-     * Builder for creating queries for data access .
-     */
-    protected CriteriaBuilder criteriaBuilder;
+    private final EntityManager entityManager;
 
     /**
      * Constructs class <code>AbstractDao</code>
@@ -39,20 +32,19 @@ public abstract class AbstractDao<T> implements Dao<T> {
      */
     public AbstractDao(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.criteriaBuilder = entityManager.getCriteriaBuilder();
     }
 
     @Override
     public Optional<T> findById(long id) {
-        return Optional.ofNullable(entityManager.find(retrieveEntityClass(), id));
+        return Optional.ofNullable(entityManager.find(getEntityClass(), id));
     }
 
     @Override
-    public Set<T> findAll() {
-        CriteriaQuery<T> query = criteriaBuilder.createQuery(retrieveEntityClass());
-        Root<T> root = query.from(retrieveEntityClass());
+    public List<T> findAll() {
+        CriteriaQuery<T> query = entityManager.getCriteriaBuilder().createQuery(getEntityClass());
+        Root<T> root = query.from(getEntityClass());
         query.select(root);
-        return entityManager.createQuery(query).getResultStream().collect(Collectors.toSet());
+        return entityManager.createQuery(query).getResultList();
     }
 
     @Override
@@ -60,13 +52,13 @@ public abstract class AbstractDao<T> implements Dao<T> {
     public T create(T entity) {
         entityManager.persist(entity);
         Object id = retrieveEntityId(entity);
-        return entityManager.find(retrieveEntityClass(), id);
+        return entityManager.find(getEntityClass(), id);
     }
 
     @Override
     @Transactional
     public void delete(long id) {
-        T entity = entityManager.find(retrieveEntityClass(), id);
+        T entity = entityManager.find(getEntityClass(), id);
         entityManager.remove(entity);
     }
 
@@ -76,7 +68,7 @@ public abstract class AbstractDao<T> implements Dao<T> {
     }
 
     @Override
-    public abstract Class<T> retrieveEntityClass();
+    public abstract Class<T> getEntityClass();
 
     /**
      * Retrieves id of entity .

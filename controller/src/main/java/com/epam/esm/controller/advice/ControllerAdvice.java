@@ -1,8 +1,9 @@
 package com.epam.esm.controller.advice;
 
 import com.epam.esm.exception.InvalidFieldValueException;
-import com.epam.esm.exception.ResourceWithNameExistsException;
+import com.epam.esm.exception.ResourceContainsDuplicateValuesException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
+import com.epam.esm.exception.ResourceWithNameExistsException;
 import com.epam.esm.exception.UnknownSortParamException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -144,6 +145,27 @@ public class ControllerAdvice {
             NumberFormatException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getMessage()};
         String errorMessageKey = "invalid_path_variable_value";
+        return formErrorResponse(errorMessageKey, locale, messageParams);
+    }
+
+    /**
+     * Handles {@link NumberFormatException} exception,
+     * ads to the response http status 400 .
+     * <p>
+     * Extracts exception field 'message'
+     * and uses this value while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(ResourceContainsDuplicateValuesException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handleNumberFormatException(
+            ResourceContainsDuplicateValuesException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getResourceName(), exception.getDuplicatesInfo()};
+        String errorMessageKey = exception.getErrorMessageKey();
         return formErrorResponse(errorMessageKey, locale, messageParams);
     }
 

@@ -1,4 +1,4 @@
-package com.epam.esm.dao.sort;
+package com.epam.esm.dao.querybuilder.sort;
 
 /**
  * Represents accessible values (sort directions)

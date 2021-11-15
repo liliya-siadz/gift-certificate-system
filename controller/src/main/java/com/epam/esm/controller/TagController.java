@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.model.TagModel;
+import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.service.impl.TagServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Controller for processing REST-api requests for Tag resource .
@@ -20,7 +20,7 @@ import java.util.Set;
  * <p>
  * Maps GET, POST, DELETE http-requests.
  * As a client model uses object of class
- * {@link TagModel} .
+ * {@link TagClientModel} .
  */
 @RestController
 @RequestMapping("/tags")
@@ -49,7 +49,7 @@ public class TagController {
      * @return list of all found Tags
      */
     @GetMapping
-    public Set<TagModel> getAll() {
+    public List<TagClientModel> getAll() {
         return service.findAll();
     }
 
@@ -62,7 +62,7 @@ public class TagController {
      * @return Tag that was found
      */
     @GetMapping("/{id}")
-    public TagModel getById(@PathVariable(value = "id") Long id) {
+    public TagClientModel getById(@PathVariable(value = "id") Long id) {
         return service.findById(id);
     }
 
@@ -75,7 +75,7 @@ public class TagController {
      * @return Tag that was created
      */
     @PostMapping
-    public TagModel create(@RequestBody TagModel tag) {
+    public TagClientModel create(@RequestBody TagClientModel tag) {
         return service.create(tag);
     }
 
@@ -88,7 +88,7 @@ public class TagController {
      * @return Tag that was deleted
      */
     @DeleteMapping("/{id}")
-    public TagModel deleteById(@PathVariable Long id) {
+    public TagClientModel deleteById(@PathVariable Long id) {
         return service.delete(id);
     }
 }

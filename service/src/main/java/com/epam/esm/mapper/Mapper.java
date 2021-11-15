@@ -6,7 +6,7 @@ package com.epam.esm.mapper;
  * @param <T> entity type
  * @param <S> client model type
  */
-public interface EntityModelMapper<T, S> {
+public interface Mapper<T, S> {
 
     /**
      * Maps client model to entity .
@@ -22,5 +22,5 @@ public interface EntityModelMapper<T, S> {
      * @param entity entity model
      * @return client model
      */
-    S toModel(T entity);
+    S toClientModel(T entity);
 }

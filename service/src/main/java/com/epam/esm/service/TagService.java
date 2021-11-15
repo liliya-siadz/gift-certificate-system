@@ -1,25 +1,25 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.TagModel;
+import com.epam.esm.clientmodel.TagClientModel;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Presents access to service operations with Tag .
  */
 @Service
-public interface TagService extends BaseService<TagModel> {
+public interface TagService extends BaseService<TagClientModel> {
 
     /**
      * Finds all Tags that bounded to target Gift Certificate .
      *
      * @param giftCertificateId id of Gift Certificate to
      *                          search bounded tags on
-     * @return set of Tags client models that bounds
+     * @return list of Tags client models that bounds
      * to target Gift Certificate
      */
-    Set<TagModel> findAllTagsBoundToGiftCertificate(Long giftCertificateId);
+    List<TagClientModel> findAllTagsBoundToGiftCertificate(Long giftCertificateId);
 
     /**
      * Updates Tags relations with specified Gift Certificate with passed id .
@@ -33,11 +33,11 @@ public interface TagService extends BaseService<TagModel> {
      * creates and then bounds Tag to Gift Certificate
      *
      * @param certificateId id of target Gift Certificate
-     * @param tags          set of Tags to execute relative to Gift Certificate
+     * @param tags          list of Tags to execute relative to Gift Certificate
      *                      updates operations
-     * @return set of Tags that bound to target Gift Certificate
+     * @return list of Tags that bound to target Gift Certificate
      */
-    Set<TagModel> updateExistingGiftCertificateTags(Long certificateId, Set<TagModel> tags);
+    List<TagClientModel> updateExistingGiftCertificateTags(Long certificateId, List<TagClientModel> tags);
 
     /**
      * Updates Tags relations with specified Gift Certificate with passed id .
@@ -49,9 +49,9 @@ public interface TagService extends BaseService<TagModel> {
      * creates and then bounds Tag to Gift Certificate
      *
      * @param giftCertificateId id of target Gift Certificate
-     * @param tags              set of Tags to execute relative to Gift Certificate
+     * @param tags              list of Tags to execute relative to Gift Certificate
      *                          updates operations
-     * @return set of Tags that bound to target Gift Certificate
+     * @return list of Tags that bound to target Gift Certificate
      */
-    Set<TagModel> updateNewGiftCertificateTags(Long giftCertificateId, Set<TagModel> tags);
+    List<TagClientModel> updateNewGiftCertificateTags(Long giftCertificateId, List<TagClientModel> tags);
 }

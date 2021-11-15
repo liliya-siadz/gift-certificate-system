@@ -1,7 +1,7 @@
 package com.epam.esm.dao;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Presents access to repository operations with entity .
@@ -20,9 +20,9 @@ public interface Dao<T> {
     /**
      * Finds all entities .
      *
-     * @return set of all Tags entities
+     * @return list of all Tags entities
      */
-    Set<T> findAll();
+    List<T> findAll();
 
     /**
      * Creates new entity .
@@ -52,5 +52,5 @@ public interface Dao<T> {
      *
      * @return class of entity that implements interface
      */
-    Class<T> retrieveEntityClass();
+    Class<T> getEntityClass();
 }

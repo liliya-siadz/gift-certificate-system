@@ -1,14 +1,14 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.AbstractModel;
+import com.epam.esm.clientmodel.AbstractClientModel;
 
 /**
  * Presents access to service operations with update operation with entity .
  */
-public interface UpdatableService<S extends AbstractModel> extends BaseService<S> {
+public interface UpdatableService<S extends AbstractClientModel> extends BaseService<S> {
 
     /**
-     * Update model with specified id by passed
+     * Updates model with specified id by passed
      * parameters in client model .
      *
      * @param id          id of model that should be updated

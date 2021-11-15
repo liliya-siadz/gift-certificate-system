@@ -2,30 +2,36 @@ package com.epam.esm.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entity for Gift Certificate, represents table 'gift_certificate' .
  */
 @Entity
 @Table(name = "gift_certificate")
-@Setter
-@Getter
-@ToString
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GiftCertificate {
+public class GiftCertificateEntity {
 
     /**
      * Represents column 'id' .
@@ -78,7 +84,7 @@ public class GiftCertificate {
     @JoinTable(name = "gift_certificates_tags",
             joinColumns = @JoinColumn(name = "gift_certificate_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id", table = "tag"))
-    private Set<Tag> tags = new HashSet<>();
+    private List<TagEntity> tags = new ArrayList<>();
 
     /**
      * Pre persist operation for setting value
@@ -99,23 +105,5 @@ public class GiftCertificate {
     @PreUpdate
     public void preUpdate() {
         lastUpdateDate = LocalDateTime.now();
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object instanceof GiftCertificate) {
-            GiftCertificate someCertificate = (GiftCertificate) object;
-            String someCertificateId = someCertificate.getName();
-            return (Objects.equals(name, someCertificateId));
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
     }
 }

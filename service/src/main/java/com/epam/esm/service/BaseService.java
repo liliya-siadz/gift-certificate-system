@@ -1,13 +1,13 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.AbstractModel;
+import com.epam.esm.clientmodel.AbstractClientModel;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Presents access to service operations with model .
  */
-public interface BaseService<S extends AbstractModel> {
+public interface BaseService<S extends AbstractClientModel> {
 
     /**
      * Creates passed model .
@@ -18,11 +18,11 @@ public interface BaseService<S extends AbstractModel> {
     S create(S model);
 
     /**
-     * Find all models .
+     * Finds all models .
      *
      * @return list of client models
      */
-    Set<S> findAll();
+    List<S> findAll();
 
     /**
      * Finds models with specified id .
