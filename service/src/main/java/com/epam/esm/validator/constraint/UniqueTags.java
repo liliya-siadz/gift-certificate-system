@@ -9,15 +9,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Validates list of Tag resources,
- * uses {@link com.epam.esm.validator.TagValidator} validator .
+ * The annotated element must be list of Tags,
+ * that doesn't contain duplicates .
  */
 @Documented
-@Constraint(validatedBy = TagsValidator.class)
+@Constraint(validatedBy = UniqueTagsValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TagsConstraint {
-    String message() default "Tags list should not contain invalid tags.";
+public @interface UniqueTags {
+    String message() default "Tags list should not contain duplicates.";
 
     Class<?>[] groups() default {};
 

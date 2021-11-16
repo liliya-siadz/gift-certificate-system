@@ -5,7 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class PastOrPresentValidator implements ConstraintValidator<PastOrPresentConstraint, String> {
+public class PastOrPresentValidator implements ConstraintValidator<PastOrPresent, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null) {

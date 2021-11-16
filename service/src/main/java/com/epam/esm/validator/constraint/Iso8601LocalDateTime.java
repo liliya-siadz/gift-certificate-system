@@ -9,15 +9,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Special validation for list of Tag resources,
- * validates that passed list doesn't contain duplicates .
+ * The annotated element must be a string instant
+ * datetime in format of {@link java.time.format.DateTimeFormatter#ISO_LOCAL_DATE_TIME} .
  */
 @Documented
-@Constraint(validatedBy = TagsSetValidator.class)
+@Constraint(validatedBy = Iso8601LocalDateTimeValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TagsSetConstraint {
-    String message() default "Tags list should not contain duplicates.";
+public @interface Iso8601LocalDateTime {
+    String message() default "Passed datetime should be in format of 8601.";
 
     Class<?>[] groups() default {};
 

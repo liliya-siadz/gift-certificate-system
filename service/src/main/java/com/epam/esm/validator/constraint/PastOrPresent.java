@@ -9,14 +9,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Validates that passed string presented datetime
- * is in past or present time .
+ * The annotated element must be a string instant
+ * datetime in the past or in the present.
  */
 @Documented
 @Constraint(validatedBy = PastOrPresentValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PastOrPresentConstraint {
+public @interface PastOrPresent {
     String message() default "Passed datetime value should be past or present .";
 
     Class<?>[] groups() default {};

@@ -2,7 +2,10 @@ package com.epam.esm.controller;
 
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.service.impl.TagServiceImpl;
+import com.epam.esm.validator.group.CreateChecks;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +26,7 @@ import java.util.List;
  * {@link TagClientModel} .
  */
 @RestController
+@Validated
 @RequestMapping("/tags")
 public class TagController {
 
@@ -62,7 +66,7 @@ public class TagController {
      * @return Tag that was found
      */
     @GetMapping("/{id}")
-    public TagClientModel getById(@PathVariable(value = "id") Long id) {
+    public TagClientModel getById(@PathVariable @Range(min = 1, max = 2147483647) Long id) {
         return service.findById(id);
     }
 
@@ -75,7 +79,7 @@ public class TagController {
      * @return Tag that was created
      */
     @PostMapping
-    public TagClientModel create(@RequestBody TagClientModel tag) {
+    public TagClientModel create(@RequestBody @Validated (CreateChecks.class) TagClientModel tag) {
         return service.create(tag);
     }
 
@@ -88,7 +92,7 @@ public class TagController {
      * @return Tag that was deleted
      */
     @DeleteMapping("/{id}")
-    public TagClientModel deleteById(@PathVariable Long id) {
+    public TagClientModel deleteById(@PathVariable @Range(min = 1, max = 2147483647) Long id) {
         return service.delete(id);
     }
 }

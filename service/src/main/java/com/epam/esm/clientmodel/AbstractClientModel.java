@@ -19,6 +19,6 @@ public abstract class AbstractClientModel {
     /**
      * Id of client model .
      */
-    @Range(min = 1, max = 200, groups = {IdChecks.class})
+    @Range(min = 1, max = 2147483647, groups = IdChecks.class)
     private Long id;
 }

@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class TagsSetValidator implements ConstraintValidator<TagsSetConstraint, List<TagClientModel>> {
+public class UniqueTagsValidator implements ConstraintValidator<UniqueTags, List<TagClientModel>> {
     @Override
     public boolean isValid(List<TagClientModel> value, ConstraintValidatorContext context) {
         if (value == null) {

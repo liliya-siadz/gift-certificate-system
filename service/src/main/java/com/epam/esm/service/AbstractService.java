@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.epam.esm.service.ResourceNames.getResourceName;
+
 /**
  * Base abstract class for classes in package {@link com.epam.esm.service.impl} .
  *
@@ -33,8 +35,8 @@ public abstract class AbstractService<T, S extends AbstractClientModel> implemen
      * Constructs <code>AbstractService</code> class
      * with passed dao, mapper and validator .
      *
-     * @param dao       {@link #dao}
-     * @param mapper    {@link #mapper}
+     * @param dao    {@link #dao}
+     * @param mapper {@link #mapper}
      */
     public AbstractService(Dao dao, Mapper mapper) {
         this.dao = dao;
@@ -58,7 +60,7 @@ public abstract class AbstractService<T, S extends AbstractClientModel> implemen
             if (optionalEntity.isPresent()) {
                 return mapper.toClientModel(optionalEntity.get());
             } else {
-                throw new ResourceWithIdNotFoundException(dao.getEntityClass().getSimpleName(), id);
+                throw new ResourceWithIdNotFoundException(getResourceName(dao.getEntityClass()), id);
             }
         }
     }
@@ -68,7 +70,7 @@ public abstract class AbstractService<T, S extends AbstractClientModel> implemen
     public S delete(Long id) {
         Optional<T> optionalEntity = dao.findById(id);
         if (!optionalEntity.isPresent()) {
-            throw new ResourceWithIdNotFoundException(dao.getEntityClass().getSimpleName(), id);
+            throw new ResourceWithIdNotFoundException(getResourceName(dao.getEntityClass()), id);
         }
         S model = mapper.toClientModel(optionalEntity.get());
         dao.delete(id);

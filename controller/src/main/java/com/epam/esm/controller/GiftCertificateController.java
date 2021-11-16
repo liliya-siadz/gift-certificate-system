@@ -2,7 +2,13 @@ package com.epam.esm.controller;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.validator.group.CreateChecks;
+import com.epam.esm.validator.group.IdChecks;
+import com.epam.esm.validator.group.UpdateChecks;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -13,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -25,6 +32,7 @@ import java.util.List;
  * {@link GiftCertificateClientModel} .
  */
 @RestController
+@Validated
 @RequestMapping("/gift_certificates")
 public class GiftCertificateController {
 
@@ -52,7 +60,8 @@ public class GiftCertificateController {
      * @return Gift Certificate that was created
      */
     @PostMapping
-    public GiftCertificateClientModel create(@RequestBody GiftCertificateClientModel certificate) {
+    public GiftCertificateClientModel create(
+            @RequestBody @Validated ({IdChecks.class, CreateChecks.class}) GiftCertificateClientModel certificate) {
         return service.create(certificate);
     }
 
@@ -77,7 +86,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was found
      */
     @GetMapping("/{id}")
-    public GiftCertificateClientModel getById(@PathVariable Long id) {
+    public GiftCertificateClientModel getById(@PathVariable @Range(min = 1, max = 2147483647) Long id) {
         return service.findById(id);
     }
 
@@ -90,7 +99,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was deleted
      */
     @DeleteMapping("/{id}")
-    public GiftCertificateClientModel deleteById(@PathVariable Long id) {
+    public GiftCertificateClientModel deleteById(@PathVariable @Range(min = 1, max = 2147483647) Long id) {
         return service.delete(id);
     }
 
@@ -105,8 +114,9 @@ public class GiftCertificateController {
      * @return Gift Certificate with updated and actual values
      */
     @PatchMapping("/{id}")
-    public GiftCertificateClientModel update(@PathVariable Long id,
-                                             @RequestBody GiftCertificateClientModel certificate) {
+    public GiftCertificateClientModel update(@PathVariable @Range(min = 1, max = 2147483647) Long id,
+                                             @RequestBody @Validated ({IdChecks.class, UpdateChecks.class})
+                                                     GiftCertificateClientModel certificate) {
         return service.update(id, certificate);
     }
 
@@ -124,9 +134,12 @@ public class GiftCertificateController {
      */
     @GetMapping("/search")
     public List<GiftCertificateClientModel> search(
-            @RequestParam(required = false) String tagName,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String description,
+            @RequestParam(required = false) @Length(min = 1, max = 200) @Pattern(regexp = ".*[a-zA-Z]+.*")
+                    String tagName,
+            @RequestParam(required = false) @Length(min = 1, max = 200) @Pattern(regexp = ".*[a-zA-Z]+.*")
+                    String name,
+            @RequestParam(required = false) @Length(min = 1, max = 2000) @Pattern(regexp = ".*[a-zA-Z]+.*")
+                    String description,
             @RequestParam(required = false) String sortField,
             @RequestParam(required = false) String sortDirection) {
         return service.search(tagName, name, description, sortField, sortDirection);

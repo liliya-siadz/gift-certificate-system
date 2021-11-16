@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class IsoLocalDateTimeValidator implements ConstraintValidator<IsoLocalDateTimeConstraint, String> {
+public class Iso8601LocalDateTimeValidator implements ConstraintValidator<Iso8601LocalDateTime, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null) {

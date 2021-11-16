@@ -1,6 +1,7 @@
 package com.epam.esm.clientmodel;
 
 import com.epam.esm.validator.group.CreateChecks;
+import com.epam.esm.validator.group.UpdateChecks;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,8 +23,8 @@ public class TagClientModel extends AbstractClientModel {
     /**
      * Tag's name .
      */
-    @NotNull (groups = {CreateChecks.class})
-    @Length(min = 1, max = 200)
-    @Pattern(regexp = ".*[a-zA-Z]+.*")
+    @NotNull(groups = CreateChecks.class)
+    @Length(min = 1, max = 200, groups = {CreateChecks.class, UpdateChecks.class})
+    @Pattern(regexp = ".*[a-zA-Z]+.*", groups = {CreateChecks.class, UpdateChecks.class})
     private String name;
 }

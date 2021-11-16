@@ -1,8 +1,7 @@
 package com.epam.esm.validator.group;
 
 /**
- * Validation group for operations where id of model
- * should be validated .
+ * Validation group for operations that use ids .
  */
 public interface IdChecks {
 }

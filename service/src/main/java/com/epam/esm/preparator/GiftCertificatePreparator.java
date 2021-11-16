@@ -1,8 +1,6 @@
 package com.epam.esm.preparator;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
-import com.epam.esm.validator.Validator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -15,25 +13,15 @@ import java.math.BigDecimal;
 public class GiftCertificatePreparator extends Preparator<GiftCertificateClientModel> {
 
     /**
-     * Validator for validating client models .
-     */
-    @Autowired
-    private Validator<GiftCertificateClientModel> validator;
-
-    /**
-     * Constructs <code>GiftCertificatePreparator</code>
-     * with passed model validator
+     * Prepares Gift Certificate client model for merge operation,
+     * copy non-null values of fields to current client model .
      *
-     * @param validator {@link #validator}
+     * @param currentModelState current client model
+     * @param newModelState     new client model,
+     *                          which non-null fields will replace same fields of current model
      */
-    public GiftCertificatePreparator(Validator<GiftCertificateClientModel> validator) {
-        super(validator);
-    }
-
-    @Override
     public void prepareForMerge(GiftCertificateClientModel currentModelState,
                                 GiftCertificateClientModel newModelState) {
-        validator.validateForUpdate(newModelState);
         String newName = newModelState.getName();
         String newDescription = newModelState.getDescription();
         String newCreateDate = newModelState.getCreateDate();

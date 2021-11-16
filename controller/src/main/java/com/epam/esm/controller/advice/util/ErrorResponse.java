@@ -1,5 +1,6 @@
-package com.epam.esm.controller.advice;
+package com.epam.esm.controller.advice.util;
 
+import com.epam.esm.controller.advice.ControllerAdvice;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -10,6 +10,7 @@ import com.epam.esm.mapper.Mapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.preparator.Preparator;
 import com.epam.esm.service.AbstractService;
+import com.epam.esm.service.ResourceNames;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -66,8 +67,8 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
         try {
              return mapper.toClientModel(dao.create(mapper.toEntity(model)));
         } catch (DataIntegrityViolationException exception) {
-            throw new ResourceWithNameExistsException(
-                    dao.getEntityClass().getSimpleName(), model.getName(), exception);
+            throw new ResourceWithNameExistsException(ResourceNames.getResourceName(dao.getEntityClass()),
+                    model.getName(), exception);
         }
     }
 

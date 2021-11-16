@@ -10,9 +10,11 @@ import com.epam.esm.exception.ResourceWithNameExistsException;
 import com.epam.esm.exception.UnknownSortParamException;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.mapper.Mapper;
+import com.epam.esm.preparator.GiftCertificatePreparator;
 import com.epam.esm.preparator.Preparator;
 import com.epam.esm.service.AbstractService;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.ResourceNames;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -83,7 +85,7 @@ public class GiftCertificateServiceImpl
         try {
             giftCertificate = dao.create(mapper.toEntity(model));
         } catch (DataIntegrityViolationException exception) {
-            throw new ResourceWithNameExistsException(dao.getEntityClass().getSimpleName(),
+            throw new ResourceWithNameExistsException(ResourceNames.getResourceName(dao.getEntityClass()),
                     model.getName(), exception);
         }
         Long id = giftCertificate.getId();
@@ -100,7 +102,7 @@ public class GiftCertificateServiceImpl
             throw new IllegalArgumentException("Parameter 'newModel' is null.");
         }
         GiftCertificateClientModel model = findById(id);
-        preparator.prepareForMerge(model, newModel);
+        ((GiftCertificatePreparator)preparator).prepareForMerge(model, newModel);
         ((GiftCertificateDao) dao).update(mapper.toEntity(model));
         List<TagClientModel> tags = newModel.getTags();
         if (tags != null) {
