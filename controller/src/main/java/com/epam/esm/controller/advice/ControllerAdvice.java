@@ -48,7 +48,7 @@ public class ControllerAdvice {
     }
 
     /**
-     * Handles {@link com.epam.esm.exception.ResourceWithIdNotFoundException} exception,
+     * Handles {@link ResourceWithIdNotFoundException} exception,
      * ads to the response http status 404 .
      * <p>
      * Extracts exception fields 'errorMessageKey', 'resourceName','resourceId'
@@ -108,7 +108,7 @@ public class ControllerAdvice {
     }
 
     /**
-     * Handles {@link InvalidFormatException} exception,
+     * Handles {@link InvalidFormatException} exception (if request body has values with mismatched types),
      * ads to the response http status 422 .
      * <p>
      * Extracts exception fields 'value' and 'targetType'
@@ -150,7 +150,7 @@ public class ControllerAdvice {
     }
 
     /**
-     * Handles {@link MethodArgumentNotValidException} exception (which thrown if resource has invalid values) ,
+     * Handles {@link MethodArgumentNotValidException} exception (if resource has invalid values) ,
      * ads to the response http status 422 .
      * <p>
      * Extracts exception fields 'fieldErrors' and 'parameter'
@@ -173,7 +173,7 @@ public class ControllerAdvice {
     }
 
     /**
-     * Handles {@link ConstraintViolationException} exception (which thrown if invalid path variable was passed) ,
+     * Handles {@link ConstraintViolationException} exception (if invalid path variable or request param is invalid) ,
      * ads to the response http status 400 .
      * <p>
      * Extracts exception field 'constraintViolations'
@@ -195,7 +195,7 @@ public class ControllerAdvice {
     }
 
     /**
-     * Handles {@link MethodArgumentTypeMismatchException} exception (which thrown if path variable value has mit) ,
+     * Handles {@link MethodArgumentTypeMismatchException} exception (if path variable value has invalid type) ,
      * ads to the response http status 400 .
      * <p>
      * Extracts exception field 'name', 'parameter'
