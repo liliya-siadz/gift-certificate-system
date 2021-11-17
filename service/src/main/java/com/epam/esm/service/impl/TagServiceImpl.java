@@ -50,8 +50,8 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
      * Constructs <code>TagServiceImpl</code> class
      * with dao, mapper and validator .
      *
-     * @param dao       {@link #dao}
-     * @param mapper    {@link #mapper}
+     * @param dao    {@link #dao}
+     * @param mapper {@link #mapper}
      */
     public TagServiceImpl(TagDao dao, TagMapper mapper) {
         super(dao, mapper);
@@ -65,7 +65,7 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
         }
         preparator.prepareForCreate(model);
         try {
-             return mapper.toClientModel(dao.create(mapper.toEntity(model)));
+            return mapper.toClientModel(dao.create(mapper.toEntity(model)));
         } catch (DataIntegrityViolationException exception) {
             throw new ResourceWithNameExistsException(ResourceNames.getResourceName(dao.getEntityClass()),
                     model.getName(), exception);

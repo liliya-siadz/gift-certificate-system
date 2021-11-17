@@ -2,6 +2,7 @@ package com.epam.esm.controller.advice;
 
 import com.epam.esm.controller.advice.util.AdviceUtil;
 import com.epam.esm.controller.advice.util.ErrorResponse;
+import com.epam.esm.exception.PageNotExistException;
 import com.epam.esm.exception.ResourceContainsDuplicateValuesException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.exception.ResourceWithNameExistsException;
@@ -145,8 +146,7 @@ public class ControllerAdvice {
     public ErrorResponse handleResourceContainsDuplicatesValuesException(
             ResourceContainsDuplicateValuesException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getResourceName(), exception.getDuplicatesInfo()};
-        String errorMessageKey = exception.getErrorMessageKey();
-        return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
+        return adviceUtil.formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
     /**
@@ -234,5 +234,26 @@ public class ControllerAdvice {
         Object[] messageParams = new Object[]{exception.getMessage()};
         String errorMessageKey = "invalid_request_body";
         return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
+    }
+
+    /**
+     * Handles {@link PageNotExistException} exception
+     * (if requested page of resources doesn't exist),
+     * ads to the response http status 400 .
+     * <p>
+     * Extracts exception fields 'resourceName', 'pageNumber'
+     * and uses these values while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(PageNotExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlePageNotExistException(
+            PageNotExistException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getResourceName(), exception.getPageNumber()};
+        return adviceUtil.formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 }

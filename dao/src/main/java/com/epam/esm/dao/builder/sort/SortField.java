@@ -1,4 +1,4 @@
-package com.epam.esm.dao.querybuilder.sort;
+package com.epam.esm.dao.builder.sort;
 
 import java.util.HashSet;
 import java.util.Set;

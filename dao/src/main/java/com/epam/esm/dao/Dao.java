@@ -1,6 +1,7 @@
 package com.epam.esm.dao;
 
-import java.util.List;
+import com.epam.esm.entity.PageableEntity;
+
 import java.util.Optional;
 
 /**
@@ -18,11 +19,14 @@ public interface Dao<T> {
     Optional<T> findById(long id);
 
     /**
-     * Finds all entities .
+     * Retrieves passed quantity of entities (page size)
+     * from passed page (page number), i.e. one page of entities .
      *
-     * @return list of all Tags entities
+     * @param pageSize page size, quantity of requested entities
+     * @param pageNumber page number, number of requested page
+     * @return one page of entities with passed quantity from passed page
      */
-    List<T> findAll();
+    PageableEntity<T> findAll (int pageSize, int pageNumber);
 
     /**
      * Creates new entity .
@@ -53,4 +57,18 @@ public interface Dao<T> {
      * @return class of entity that implements interface
      */
     Class<T> getEntityClass();
+
+    /**
+     * Retrieves array of primary key attributes .
+     *
+     * @return array of primary key attributes .
+     */
+    String[] getPrimaryKeyAttributeName();
+
+    /**
+     * Retrieves quantity of all entities in database .
+     *
+     * @return quantity of all entities in database
+     */
+    Long countAll();
 }

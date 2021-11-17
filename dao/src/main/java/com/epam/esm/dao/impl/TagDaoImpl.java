@@ -2,8 +2,10 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.AbstractDao;
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.builder.TagQueryBuilder;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.TagEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -22,18 +24,29 @@ public class TagDaoImpl extends AbstractDao<TagEntity> implements TagDao {
     private EntityManager entityManager;
 
     /**
+     * Query builder for criteria queries .
+     */
+    @Autowired
+    private TagQueryBuilder tagQueryBuilder;
+
+    /**
      * Constructs class <code>TagDaoImpl</code>
-     * with entity manager .
+     * with entity manager and criteria query builder .
      *
      * @param entityManager {@link #entityManager}
      */
-    public TagDaoImpl(EntityManager entityManager) {
-        super(entityManager);
+    public TagDaoImpl(EntityManager entityManager, TagQueryBuilder tagQueryBuilder) {
+        super(entityManager, tagQueryBuilder);
     }
 
     @Override
     public Class<TagEntity> getEntityClass() {
         return TagEntity.class;
+    }
+
+    @Override
+    public String[] getPrimaryKeyAttributeName() {
+        return new String[]{"id"};
     }
 
     @Override

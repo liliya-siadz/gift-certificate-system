@@ -1,4 +1,4 @@
-package com.epam.esm.dao.querybuilder.sort;
+package com.epam.esm.dao.builder.sort;
 
 /**
  * Thrown to indicate that unknown sort field

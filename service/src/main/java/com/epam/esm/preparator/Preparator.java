@@ -18,4 +18,5 @@ public abstract class Preparator<S extends AbstractClientModel> {
     public void prepareForCreate(S model) {
         model.setId(null);
     }
+
 }
