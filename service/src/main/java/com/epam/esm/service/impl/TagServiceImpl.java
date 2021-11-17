@@ -1,21 +1,24 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.clientmodel.TagClientModel;
+import com.epam.esm.dao.Dao;
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.exception.ResourceWithNameIsExistException;
+import com.epam.esm.entity.TagEntity;
+import com.epam.esm.exception.ResourceWithNameExistsException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
-import com.epam.esm.mapper.TagModelMapper;
-import com.epam.esm.model.TagClientModel;
-import com.epam.esm.model.TagEntityModel;
+import com.epam.esm.mapper.Mapper;
+import com.epam.esm.mapper.TagMapper;
+import com.epam.esm.preparator.Preparator;
+import com.epam.esm.service.AbstractService;
+import com.epam.esm.service.ResourceNames;
 import com.epam.esm.service.TagService;
-import com.epam.esm.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -23,180 +26,131 @@ import java.util.stream.Collectors;
  * for presenting access to service operations with Tag .
  */
 @Service
-public class TagServiceImpl implements TagService {
+public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> implements TagService {
 
     /**
-     * Dao for repository operations with table 'tag' .
-     */
-    private final TagDao tagDao;
-
-    /**
-     * Mapper from Tag entity model to Tag client model and otherwise .
-     */
-    private final TagModelMapper modelMapper;
-
-    /**
-     * Validator for client model of Tag .
-     */
-    private final Validator<TagClientModel> validator;
-
-    /**
-     * Constructs service with injected params .
-     *
-     * @param modelMapper {@link #modelMapper}
-     * @param validator   {@link #validator}
+     * Dao class for repository operations .
      */
     @Autowired
-    public TagServiceImpl(TagDao tagDao, TagModelMapper modelMapper,
-                          @Qualifier("tagValidator") Validator<TagClientModel> validator) {
-        this.tagDao = tagDao;
-        this.modelMapper = modelMapper;
-        this.validator = validator;
+    private Dao<TagEntity> dao;
+
+    /**
+     * Mapper for mapping from entity to client model and otherwise .
+     */
+    @Autowired
+    private Mapper<TagEntity, TagClientModel> mapper;
+
+    /**
+     * Preparator for update/create operations with Tag
+     */
+    @Autowired
+    private Preparator<TagClientModel> preparator;
+
+    /**
+     * Constructs <code>TagServiceImpl</code> class
+     * with dao, mapper and validator .
+     *
+     * @param dao       {@link #dao}
+     * @param mapper    {@link #mapper}
+     */
+    public TagServiceImpl(TagDao dao, TagMapper mapper) {
+        super(dao, mapper);
     }
 
     @Override
-    public TagClientModel findById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id of tag is null!");
-        } else {
-            Optional<TagEntityModel> entity = tagDao.findById(id);
-            if (entity.isPresent()) {
-                return modelMapper.toClientModel(entity.get());
-            } else {
-                throw new ResourceWithIdNotFoundException("Tag", id);
-            }
+    @Transactional
+    public TagClientModel create(TagClientModel model) {
+        if (model == null) {
+            throw new IllegalArgumentException("Parameter 'model' is null.");
+        }
+        preparator.prepareForCreate(model);
+        try {
+             return mapper.toClientModel(dao.create(mapper.toEntity(model)));
+        } catch (DataIntegrityViolationException exception) {
+            throw new ResourceWithNameExistsException(ResourceNames.getResourceName(dao.getEntityClass()),
+                    model.getName(), exception);
         }
     }
 
     @Override
-    public TagClientModel delete(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id of tag is null!");
+    public List<TagClientModel> findAllTagsBoundToGiftCertificate(Long certificateId) {
+        if (certificateId == null) {
+            throw new IllegalArgumentException("Parameter 'certificateId' is null.");
         }
-        if (tagDao.isExist(id)) {
-            TagEntityModel tagEntity = tagDao.findById(id).get();
-            tagDao.delete(id);
-            return modelMapper.toClientModel(tagEntity);
-        } else {
-            throw new ResourceWithIdNotFoundException("Tag", id);
-        }
-    }
-
-    @Override
-    public List<TagClientModel> findAll() {
-        return tagDao.findAll()
+        TagDao temp = (TagDao) dao;
+        return temp.findAllTagsBoundToGiftCertificate(certificateId)
                 .stream()
-                .map(modelMapper::toClientModel).
-                collect(Collectors.toList());
-    }
-
-    @Override
-    public TagClientModel create(TagClientModel clientModel) {
-        if (clientModel == null) {
-            throw new IllegalArgumentException("Tag's model or tag's name is null!");
-        } else {
-            validator.validateForCreate(clientModel);
-            try {
-                long tagGeneratedId = tagDao.create(modelMapper.toEntity(clientModel));
-                clientModel.setId(tagGeneratedId);
-                return clientModel;
-            } catch (DuplicateKeyException exception) {
-                throw new ResourceWithNameIsExistException("Tag", clientModel.getName(), exception);
-            }
-        }
-    }
-
-    @Override
-    public List<TagClientModel> findAllTagsBoundToGiftCertificate(Long giftCertificateId) {
-        if (giftCertificateId == null) {
-            throw new IllegalArgumentException("Gift certificate is null!");
-        }
-        return tagDao.findAllTagsBoundToGiftCertificate(giftCertificateId)
-                .stream()
-                .map(modelMapper::toClientModel)
+                .map(mapper::toClientModel)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<TagClientModel> updateExistingGiftCertificateTags(
-            Long giftCertificateId, List<TagClientModel> tags) {
-        if ((giftCertificateId == null) || (tags == null)
-                || (tags.stream().anyMatch(Objects::isNull))) {
-            throw new IllegalArgumentException("Gift certificate's id or tags list is null (has null values)!");
+    @Transactional
+    public List<TagClientModel> updateExistingGiftCertificateTags(Long certificateId, List<TagClientModel> tags) {
+        if ((certificateId == null) || (tags == null) || (tags.stream().anyMatch(Objects::isNull))) {
+            throw new IllegalArgumentException(
+                    "Parameter 'certificateId' or 'tags' is null, or list 'tags' contains null value.");
         }
         tags.forEach(tag -> {
             Long tagId = tag.getId();
             String tagName = tag.getName();
             if ((tagId != null) && (tagName != null)) {
-                validator.validateForUpdate(tag);
-                boundTagToGiftCertificate(tagId, giftCertificateId);
+                boundTagToGiftCertificate(tagId, certificateId);
             } else if (tagId != null) {
-                validator.validateForUpdate(tag);
-                unboundTagFromGiftCertificate(tagId, giftCertificateId);
+                unboundTagFromGiftCertificate(tagId, certificateId);
             } else if (tagName != null) {
-                validator.validateForCreate(tag);
-                create(tag);
-                boundTagToGiftCertificate(tag.getId(), giftCertificateId);
+                TagClientModel temp = create(tag);
+                boundTagToGiftCertificate(temp.getId(), certificateId);
             }
         });
-        return tags.stream()
-                .filter(tag -> tag.getName() != null)
-                .collect(Collectors.toList());
+        return tags.stream().filter(tag -> tag.getName() != null).collect(Collectors.toList());
     }
 
     @Override
-    public List<TagClientModel> updateNewGiftCertificateTags(
-            Long giftCertificateId, List<TagClientModel> tags) {
-        if ((giftCertificateId == null) || (tags == null)
-                || (tags.stream().anyMatch(Objects::isNull))) {
-            throw new IllegalArgumentException("Gift certificate's id or tags list is null (has null values)!");
+    @Transactional
+    public List<TagClientModel> updateNewGiftCertificateTags(Long certificateId, List<TagClientModel> tags) {
+        if ((certificateId == null) || (tags == null) || (tags.stream().anyMatch(Objects::isNull))) {
+            throw new IllegalArgumentException(
+                    "Parameter 'certificateId' or 'tags' is null, or list 'tags' contains null value.");
         }
         tags.forEach(tag -> {
             Long tagId = tag.getId();
             String tagName = tag.getName();
             if ((tagId != null) && (tagName != null)) {
-                validator.validateForUpdate(tag);
-                boundTagToGiftCertificate(tagId, giftCertificateId);
+                boundTagToGiftCertificate(tagId, certificateId);
             } else if (tagName != null) {
-                validator.validateForCreate(tag);
-                create(tag);
-                boundTagToGiftCertificate(tag.getId(), giftCertificateId);
+                TagClientModel temp = create(tag);
+                boundTagToGiftCertificate(temp.getId(), certificateId);
             }
         });
-        return tags.stream()
-                .filter(tag -> tag.getName() != null)
-                .collect(Collectors.toList());
+        return tags.stream().filter(tag -> tag.getName() != null).collect(Collectors.toList());
     }
 
-    @Override
-    public boolean isExist(Long id) {
-        return (id != null) && (tagDao.isExist(id));
-    }
-
-    private void boundTagToGiftCertificate(Long id, Long giftCertificateId) {
-        if (isExist(id)) {
-            if (!isTagBoundToGiftCertificate(id, giftCertificateId)) {
-                tagDao.boundTagToGiftCertificate(id, giftCertificateId);
-            }
-        } else {
-            throw new ResourceWithIdNotFoundException("Tag", id);
+    private void boundTagToGiftCertificate(Long id, Long certificateId) {
+        if (!isExist(id)) {
+            throw new ResourceWithIdNotFoundException(TagEntity.class.getSimpleName(), id);
+        }
+        if (!isTagBoundToGiftCertificate(id, certificateId)) {
+            TagDao temp = (TagDao) dao;
+            temp.boundTagToGiftCertificate(id, certificateId);
         }
     }
 
-    private void unboundTagFromGiftCertificate(Long id, Long giftCertificateId) {
-        if (isExist(id)) {
-            if (isTagBoundToGiftCertificate(id, giftCertificateId)) {
-                tagDao.unboundTagFromGiftCertificate(id, giftCertificateId);
-            }
-        } else {
-            throw new ResourceWithIdNotFoundException("Tag", id);
+    private void unboundTagFromGiftCertificate(Long id, Long certificateId) {
+        if (!isExist(id)) {
+            throw new ResourceWithIdNotFoundException(TagEntity.class.getSimpleName(), id);
+        }
+        if (isTagBoundToGiftCertificate(id, certificateId)) {
+            TagDao temp = (TagDao) dao;
+            temp.unboundTagFromGiftCertificate(id, certificateId);
         }
     }
 
-    private boolean isTagBoundToGiftCertificate(Long id, Long giftCertificateId) {
-        if ((id == null) || (giftCertificateId == null)) {
-            throw new IllegalArgumentException("Tag id of gift certificate id is null!");
+    private boolean isTagBoundToGiftCertificate(Long id, Long certificateId) {
+        if ((id == null) || (certificateId == null)) {
+            throw new IllegalArgumentException("Parameter 'id' or 'certificateId' is null.");
         }
-        return tagDao.isTagBoundToGiftCertificate(id, giftCertificateId);
+        TagDao temp = (TagDao) dao;
+        return temp.isTagBoundToGiftCertificate(id, certificateId);
     }
 }

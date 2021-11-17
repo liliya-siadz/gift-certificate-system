@@ -12,7 +12,7 @@ buildscript {
     }
 }
 
-allprojects {
+subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.springframework.boot'
@@ -39,15 +39,15 @@ allprojects {
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web:2.5.6'
         testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
-    }
-}
-
-subprojects {
-    dependencies {
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     }
-}
 
+    sourceSets {
+        main {
+            output.resourcesDir = "build/classes/java/main/com/epam/esm"
+        }
+    }
+}

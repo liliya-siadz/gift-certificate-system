@@ -3,5 +3,9 @@ version '0.0.1-SNAPSHOT'
 
 dependencies {
     runtimeOnly 'org.postgresql:postgresql'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.5.6'
+    implementation 'com.zaxxer:HikariCP:4.0.3'
+    implementation 'org.hibernate:hibernate-core:6.0.0.Beta1'
+    implementation 'org.hibernate:hibernate-entitymanager:6.0.0.Alpha7'
+    implementation 'org.hibernate:hibernate-hikaricp:6.0.0.Beta1'
+    implementation 'org.springframework:spring-orm:5.3.12'
 }

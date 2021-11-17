@@ -20,7 +20,7 @@ public class ResourceWithIdNotFoundException extends RuntimeException {
      * with name of resource and id of resource .
      *
      * @param resourceName {@link #resourceName}
-     * @param resourceId {@link #resourceId}
+     * @param resourceId   {@link #resourceId}
      */
     public ResourceWithIdNotFoundException(String resourceName, Long resourceId) {
         this.resourceId = resourceId;

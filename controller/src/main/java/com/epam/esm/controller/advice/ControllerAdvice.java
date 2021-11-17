@@ -1,18 +1,25 @@
 package com.epam.esm.controller.advice;
 
-import com.epam.esm.exception.InvalidFieldValueException;
-import com.epam.esm.exception.ResourceWithNameIsExistException;
+import com.epam.esm.controller.advice.util.AdviceUtil;
+import com.epam.esm.controller.advice.util.ErrorResponse;
+import com.epam.esm.exception.ResourceContainsDuplicateValuesException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
+import com.epam.esm.exception.ResourceWithNameExistsException;
 import com.epam.esm.exception.UnknownSortParamException;
+import com.epam.esm.service.ResourceNames;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.text.MessageFormat;
+import javax.validation.ConstraintViolationException;
 import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.Map;
 
 /**
  * Handles exceptions from {@link com.epam.esm.exception} package
@@ -26,27 +33,22 @@ import java.util.ResourceBundle;
 public class ControllerAdvice {
 
     /**
-     * Handles {@link com.epam.esm.exception.InvalidFieldValueException} exception,
-     * ads to the response http status 400 .
-     * <p>
-     * Extracts exception field 'validationMap'
-     * and this value while creating response body object .
-     *
-     * @param exception handled exception
-     * @param locale    request locale
-     * @return response body (with localized and parametrized message)
-     * as result of exception handling
+     * Service utility for advice, forms error response, validation maps, etc.
      */
-    @ExceptionHandler(InvalidFieldValueException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleInvalidFieldValueException(
-            InvalidFieldValueException exception, Locale locale) {
-        Object[] messageParams = new Object[]{exception.getValidationMap()};
-        return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
+    private final AdviceUtil adviceUtil;
+
+    /**
+     * Constructs <code>ControllerAdvice</code> class with injected controller advice util .
+     *
+     * @param adviceUtil {@link #adviceUtil}
+     */
+    @Autowired
+    public ControllerAdvice(AdviceUtil adviceUtil) {
+        this.adviceUtil = adviceUtil;
     }
 
     /**
-     * Handles {@link com.epam.esm.exception.ResourceWithIdNotFoundException} exception,
+     * Handles {@link ResourceWithIdNotFoundException} exception,
      * ads to the response http status 404 .
      * <p>
      * Extracts exception fields 'errorMessageKey', 'resourceName','resourceId'
@@ -62,11 +64,11 @@ public class ControllerAdvice {
     public ErrorResponse handleResourceWithIdNotFoundException(
             ResourceWithIdNotFoundException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getResourceName(), exception.getResourceId()};
-        return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
+        return adviceUtil.formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
     /**
-     * Handles {@link ResourceWithNameIsExistException} exception,
+     * Handles {@link ResourceWithNameExistsException} exception,
      * ads to the response http status 409 .
      * <p>
      * Extracts exception fields 'errorMessageKey', 'resourceName', 'name'
@@ -77,12 +79,12 @@ public class ControllerAdvice {
      * @return response body (with localized and parametrized message)
      * as result of exception handling
      */
-    @ExceptionHandler(ResourceWithNameIsExistException.class)
+    @ExceptionHandler(ResourceWithNameExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleResourceIsAlreadyExistException(
-            ResourceWithNameIsExistException exception, Locale locale) {
-        Object[] messageParams = new Object[]{exception.getResourceName(), exception.getName()};
-        return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
+            ResourceWithNameExistsException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getResourceName(), exception.getNameValue()};
+        return adviceUtil.formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
     /**
@@ -102,35 +104,79 @@ public class ControllerAdvice {
     public ErrorResponse handleUnknownSortParamException(
             UnknownSortParamException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getSortParamValue()};
-        return formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
+        return adviceUtil.formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
     /**
-     * Handles {@link HttpMessageNotReadableException} exception,
+     * Handles {@link InvalidFormatException} exception (if request body has values with mismatched types),
      * ads to the response http status 422 .
      * <p>
-     * Extracts exception field 'httpInputMessage'
-     * and uses its values while creating response body object .
+     * Extracts exception fields 'value' and 'targetType'
+     * and uses these values while creating response body object .
      *
      * @param exception handled exception
      * @param locale    request locale
      * @return response body (with localized and parametrized message)
      * as result of exception handling
      */
-    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ExceptionHandler(InvalidFormatException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public ErrorResponse handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException exception, Locale locale) {
-        Object[] messageParams = new Object[]{exception.getMostSpecificCause().getMessage()};
-        String errorMessageKey = "invalid_request_body_types";
-        return formErrorResponse(errorMessageKey, locale, messageParams);
+    public ErrorResponse handleInvalidFormatException(
+            InvalidFormatException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getValue(), exception.getTargetType().getSimpleName()};
+        String errorMessageKey = "mismatched_request_body_types";
+        return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
     }
 
     /**
-     * Handles {@link NumberFormatException} exception,
+     * Handles {@link ResourceContainsDuplicateValuesException} exception,
+     * ads to the response http status 422 .
+     * <p>
+     * Extracts exception fields 'resourceName' and 'duplicatesInfo'
+     * and uses these values while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(ResourceContainsDuplicateValuesException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handleResourceContainsDuplicatesValuesException(
+            ResourceContainsDuplicateValuesException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getResourceName(), exception.getDuplicatesInfo()};
+        String errorMessageKey = exception.getErrorMessageKey();
+        return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
+    }
+
+    /**
+     * Handles {@link MethodArgumentNotValidException} exception (if resource has invalid values) ,
+     * ads to the response http status 422 .
+     * <p>
+     * Extracts exception fields 'fieldErrors' and 'parameter'
+     * and uses these values while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException exception, Locale locale) {
+        Map<String, Object> validationMap = adviceUtil.formValidationMap(exception.getFieldErrors());
+        String resourceName  = ResourceNames.getResourceName(exception.getParameter().getParameterType());
+        Object[] messageParams = new Object[]{resourceName, validationMap};
+        String errorMessageKey = "invalid_field_values";
+        return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
+    }
+
+    /**
+     * Handles {@link ConstraintViolationException} exception (if invalid path variable or request param is invalid) ,
      * ads to the response http status 400 .
      * <p>
-     * Extracts exception field 'message'
+     * Extracts exception field 'constraintViolations'
      * and uses this value while creating response body object .
      *
      * @param exception handled exception
@@ -138,29 +184,55 @@ public class ControllerAdvice {
      * @return response body (with localized and parametrized message)
      * as result of exception handling
      */
-    @ExceptionHandler(NumberFormatException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleNumberFormatException(
-            NumberFormatException exception, Locale locale) {
+    public ErrorResponse handleConstraintViolationException(
+            ConstraintViolationException exception, Locale locale) {
+        Map<String, Object> validationMap = adviceUtil.formValidationMap(exception.getConstraintViolations());
+        Object[] messageParams = new Object[]{validationMap};
+        String errorMessageKey = "invalid_path_variable_or_request_param_value";
+        return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
+    }
+
+    /**
+     * Handles {@link MethodArgumentTypeMismatchException} exception (if path variable value has invalid type) ,
+     * ads to the response http status 400 .
+     * <p>
+     * Extracts exception field 'name', 'parameter'
+     * and uses this value while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getName(), exception.getValue(),
+                exception.getParameter().getParameterType().getSimpleName()};
+        String errorMessageKey = "invalid_path_variable_type";
+        return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
+    }
+
+    /**
+     * Handles {@link HttpMessageNotReadableException} exception (if request body of resource is invalid) ,
+     * ads to the response http status 400 .
+     * <p>
+     * Extracts exception field 'message' and uses this value while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getMessage()};
-        String errorMessageKey = "invalid_path_variable_value";
-        return formErrorResponse(errorMessageKey, locale, messageParams);
-    }
-
-    private ErrorResponse formErrorResponse(String errorMessageKey, Locale locale, Object[] params) {
-        int errorCode = Integer.parseInt(getErrorMessageResource(errorMessageKey.concat(".code"), locale));
-        String errorMessage = getErrorMessageResource(errorMessageKey.concat(".message"), locale, params);
-        return new ErrorResponse(errorCode, errorMessage);
-    }
-
-    private String getErrorMessageResource(String key, Locale locale, Object[] params) {
-        MessageFormat formatter = new MessageFormat("");
-        formatter.setLocale(locale);
-        formatter.applyPattern(getErrorMessageResource(key, locale));
-        return formatter.format(params);
-    }
-
-    private String getErrorMessageResource(String key, Locale locale) {
-        return ResourceBundle.getBundle("com.epam.esm.error_messages", locale).getString(key);
+        String errorMessageKey = "invalid_request_body";
+        return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
     }
 }
