@@ -1,9 +1,9 @@
-package com.epam.esm.dao.querybuilder.impl;
+package com.epam.esm.dao.builder.impl;
 
-import com.epam.esm.dao.querybuilder.GiftCertificateQueryBuilder;
-import com.epam.esm.dao.querybuilder.sort.SortDirection;
-import com.epam.esm.dao.querybuilder.sort.SortField;
-import com.epam.esm.dao.querybuilder.sort.UnknownSortFieldException;
+import com.epam.esm.dao.builder.GiftCertificateQueryBuilder;
+import com.epam.esm.dao.builder.sort.SortDirection;
+import com.epam.esm.dao.builder.sort.SortField;
+import com.epam.esm.dao.builder.sort.UnknownSortFieldException;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.TagEntity;
 import org.springframework.stereotype.Component;

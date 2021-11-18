@@ -1,8 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.clientmodel.AbstractClientModel;
-
-import java.util.List;
+import com.epam.esm.clientmodel.PageableClientModel;
 
 /**
  * Presents access to service operations with model .
@@ -18,11 +17,11 @@ public interface BaseService<S extends AbstractClientModel> {
     S create(S model);
 
     /**
-     * Finds all models .
+     * Finds all models of passed quantity from passed page.
      *
      * @return list of client models
      */
-    List<S> findAll();
+    PageableClientModel<S> findAll(Integer pageSize, Integer pageNumber);
 
     /**
      * Finds models with specified id .
@@ -47,4 +46,11 @@ public interface BaseService<S extends AbstractClientModel> {
      * @return true if model is exist, otherwise - false
      */
     boolean isExist(Long id);
+
+    /**
+     * Retrieves quantity of models .
+     *
+     * @return quantity of models
+     */
+    Long countAll();
 }

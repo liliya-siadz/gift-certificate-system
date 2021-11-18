@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.service.impl.TagServiceImpl;
 import com.epam.esm.validator.group.CreateChecks;
@@ -12,9 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import javax.validation.constraints.Min;
 
 /**
  * Controller for processing REST-api requests for Tag resource .
@@ -46,15 +48,19 @@ public class TagController {
     }
 
     /**
-     * Gets all Tag resources.
+     * Gets all Tag resources of passed quantity from passed page .
      * <p>
      * Handles GET http-request.
      *
-     * @return list of all found Tags
+     * @param pageNumber page number to get Tags from
+     * @param pageSize quantity of Tags on page (page size)
+     * @return page of Tag resources of passed quantity
      */
     @GetMapping
-    public List<TagClientModel> getAll() {
-        return service.findAll();
+    public PageableClientModel<TagClientModel> getAll(
+            @RequestParam (required = false, defaultValue = "5") @Min(1) Integer pageSize,
+            @RequestParam (required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
+        return service.findAll(pageSize, pageNumber);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
+import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validator.group.CreateChecks;
 import com.epam.esm.validator.group.IdChecks;
@@ -19,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
-import java.util.List;
 
 /**
  * Controller for processing REST-api requests for Gift Certificate resource .
@@ -61,20 +62,25 @@ public class GiftCertificateController {
      */
     @PostMapping
     public GiftCertificateClientModel create(
-            @RequestBody @Validated ({IdChecks.class, CreateChecks.class}) GiftCertificateClientModel certificate) {
+            @RequestBody @Validated({IdChecks.class, CreateChecks.class})
+                    GiftCertificateClientModel certificate) {
         return service.create(certificate);
     }
 
     /**
-     * Gets all Gift Certificate resources.
+     * Gets all Gift Certificate resources of passed quantity from passed page .
      * <p>
      * Handles GET http-request.
      *
-     * @return list of all found Gift Certificates
+     * @param pageNumber page number to get Gift Certificates from
+     * @param pageSize   quantity of Gift Certificates on page (page size)
+     * @return page of Tag resources of passed quantity
      */
     @GetMapping
-    public List<GiftCertificateClientModel> getAll() {
-        return service.findAll();
+    public PageableClientModel<GiftCertificateClientModel> getAll(
+            @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
+            @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
+        return service.findAll(pageSize, pageNumber);
     }
 
     /**
@@ -115,25 +121,27 @@ public class GiftCertificateController {
      */
     @PatchMapping("/{id}")
     public GiftCertificateClientModel update(@PathVariable @Range(min = 1, max = 2147483647) Long id,
-                                             @RequestBody @Validated ({IdChecks.class, UpdateChecks.class})
+                                             @RequestBody @Validated({IdChecks.class, UpdateChecks.class})
                                                      GiftCertificateClientModel certificate) {
         return service.update(id, certificate);
     }
 
     /**
-     * Searches (also could sort) Gift Certificate resources
-     * that fits to specified params of search .
+     * Searches (also could sort) passed quantity of Gift Certificate resources
+     * that fits to specified params of search from passed page .
      *
      * @param tagName       full name of Tag that bound to target Gift Certificate
      * @param name          part of name of target Gift Certificate
      * @param description   part of description of target Gift Certificate
      * @param sortField     property of sorting Gift Certificate
      * @param sortDirection direction of sorting Gift Certificates
-     * @return found and sorted list of Gift Certificates
+     * @param pageNumber page number to get Gift Certificates from
+     * @param pageSize   quantity of Gift Certificates on page (page size)
+     * @return fixed size page of search result
      * see {@link com.epam.esm.service.GiftCertificateService#search}
      */
     @GetMapping("/search")
-    public List<GiftCertificateClientModel> search(
+    public PageableClientModel<GiftCertificateClientModel> search(
             @RequestParam(required = false) @Length(min = 1, max = 200) @Pattern(regexp = ".*[a-zA-Z]+.*")
                     String tagName,
             @RequestParam(required = false) @Length(min = 1, max = 200) @Pattern(regexp = ".*[a-zA-Z]+.*")
@@ -141,7 +149,9 @@ public class GiftCertificateController {
             @RequestParam(required = false) @Length(min = 1, max = 2000) @Pattern(regexp = ".*[a-zA-Z]+.*")
                     String description,
             @RequestParam(required = false) String sortField,
-            @RequestParam(required = false) String sortDirection) {
-        return service.search(tagName, name, description, sortField, sortDirection);
+            @RequestParam(required = false) String sortDirection,
+            @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
+            @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
+        return service.search(tagName, name, description, sortField, sortDirection, pageSize, pageNumber);
     }
 }

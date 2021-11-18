@@ -1,13 +1,15 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.dao.builder.QueryBuilder;
+import com.epam.esm.entity.PageableEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,13 +27,19 @@ public abstract class AbstractDao<T> implements Dao<T> {
     private final EntityManager entityManager;
 
     /**
+     * Query builder for criteria queries .
+     */
+    private final QueryBuilder<T> queryBuilder;
+
+    /**
      * Constructs class <code>AbstractDao</code>
      * with passed entity manager .
      *
      * @param entityManager {@link #entityManager}
      */
-    public AbstractDao(EntityManager entityManager) {
+    public AbstractDao(EntityManager entityManager, QueryBuilder<T> queryBuilder) {
         this.entityManager = entityManager;
+        this.queryBuilder = queryBuilder;
     }
 
     @Override
@@ -40,11 +48,11 @@ public abstract class AbstractDao<T> implements Dao<T> {
     }
 
     @Override
-    public List<T> findAll() {
-        CriteriaQuery<T> query = entityManager.getCriteriaBuilder().createQuery(getEntityClass());
-        Root<T> root = query.from(getEntityClass());
-        query.select(root);
-        return entityManager.createQuery(query).getResultList();
+    public PageableEntity<T> findAll(int pageSize, int pageNumber) {
+        CriteriaQuery<T> getAllOrderedByPkQuery = queryBuilder.buildGetAllOrderedByPkQuery(
+                entityManager, getEntityClass(), getPrimaryKeyAttributeName());
+        TypedQuery<T> typedQuery = entityManager.createQuery(getAllOrderedByPkQuery);
+        return runTypedQuery(typedQuery, pageSize, pageNumber, countAll());
     }
 
     @Override
@@ -68,7 +76,26 @@ public abstract class AbstractDao<T> implements Dao<T> {
     }
 
     @Override
+    public Long countAll() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> countAllQuery = criteriaBuilder.createQuery(Long.class);
+        countAllQuery.select(criteriaBuilder.count(countAllQuery.from(getEntityClass())));
+        return entityManager.createQuery(countAllQuery).getSingleResult();
+    }
+
+    @Override
     public abstract Class<T> getEntityClass();
+
+    @Override
+    public abstract String[] getPrimaryKeyAttributeName();
+
+    protected PageableEntity<T> runTypedQuery(TypedQuery<T> typedQuery, int pageSize, int pageNumber,
+                                 long totalEntities) {
+        PageableEntity<T> pageableEntity = queryBuilder.buildPage(pageSize, pageNumber, totalEntities);
+        typedQuery.setFirstResult((pageNumber - 1) * pageSize).setMaxResults(pageSize);
+        pageableEntity.setElements(typedQuery.getResultList());
+        return pageableEntity;
+    }
 
     /**
      * Retrieves id of entity .

@@ -145,8 +145,7 @@ public class ControllerAdvice {
     public ErrorResponse handleResourceContainsDuplicatesValuesException(
             ResourceContainsDuplicateValuesException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getResourceName(), exception.getDuplicatesInfo()};
-        String errorMessageKey = exception.getErrorMessageKey();
-        return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
+        return adviceUtil.formErrorResponse(exception.getErrorMessageKey(), locale, messageParams);
     }
 
     /**

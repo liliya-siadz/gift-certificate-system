@@ -1,10 +1,11 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
+import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.dao.Dao;
 import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.dao.querybuilder.sort.UnknownSortFieldException;
+import com.epam.esm.dao.builder.sort.UnknownSortFieldException;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.exception.ResourceWithNameExistsException;
 import com.epam.esm.exception.UnknownSortParamException;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link GiftCertificateService} interface,
@@ -102,7 +102,7 @@ public class GiftCertificateServiceImpl
             throw new IllegalArgumentException("Parameter 'newModel' is null.");
         }
         GiftCertificateClientModel model = findById(id);
-        ((GiftCertificatePreparator)preparator).prepareForMerge(model, newModel);
+        ((GiftCertificatePreparator) preparator).prepareForMerge(model, newModel);
         ((GiftCertificateDao) dao).update(mapper.toEntity(model));
         List<TagClientModel> tags = newModel.getTags();
         if (tags != null) {
@@ -112,12 +112,13 @@ public class GiftCertificateServiceImpl
     }
 
     @Override
-    public List<GiftCertificateClientModel> search(String tagName, String name, String description,
-                                                   String sortField, String sortDirection) {
+    public PageableClientModel<GiftCertificateClientModel> search(String tagName, String name, String description,
+                                                                  String sortField, String sortDirection,
+                                                                  Integer pageSize, Integer pageNumber) {
         try {
-            return ((GiftCertificateDao) dao).search(tagName, name, description, sortField, sortDirection).stream()
-                    .map(mapper::toClientModel)
-                    .collect(Collectors.toList());
+            return mapper.toClientModel(((GiftCertificateDao) dao)
+                    .search(tagName, name, description, sortField, sortDirection,
+                            pageSize, pageNumber));
         } catch (EnumConstantNotPresentException exception) {
             throw new UnknownSortParamException(exception.constantName());
         } catch (UnknownSortFieldException exception) {

@@ -1,14 +1,13 @@
 package com.epam.esm.service;
 
 import com.epam.esm.clientmodel.AbstractClientModel;
+import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.dao.Dao;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.Mapper;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.epam.esm.service.ResourceNames.getResourceName;
 
@@ -20,6 +19,8 @@ import static com.epam.esm.service.ResourceNames.getResourceName;
  *            must extend class {@link AbstractClientModel}
  */
 public abstract class AbstractService<T, S extends AbstractClientModel> implements BaseService<S> {
+    protected static final int DEFAULT_PAGE_SIZE = 5;
+    protected static final int DEFAULT_PAGE_NUMBER = 1;
 
     /**
      * Dao class for repository operations .
@@ -47,8 +48,8 @@ public abstract class AbstractService<T, S extends AbstractClientModel> implemen
     public abstract S create(S model);
 
     @Override
-    public List<S> findAll() {
-        return dao.findAll().stream().map(mapper::toClientModel).collect(Collectors.toList());
+    public PageableClientModel<S> findAll(Integer pageSize, Integer pageNumber) {
+        return mapper.toClientModel(dao.findAll(pageSize, pageNumber));
     }
 
     @Override
@@ -80,5 +81,10 @@ public abstract class AbstractService<T, S extends AbstractClientModel> implemen
     @Override
     public boolean isExist(Long id) {
         return ((id != null) && (dao.isExist(id)));
+    }
+
+    @Override
+    public Long countAll() {
+        return dao.countAll();
     }
 }
