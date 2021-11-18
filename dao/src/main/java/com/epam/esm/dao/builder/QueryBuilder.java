@@ -3,7 +3,6 @@ package com.epam.esm.dao.builder;
 import com.epam.esm.entity.PageableEntity;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
@@ -42,19 +41,15 @@ public interface QueryBuilder<T> {
      * Retrieves requested page with passed quantity of entities
      * from passed query of entities  .
      *
-     * @param typedQuery    query that contains list of entities to cut on pages
      * @param pageSize      quantity of entities on page
      * @param pageNumber    page number
      * @param totalEntities total number of entities
-     * @return page of entities from passed query with passed params
+     * @return page of entities from passed params
      */
-    default PageableEntity<T> buildPageFromQuery(TypedQuery<T> typedQuery,
-                                                 int pageSize, int pageNumber,
-                                                 long totalEntities) {
-        typedQuery.setFirstResult((pageNumber - 1) * pageSize).setMaxResults(pageSize);
+    default PageableEntity<T> buildPage(int pageSize, int pageNumber, long totalEntities) {
         long totalPages = totalEntities == 0 ? 0 : ((totalEntities + pageSize - 1) / pageSize);
         return PageableEntity.<T>builder()
-                .pageSize(pageSize).pageNumber(pageNumber).elements(typedQuery.getResultList())
+                .pageSize(pageSize).pageNumber(pageNumber)
                 .totalElements(totalEntities).totalPages(totalPages).build();
     }
 }

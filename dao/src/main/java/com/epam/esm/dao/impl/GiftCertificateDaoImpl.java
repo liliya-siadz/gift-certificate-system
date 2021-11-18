@@ -66,6 +66,6 @@ public class GiftCertificateDaoImpl extends AbstractDao<GiftCertificateEntity>
         TypedQuery<GiftCertificateEntity> typedQuery = entityManager.createQuery(searchQuery);
         TypedQuery<GiftCertificateEntity> temp = entityManager.createQuery(searchQuery);
         long totalSearchedEntities = temp.getResultList().size();
-        return queryBuilder.buildPageFromQuery(typedQuery, pageSize, pageNumber, totalSearchedEntities);
+        return runTypedQuery(typedQuery, pageSize, pageNumber, totalSearchedEntities);
     }
 }

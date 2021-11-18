@@ -3,7 +3,6 @@ package com.epam.esm.service;
 import com.epam.esm.clientmodel.AbstractClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.dao.Dao;
-import com.epam.esm.exception.PageNotExistException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.Mapper;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +49,6 @@ public abstract class AbstractService<T, S extends AbstractClientModel> implemen
 
     @Override
     public PageableClientModel<S> findAll(Integer pageSize, Integer pageNumber) {
-        verifyPageAttributes(pageSize, pageNumber);
         return mapper.toClientModel(dao.findAll(pageSize, pageNumber));
     }
 
@@ -88,11 +86,5 @@ public abstract class AbstractService<T, S extends AbstractClientModel> implemen
     @Override
     public Long countAll() {
         return dao.countAll();
-    }
-
-    protected void verifyPageAttributes(Integer pageSize, Integer pageNumber) {
-        if (pageNumber > ((long) Math.ceil(countAll() / pageSize) + 1)) {
-            throw new PageNotExistException(getResourceName(dao.getEntityClass()), pageNumber);
-        }
     }
 }

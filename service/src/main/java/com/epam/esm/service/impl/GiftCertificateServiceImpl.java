@@ -115,7 +115,6 @@ public class GiftCertificateServiceImpl
     public PageableClientModel<GiftCertificateClientModel> search(String tagName, String name, String description,
                                                                   String sortField, String sortDirection,
                                                                   Integer pageSize, Integer pageNumber) {
-        verifyPageAttributes(pageSize, pageNumber);
         try {
             return mapper.toClientModel(((GiftCertificateDao) dao)
                     .search(tagName, name, description, sortField, sortDirection,

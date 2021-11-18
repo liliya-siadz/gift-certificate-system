@@ -52,7 +52,7 @@ public abstract class AbstractDao<T> implements Dao<T> {
         CriteriaQuery<T> getAllOrderedByPkQuery = queryBuilder.buildGetAllOrderedByPkQuery(
                 entityManager, getEntityClass(), getPrimaryKeyAttributeName());
         TypedQuery<T> typedQuery = entityManager.createQuery(getAllOrderedByPkQuery);
-        return queryBuilder.buildPageFromQuery(typedQuery, pageSize, pageNumber, countAll());
+        return runTypedQuery(typedQuery, pageSize, pageNumber, countAll());
     }
 
     @Override
@@ -88,6 +88,14 @@ public abstract class AbstractDao<T> implements Dao<T> {
 
     @Override
     public abstract String[] getPrimaryKeyAttributeName();
+
+    protected PageableEntity<T> runTypedQuery(TypedQuery<T> typedQuery, int pageSize, int pageNumber,
+                                 long totalEntities) {
+        PageableEntity<T> pageableEntity = queryBuilder.buildPage(pageSize, pageNumber, totalEntities);
+        typedQuery.setFirstResult((pageNumber - 1) * pageSize).setMaxResults(pageSize);
+        pageableEntity.setElements(typedQuery.getResultList());
+        return pageableEntity;
+    }
 
     /**
      * Retrieves id of entity .
