@@ -1,6 +1,6 @@
 package com.epam.esm.validator.constraint;
 
-import com.epam.esm.clientmodel.TagClientModel;
+import com.epam.esm.clientmodel.GiftCertificateClientModel;
 import com.epam.esm.exception.ResourceContainsDuplicateValuesException;
 
 import javax.validation.ConstraintValidator;
@@ -11,40 +11,41 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class UniqueTagsValidator implements ConstraintValidator<UniqueTags, List<TagClientModel>> {
+public class UniqueCertificatesValidator
+        implements ConstraintValidator<UniqueCertificates, List<GiftCertificateClientModel>> {
     @Override
-    public boolean isValid(List<TagClientModel> value, ConstraintValidatorContext context) {
+    public boolean isValid(List<GiftCertificateClientModel> value, ConstraintValidatorContext context) {
         if (value == null) {
             return true;
         }
-        return validateTagsDuplicates(value);
+        return validateCertificatesDuplicates(value);
     }
 
-    private boolean validateTagsDuplicates(List<TagClientModel> tags) {
-        List<Long> idsDuplicates = getIdsDuplicates(tags);
-        List<String> namesDuplicates = getNamesDuplicates(tags);
+    private boolean validateCertificatesDuplicates(List<GiftCertificateClientModel> certificates) {
+        List<Long> idsDuplicates = getIdsDuplicates(certificates);
+        List<String> namesDuplicates = getNamesDuplicates(certificates);
         boolean isIdsDuplicated = !idsDuplicates.isEmpty();
         boolean isNamesDuplicated = !namesDuplicates.isEmpty();
         if (isIdsDuplicated || isNamesDuplicated) {
-            StringBuilder tagsDuplicates = new StringBuilder("{")
+            StringBuilder certificatesDuplicates = new StringBuilder("{")
                     .append(isIdsDuplicated ? "ids: " + idsDuplicates : "")
                     .append(isNamesDuplicated ? "names: " + namesDuplicates : "")
                     .append("}");
-            throw new ResourceContainsDuplicateValuesException("Tag", tagsDuplicates.toString());
+            throw new ResourceContainsDuplicateValuesException("Gift Certificate", certificatesDuplicates.toString());
         } else {
             return true;
         }
     }
 
-    private List<String> getNamesDuplicates(List<TagClientModel> tags) {
-        return tags.stream().map(TagClientModel::getName)
+    private List<String> getNamesDuplicates(List<GiftCertificateClientModel> certificates) {
+        return certificates.stream().map(GiftCertificateClientModel::getName)
                 .filter(Objects::nonNull).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream().filter(nameUsedTimes -> nameUsedTimes.getValue() > 1).map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 
-    private List<Long> getIdsDuplicates(List<TagClientModel> tags) {
-        return tags.stream().map(TagClientModel::getId)
+    private List<Long> getIdsDuplicates(List<GiftCertificateClientModel> certificates) {
+        return certificates.stream().map(GiftCertificateClientModel::getId)
                 .filter(Objects::nonNull).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream().filter(idUsedTimes -> idUsedTimes.getValue() > 1).map(Map.Entry::getKey)
                 .collect(Collectors.toList());
