@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
@@ -33,7 +34,7 @@ public class TagDaoImpl extends AbstractDao<TagEntity> implements TagDao {
                     + "(SELECT public.user.id FROM public.user"
                     + " JOIN public.order"
                     + " ON public.order.user_id=public.user.id"
-                    + " GROUP BY public.user.id ORDER BY sum(public.order.cost) DESC LIMIT 1)"
+                    + " GROUP BY public.user.id ORDER BY sum(public.order.cost) DESC LIMIT 1 OFFSET 100)"
                     + " GROUP BY tag.id ORDER BY count(tag.id) DESC LIMIT 1";
 
     @PersistenceContext
@@ -97,7 +98,11 @@ public class TagDaoImpl extends AbstractDao<TagEntity> implements TagDao {
 
     @Override
     public TagEntity findTopTag() {
-        Query nativeQuery = entityManager.createNativeQuery(FIND_TOP_TAG_NATIVE_SQL_QUERY, TagEntity.class);
-        return ((TagEntity) nativeQuery.getSingleResult());
+        try {
+            Query nativeQuery = entityManager.createNativeQuery(FIND_TOP_TAG_NATIVE_SQL_QUERY, TagEntity.class);
+            return ((TagEntity) nativeQuery.getSingleResult());
+        } catch (NoResultException exception) {
+            return null;
+        }
     }
 }

@@ -109,7 +109,8 @@ public class TagController {
      * <p>
      * Handles GET http-request.
      *
-     * @return most widely used Tag of a User with the highest cost of all Orders
+     * @return most widely used Tag of a User with the highest cost of all Orders if present,
+     * otherwise null
      */
     @GetMapping("/top-tag")
     public TagClientModel findTopTag() {
