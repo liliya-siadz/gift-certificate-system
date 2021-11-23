@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -165,7 +166,7 @@ public class ControllerAdvice {
     public ErrorResponse handleMethodArgumentNotValidException(
             MethodArgumentNotValidException exception, Locale locale) {
         Map<String, Object> validationMap = adviceUtil.formValidationMap(exception.getFieldErrors());
-        String resourceName  = ResourceNames.getResourceName(exception.getParameter().getParameterType());
+        String resourceName = ResourceNames.getResourceName(exception.getParameter().getParameterType());
         Object[] messageParams = new Object[]{resourceName, validationMap};
         String errorMessageKey = "invalid_field_values";
         return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
@@ -232,6 +233,27 @@ public class ControllerAdvice {
             HttpMessageNotReadableException exception, Locale locale) {
         Object[] messageParams = new Object[]{exception.getMessage()};
         String errorMessageKey = "invalid_request_body";
+        return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
+    }
+
+    /**
+     * Handles {@link MissingServletRequestParameterException} exception (if request parameter is null) ,
+     * ads to the response http status 400 .
+     * <p>
+     * Extracts exception field 'parameterName'
+     * and uses this value while creating response body object .
+     *
+     * @param exception handled exception
+     * @param locale    request locale
+     * @return response body (with localized and parametrized message)
+     * as result of exception handling
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException exception, Locale locale) {
+        Object[] messageParams = new Object[]{exception.getParameterName()};
+        String errorMessageKey = "request_parameter_null";
         return adviceUtil.formErrorResponse(errorMessageKey, locale, messageParams);
     }
 }

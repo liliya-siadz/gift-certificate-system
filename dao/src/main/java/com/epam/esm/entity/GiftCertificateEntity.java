@@ -93,7 +93,7 @@ public class GiftCertificateEntity {
      */
     @PrePersist
     public void prePersist() {
-        if(createDate == null) {
+        if (createDate == null) {
             createDate = LocalDateTime.now();
         }
         lastUpdateDate = createDate;

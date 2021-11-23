@@ -1,9 +1,13 @@
 package com.epam.esm.service;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
+import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.entity.GiftCertificateEntity;
+import com.epam.esm.entity.OrderEntity;
 import com.epam.esm.entity.TagEntity;
+import com.epam.esm.entity.UserEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +27,10 @@ public class ResourceNames {
         resourceNames.put(GiftCertificateEntity.class, "Gift Certificate");
         resourceNames.put(TagClientModel.class, "Tag");
         resourceNames.put(TagEntity.class, "Tag");
+        resourceNames.put(UserClientModel.class, "User");
+        resourceNames.put(UserEntity.class, "User");
+        resourceNames.put(OrderClientModel.class, "Order");
+        resourceNames.put(OrderEntity.class, "Order");
     }
 
     private ResourceNames() {

@@ -2,14 +2,16 @@ package com.epam.esm.clientmodel;
 
 import com.epam.esm.validator.constraint.Iso8601LocalDateTime;
 import com.epam.esm.validator.constraint.PastOrPresent;
-import com.epam.esm.validator.constraint.UniqueCertificates;
-import com.epam.esm.validator.group.CreateChecks;
+import com.epam.esm.validator.group.IdChecks;
+import com.epam.esm.validator.group.OrderChecks;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -22,35 +24,40 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderClientModel extends AbstractClientModel {
+public class OrderClientModel {
+
+    /**
+     * Order's id.
+     */
+    @Range(min = 1, max = 2147483647, groups = IdChecks.class)
+    private Long id;
 
     /**
      * Order's user .
      */
-    @NotNull(groups = CreateChecks.class)
+    @NotNull(groups = OrderChecks.class)
     @Valid
     private UserClientModel user;
 
     /**
      * Order's price .
      */
-    @NotNull(groups = CreateChecks.class)
-    @Positive(groups = CreateChecks.class)
+    @Null(groups = OrderChecks.class)
+    @Positive(groups = OrderChecks.class)
     private BigDecimal cost;
 
     /**
      * Order's purchase date .
      */
-    @PastOrPresent(groups = CreateChecks.class)
-    @Iso8601LocalDateTime(groups = CreateChecks.class)
+    @PastOrPresent(groups = OrderChecks.class)
+    @Iso8601LocalDateTime(groups = OrderChecks.class)
     private String purchaseDate;
 
     /**
      * Order's Gift Certificates .
      */
-    @NotNull(groups = CreateChecks.class)
-    @Size(min = 1, groups = CreateChecks.class)
-    @UniqueCertificates (groups = CreateChecks.class)
+    @NotNull(groups = OrderChecks.class)
+    @Size(min = 1, groups = OrderChecks.class)
     @Valid
     private List<GiftCertificateClientModel> certificates = new ArrayList<>();
 }

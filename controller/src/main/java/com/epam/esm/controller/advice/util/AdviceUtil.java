@@ -34,8 +34,8 @@ public interface AdviceUtil {
      * in class {@link com.epam.esm.controller.advice.ControllerAdvice} .
      *
      * @param errorMessageKey key of error message (to find error message by key)
-     * @param locale request locale (to localize error message)
-     * @param params params of error message (to use while forming error message)
+     * @param locale          request locale (to localize error message)
+     * @param params          params of error message (to use while forming error message)
      * @return error response object
      */
     ErrorResponse formErrorResponse(String errorMessageKey, Locale locale, Object[] params);
@@ -43,7 +43,7 @@ public interface AdviceUtil {
     /**
      * Retrieves error message from Resource Bundle with params .
      *
-     * @param key key of error message
+     * @param key    key of error message
      * @param locale locale
      * @param params params of error message
      * @return error message from Resource Bundle
@@ -53,7 +53,7 @@ public interface AdviceUtil {
     /**
      * Retrieves error message from Resource Bundle .
      *
-     * @param key key of error message
+     * @param key    key of error message
      * @param locale locale
      * @return error message from Resource Bundle
      */

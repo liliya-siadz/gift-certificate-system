@@ -1,12 +1,11 @@
 package com.epam.esm.service;
 
-import com.epam.esm.clientmodel.AbstractClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
 
 /**
  * Presents access to service operations with model .
  */
-public interface BaseService<S extends AbstractClientModel> {
+public interface BaseService<S> {
 
     /**
      * Creates passed model .
@@ -46,11 +45,4 @@ public interface BaseService<S extends AbstractClientModel> {
      * @return true if model is exist, otherwise - false
      */
     boolean isExist(Long id);
-
-    /**
-     * Retrieves quantity of models .
-     *
-     * @return quantity of models
-     */
-    Long countAll();
 }

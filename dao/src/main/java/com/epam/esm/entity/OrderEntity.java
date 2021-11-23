@@ -25,7 +25,7 @@ import java.util.List;
  * Entity for Order, represents table 'order' .
  */
 @Entity
-@Table(name = "order")
+@Table(name = "\"order\"")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -62,8 +62,8 @@ public class OrderEntity {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "orders_gift_certificates",
-    joinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "gift_certificate_id", referencedColumnName = "id"))
+            joinColumns = @JoinColumn(name = "order_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "gift_certificate_id", referencedColumnName = "id"))
     private List<GiftCertificateEntity> certificates = new ArrayList<>();
 
     /**
@@ -72,7 +72,7 @@ public class OrderEntity {
      */
     @PrePersist
     public void prePersist() {
-        if(purchaseDate == null) {
+        if (purchaseDate == null) {
             purchaseDate = LocalDateTime.now();
         }
     }

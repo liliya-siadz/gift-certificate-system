@@ -11,8 +11,7 @@ import java.util.List;
  * retrieves one page of resources with additional information,
  * such page size, total pages quantity, etc.
  *
- * @param <S> type of elements presented on page,
- *           must extend class {@link AbstractClientModel}
+ * @param <S> type of elements presented on page (client models)
  */
 @Data
 @Builder

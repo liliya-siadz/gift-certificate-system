@@ -4,6 +4,7 @@ import com.epam.esm.validator.constraint.Iso8601LocalDateTime;
 import com.epam.esm.validator.constraint.PastOrPresent;
 import com.epam.esm.validator.constraint.UniqueTags;
 import com.epam.esm.validator.group.CreateChecks;
+import com.epam.esm.validator.group.OrderChecks;
 import com.epam.esm.validator.group.UpdateChecks;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,7 +28,14 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GiftCertificateClientModel extends AbstractClientModel {
+public class GiftCertificateClientModel {
+
+    /**
+     * Id of client model .
+     */
+    @NotNull(groups = OrderChecks.class)
+    @Range(min = 1, max = 2147483647, groups = OrderChecks.class)
+    private Long id;
 
     /**
      * Gift Certificate's name.

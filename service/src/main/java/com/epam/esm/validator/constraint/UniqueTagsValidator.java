@@ -11,6 +11,10 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Validates constraint {@link UniqueTags}
+ * for list of objects type of {@link com.epam.esm.clientmodel.TagClientModel} .
+ */
 public class UniqueTagsValidator implements ConstraintValidator<UniqueTags, List<TagClientModel>> {
     @Override
     public boolean isValid(List<TagClientModel> value, ConstraintValidatorContext context) {

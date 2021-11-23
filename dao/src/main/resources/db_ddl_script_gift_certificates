@@ -68,6 +68,3 @@ CREATE TABLE orders_gift_certificates (
   ADD CONSTRAINT gift_certificate_id_fk
   FOREIGN KEY (gift_certificate_id )
   REFERENCES gift_certificate(id) ON DELETE CASCADE;
-
-    ALTER TABLE orders_gift_certificates
-    ADD UNIQUE (gift_certificate_id, order_id);

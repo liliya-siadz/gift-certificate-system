@@ -22,20 +22,28 @@ public class AdviceUtilImpl implements AdviceUtil {
     @Override
     public Map<String, Object> formValidationMap(Set<ConstraintViolation<?>> constraintViolations) {
         return constraintViolations.stream()
-                .collect(Collectors.toMap(key->key.getPropertyPath().toString().replaceAll(".*[.]",""),
-                ConstraintViolation::getInvalidValue, (key1, key2)->key1));
+                .collect(Collectors.toMap(
+                       key->key.getPropertyPath().toString().replaceFirst("[^.]*[.]",""),
+                       value-> (value.getInvalidValue()== null)
+                               ? "[NULL VALUE]"
+                               : ((value.getInvalidValue().toString().isEmpty())
+                                     || (value.getInvalidValue().toString().trim().isEmpty()))
+                                          ? "[EMPTY OR BLANK VALUE]"
+                                          : (value.getInvalidValue()),
+                       (key1, key2)->key1));
     }
 
     @Override
     public Map<String, Object> formValidationMap(List<FieldError> errors) {
         return new TreeMap<>(errors.stream()
-                .collect(Collectors.toMap(FieldError::getField,
+                .collect(Collectors.toMap(
+                        FieldError::getField,
                         value->{
                           if (value.getRejectedValue() == null) {
                               return "[NULL VALUE]";
                           }
                           String temp = value.getRejectedValue().toString();
-                          if (temp.isEmpty() || temp.trim().isEmpty()) {
+                          if ((temp.isEmpty()) || (temp.trim().isEmpty())) {
                               return "[EMPTY OR BLANK VALUE]";
                           }
                           return value.getRejectedValue();
