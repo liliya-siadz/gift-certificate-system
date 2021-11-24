@@ -34,7 +34,7 @@ public class GiftCertificateClientModel extends AbstractClientModel {
      */
     @NotNull(groups = CreateChecks.class)
     @Length(min = 1, max = 200, groups = {CreateChecks.class, UpdateChecks.class})
-    @Pattern(regexp = ".*[a-zA-Z]+.*", groups = {CreateChecks.class, UpdateChecks.class})
+    @Pattern(regexp = "[a-zA-Z]{2,}", groups = {CreateChecks.class, UpdateChecks.class})
     private String name;
 
     /**
