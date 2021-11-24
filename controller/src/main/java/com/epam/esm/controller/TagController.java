@@ -104,7 +104,7 @@ public class TagController {
     }
 
     /**
-     * Finds top Tag resource of Top Users,
+     * Finds most popular Tag resource of Top User,
      * i.e. gets the most widely used Tag of a User with the highest cost of all Orders .
      * <p>
      * Handles GET http-request.
@@ -113,7 +113,7 @@ public class TagController {
      * otherwise null
      */
     @GetMapping("/top-tag")
-    public TagClientModel findTopTag() {
-        return service.findTopTag();
+    public TagClientModel findMostPopularTag() {
+        return service.findMostPopularTag();
     }
 }

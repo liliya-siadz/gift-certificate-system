@@ -97,7 +97,7 @@ public class TagDaoImpl extends AbstractDao<TagEntity> implements TagDao {
     }
 
     @Override
-    public TagEntity findTopTag() {
+    public TagEntity findMostPopularTag() {
         try {
             Query nativeQuery = entityManager.createNativeQuery(FIND_TOP_TAG_NATIVE_SQL_QUERY, TagEntity.class);
             return ((TagEntity) nativeQuery.getSingleResult());

@@ -126,8 +126,8 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
     }
 
     @Override
-    public TagClientModel findTopTag() {
-        return mapper.toClientModel(dao.findTopTag());
+    public TagClientModel findMostPopularTag() {
+        return mapper.toClientModel(dao.findMostPopularTag());
     }
 
     private void boundTagToGiftCertificate(Long id, Long certificateId) {
