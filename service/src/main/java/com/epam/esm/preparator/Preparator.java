@@ -6,11 +6,4 @@ package com.epam.esm.preparator;
  * @param <S> type of client model,
  */
 public abstract class Preparator<S> {
-
-    /**
-     * Prepare model for create operation .
-     *
-     * @param model model to create
-     */
-    public abstract void prepareForCreate(S model);
 }

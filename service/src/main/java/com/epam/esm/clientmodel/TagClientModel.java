@@ -5,9 +5,11 @@ import com.epam.esm.validator.group.IdChecks;
 import com.epam.esm.validator.group.UpdateChecks;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -18,7 +20,8 @@ import javax.validation.constraints.Pattern;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TagClientModel {
+@EqualsAndHashCode(callSuper = true)
+public class TagClientModel extends RepresentationModel<TagClientModel> {
 
     /**
      * Tag's id .
@@ -31,6 +34,6 @@ public class TagClientModel {
      */
     @NotNull(groups = CreateChecks.class)
     @Length(min = 1, max = 200, groups = {CreateChecks.class, UpdateChecks.class})
-    @Pattern(regexp = "[a-zA-Z,()-]{2,}", groups = {CreateChecks.class, UpdateChecks.class})
+    @Pattern(regexp = "[\\w\\s,()-]{2,}", groups = {CreateChecks.class, UpdateChecks.class})
     private String name;
 }

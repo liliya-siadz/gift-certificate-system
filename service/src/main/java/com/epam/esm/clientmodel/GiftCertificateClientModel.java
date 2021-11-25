@@ -7,11 +7,12 @@ import com.epam.esm.validator.group.CreateChecks;
 import com.epam.esm.validator.group.OrderChecks;
 import com.epam.esm.validator.group.UpdateChecks;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -25,10 +26,10 @@ import java.util.List;
  * Client model of Gift Certificate .
  */
 @Data
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GiftCertificateClientModel {
+public class GiftCertificateClientModel extends RepresentationModel<GiftCertificateClientModel> {
 
     /**
      * Id of client model .
@@ -42,14 +43,14 @@ public class GiftCertificateClientModel {
      */
     @NotNull(groups = CreateChecks.class)
     @Length(min = 1, max = 200, groups = {CreateChecks.class, UpdateChecks.class})
-    @Pattern(regexp = "[a-zA-Z]{2,}", groups = {CreateChecks.class, UpdateChecks.class})
+    @Pattern(regexp = "[\\w\\s,()-]{2,}", groups = {CreateChecks.class, UpdateChecks.class})
     private String name;
 
     /**
      * Gift Certificate's description .
      */
     @Length(min = 1, max = 2000, groups = {CreateChecks.class, UpdateChecks.class})
-    @Pattern(regexp = ".*[a-zA-Z]+.*", groups = {CreateChecks.class, UpdateChecks.class})
+    @Pattern(regexp = ".*[\\w\\s,()-]+.*", groups = {CreateChecks.class, UpdateChecks.class})
     private String description;
 
     /**

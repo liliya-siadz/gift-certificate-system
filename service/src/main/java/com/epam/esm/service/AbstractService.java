@@ -4,7 +4,6 @@ import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.dao.Dao;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.Mapper;
-import com.epam.esm.preparator.Preparator;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -32,21 +31,15 @@ public abstract class AbstractService<T, S> implements BaseService<S> {
     private final Mapper<T, S> mapper;
 
     /**
-     * Preparator for update/create operations
-     */
-    private Preparator<S> preparator;
-
-    /**
      * Constructs <code>AbstractService</code> class
      * with passed dao, mapper and validator .
      *
      * @param dao    {@link #dao}
      * @param mapper {@link #mapper}
      */
-    public AbstractService(Dao dao, Mapper mapper, Preparator<S> preparator) {
+    public AbstractService(Dao dao, Mapper mapper) {
         this.dao = dao;
         this.mapper = mapper;
-        this.preparator = preparator;
     }
 
     @Override

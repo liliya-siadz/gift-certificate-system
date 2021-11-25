@@ -34,7 +34,7 @@ public class TagDaoImpl extends AbstractDao<TagEntity> implements TagDao {
                     + "(SELECT public.user.id FROM public.user"
                     + " JOIN public.order"
                     + " ON public.order.user_id=public.user.id"
-                    + " GROUP BY public.user.id ORDER BY sum(public.order.cost) DESC LIMIT 1 OFFSET 100)"
+                    + " GROUP BY public.user.id ORDER BY sum(public.order.cost) DESC LIMIT 1)"
                     + " GROUP BY tag.id ORDER BY count(tag.id) DESC LIMIT 1";
 
     @PersistenceContext

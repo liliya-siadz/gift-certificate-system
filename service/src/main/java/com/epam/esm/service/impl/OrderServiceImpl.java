@@ -9,7 +9,6 @@ import com.epam.esm.entity.UserEntity;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.Mapper;
 import com.epam.esm.mapper.OrderMapper;
-import com.epam.esm.preparator.Preparator;
 import com.epam.esm.service.AbstractService;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.OrderService;
@@ -43,12 +42,6 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
     private Mapper<OrderEntity, OrderClientModel> mapper;
 
     /**
-     * Preparator for update/create operations with Order
-     */
-    @Autowired
-    private Preparator<OrderClientModel> preparator;
-
-    /**
      * Service for operations with Gift Certificate .
      */
     @Autowired
@@ -62,18 +55,16 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
 
     /**
      * Constructs <code>TagServiceImpl</code> class
-     * with dao, mapper, validator, preparator and Gift Certificate service
+     * with dao, mapper, validator and Gift Certificate service
      *
      * @param dao                {@link #dao}
      * @param mapper             {@link #mapper}
-     * @param preparator         {@link #preparator}
      * @param certificateService {@link #certificateService}
      * @param userService        {@link #userService}
      */
-    public OrderServiceImpl(OrderDao dao, OrderMapper mapper, Preparator<OrderClientModel> preparator,
-                            GiftCertificateService certificateService,
+    public OrderServiceImpl(OrderDao dao, OrderMapper mapper, GiftCertificateService certificateService,
                             UserService userService) {
-        super(dao, mapper, preparator);
+        super(dao, mapper);
         this.certificateService = certificateService;
         this.userService = userService;
     }
@@ -84,7 +75,6 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
         if (model == null) {
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }
-        preparator.prepareForCreate(model);
         List<GiftCertificateClientModel> certificates = new ArrayList<>(model.getCertificates());
         model.setCost(calculateOrderCost(certificates));
         model.getCertificates().clear();

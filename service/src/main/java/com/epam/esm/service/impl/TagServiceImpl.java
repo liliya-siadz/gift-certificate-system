@@ -7,7 +7,6 @@ import com.epam.esm.exception.ResourceWithNameExistsException;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.Mapper;
 import com.epam.esm.mapper.TagMapper;
-import com.epam.esm.preparator.Preparator;
 import com.epam.esm.service.AbstractService;
 import com.epam.esm.service.ResourceNames;
 import com.epam.esm.service.TagService;
@@ -40,21 +39,13 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
     private Mapper<TagEntity, TagClientModel> mapper;
 
     /**
-     * Preparator for update/create operations with Tag
-     */
-    @Autowired
-    private Preparator<TagClientModel> preparator;
-
-    /**
-     * Constructs <code>TagServiceImpl</code> class
-     * with dao, mapper, validator and preparator.
+     * Constructs <code>TagServiceImpl</code> class with dao, mapper, validator .
      *
-     * @param dao        {@link #dao}
-     * @param mapper     {@link #mapper}
-     * @param preparator {@link #preparator}
+     * @param dao    {@link #dao}
+     * @param mapper {@link #mapper}
      */
-    public TagServiceImpl(TagDao dao, TagMapper mapper, Preparator<TagClientModel> preparator) {
-        super(dao, mapper, preparator);
+    public TagServiceImpl(TagDao dao, TagMapper mapper) {
+        super(dao, mapper);
     }
 
     @Override
@@ -63,7 +54,6 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
         if (model == null) {
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }
-        preparator.prepareForCreate(model);
         try {
             return mapper.toClientModel(dao.create(mapper.toEntity(model)));
         } catch (DataIntegrityViolationException exception) {

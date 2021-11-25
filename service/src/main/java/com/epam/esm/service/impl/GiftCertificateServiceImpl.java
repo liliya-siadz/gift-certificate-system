@@ -33,8 +33,7 @@ import java.util.Objects;
  */
 @Service
 public class GiftCertificateServiceImpl
-        extends AbstractService<GiftCertificateEntity, GiftCertificateClientModel>
-        implements GiftCertificateService {
+        extends AbstractService<GiftCertificateEntity, GiftCertificateClientModel> implements GiftCertificateService {
 
     /**
      * Dao class for repository operations .
@@ -71,8 +70,9 @@ public class GiftCertificateServiceImpl
      */
     public GiftCertificateServiceImpl(GiftCertificateDao dao, GiftCertificateMapper mapper,
                                       TagService tagService, Preparator<GiftCertificateClientModel> preparator) {
-        super(dao, mapper, preparator);
+        super(dao, mapper);
         this.tagService = tagService;
+        this.preparator = preparator;
     }
 
     @Override
@@ -81,7 +81,6 @@ public class GiftCertificateServiceImpl
         if (model == null) {
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }
-        preparator.prepareForCreate(model);
         List<TagClientModel> tags = new ArrayList<>(model.getTags());
         model.getTags().clear();
         GiftCertificateEntity giftCertificate;
