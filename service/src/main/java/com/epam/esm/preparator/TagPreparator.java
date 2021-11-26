@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 public class TagPreparator extends Preparator<TagClientModel> {
     @Override
     public void prepareForCreate(TagClientModel model) {
+        if (model == null) {
+            throw new IllegalArgumentException("Parameter 'model' is null.");
+        }
         model.setId(null);
     }
 }

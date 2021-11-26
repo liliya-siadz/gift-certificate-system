@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 public class UserPreparator extends Preparator<UserClientModel> {
     @Override
     public void prepareForCreate(UserClientModel model) {
+        if (model == null) {
+            throw new IllegalArgumentException("Parameter 'model' is null.");
+        }
         model.setId(null);
     }
 }

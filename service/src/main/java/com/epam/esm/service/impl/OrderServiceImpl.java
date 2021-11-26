@@ -52,13 +52,13 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
      * Service for operations with Gift Certificate .
      */
     @Autowired
-    private final GiftCertificateService certificateService;
+    private GiftCertificateService certificateService;
 
     /**
      * Service for operations with User .
      */
     @Autowired
-    private final UserService userService;
+    private UserService userService;
 
     /**
      * Constructs <code>TagServiceImpl</code> class

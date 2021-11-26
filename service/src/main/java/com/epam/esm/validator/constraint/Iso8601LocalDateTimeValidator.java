@@ -1,5 +1,7 @@
 package com.epam.esm.validator.constraint;
 
+import org.springframework.stereotype.Component;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;

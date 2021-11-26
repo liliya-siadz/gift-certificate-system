@@ -51,7 +51,7 @@ public class GiftCertificateServiceImpl
      * Service for operations with Tag .
      */
     @Autowired
-    private final TagService tagService;
+    private TagService tagService;
 
     /**
      * Preparator for update/create operations with Gift Certificate
@@ -116,6 +116,10 @@ public class GiftCertificateServiceImpl
         if ((id == null) || (price == null)) {
             throw new IllegalArgumentException("Parameter 'id' or 'price' is null!");
         }
+        if (!isExist(id)) {
+            throw new ResourceWithIdNotFoundException(
+                    ResourceNames.getResourceName(GiftCertificateClientModel.class),id);
+        }
         dao.updatePrice(id, price);
         return findById(id);
     }
@@ -132,11 +136,11 @@ public class GiftCertificateServiceImpl
 
     @Override
     public PageableClientModel<GiftCertificateClientModel> search(
-            List<String> tags, Integer pageSize, Integer pageNumber) {
+            List<String> tagNames, Integer pageSize, Integer pageNumber) {
         if ((pageSize == null) || (pageNumber == null)) {
             throw new IllegalArgumentException("Parameter 'pageSize' or 'pageNumber' is null.");
         }
-        return mapper.toClientModel(dao.search(tags, pageSize, pageNumber));
+        return mapper.toClientModel(dao.search(tagNames, pageSize, pageNumber));
     }
 
     @Override
