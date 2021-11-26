@@ -8,8 +8,6 @@ import com.epam.esm.entity.PageableEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -21,27 +19,19 @@ import javax.persistence.criteria.Root;
 @Repository
 public class OrderDaoImpl extends AbstractDao<OrderEntity> implements OrderDao {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     /**
      * Query builder for criteria queries .
      */
     @Autowired
     private OrderQueryBuilder queryBuilder;
 
-    private CriteriaBuilder criteriaBuilder;
-
     /**
-     * Constructs class <code>OrderDaoImpl</code>
-     * with entity manager and criteria query builder .
+     * Constructs class <code>OrderDaoImpl</code> with passed query builder .
      *
-     * @param entityManager {@link #entityManager}
-     * @param queryBuilder  {@link #queryBuilder}
+     * @param queryBuilder {@link #queryBuilder}
      */
-    public OrderDaoImpl(EntityManager entityManager, OrderQueryBuilder queryBuilder) {
-        super(entityManager, queryBuilder);
-        this.criteriaBuilder = entityManager.getCriteriaBuilder();
+    public OrderDaoImpl(OrderQueryBuilder queryBuilder) {
+        super(queryBuilder);
     }
 
     @Override
@@ -56,6 +46,7 @@ public class OrderDaoImpl extends AbstractDao<OrderEntity> implements OrderDao {
 
     @Override
     public PageableEntity<OrderEntity> findUserOrders(long id, int pageSize, int pageNumber) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderEntity> criteriaQuery = criteriaBuilder.createQuery(OrderEntity.class);
         Root<OrderEntity> order = criteriaQuery.from(OrderEntity.class);
         criteriaQuery.select(order).where(criteriaBuilder.equal(order.get("user").get("id"), id))
@@ -65,6 +56,7 @@ public class OrderDaoImpl extends AbstractDao<OrderEntity> implements OrderDao {
 
     @Override
     public OrderEntity findUserOrder(long userId, long orderId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderEntity> criteriaQuery = criteriaBuilder.createQuery(OrderEntity.class);
         Root<OrderEntity> order = criteriaQuery.from(OrderEntity.class);
         criteriaQuery.select(order).where(criteriaBuilder.equal(order.get("user").get("id"), userId))
@@ -73,6 +65,7 @@ public class OrderDaoImpl extends AbstractDao<OrderEntity> implements OrderDao {
     }
 
     private long countUserOrders(long id) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<OrderEntity> order = criteriaQuery.from(OrderEntity.class);
         criteriaQuery.select(criteriaBuilder.count(order))

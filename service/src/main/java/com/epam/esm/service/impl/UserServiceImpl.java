@@ -6,6 +6,7 @@ import com.epam.esm.entity.UserEntity;
 import com.epam.esm.exception.ResourceWithNameExistsException;
 import com.epam.esm.mapper.Mapper;
 import com.epam.esm.mapper.UserMapper;
+import com.epam.esm.preparator.Preparator;
 import com.epam.esm.service.AbstractService;
 import com.epam.esm.service.ResourceNames;
 import com.epam.esm.service.UserService;
@@ -34,6 +35,12 @@ public class UserServiceImpl extends AbstractService<UserEntity, UserClientModel
     private Mapper<UserEntity, UserClientModel> mapper;
 
     /**
+     * Preparator for preparing User client models to service operations .
+     */
+    @Autowired
+    private Preparator<UserClientModel> preparator;
+
+    /**
      * Constructs <code>UserServiceImpl</code> class with dao, mapper  .
      *
      * @param dao    {@link #dao}
@@ -50,10 +57,11 @@ public class UserServiceImpl extends AbstractService<UserEntity, UserClientModel
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }
         try {
+            preparator.prepareForCreate(model);
             return mapper.toClientModel(dao.create(mapper.toEntity(model)));
         } catch (DataIntegrityViolationException exception) {
-            throw new ResourceWithNameExistsException(ResourceNames.getResourceName(dao.getEntityClass()),
-                    model.getName(), exception);
+            throw new ResourceWithNameExistsException(
+                    ResourceNames.getResourceName(dao.getEntityClass()), model.getName(), exception);
         }
     }
 }

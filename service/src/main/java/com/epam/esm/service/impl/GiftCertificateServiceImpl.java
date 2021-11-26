@@ -61,18 +61,15 @@ public class GiftCertificateServiceImpl
 
     /**
      * Constructs <code>GiftCertificateServiceImpl</code> class
-     * with dao, mapper, validator, preparator and Tag service .
+     * with dao, mapper, validator and Tag service .
      *
      * @param dao        {@link #dao}
      * @param mapper     {@link #mapper}
      * @param tagService {@link #tagService}
-     * @param preparator {@link #preparator}
      */
-    public GiftCertificateServiceImpl(GiftCertificateDao dao, GiftCertificateMapper mapper,
-                                      TagService tagService, Preparator<GiftCertificateClientModel> preparator) {
+    public GiftCertificateServiceImpl(GiftCertificateDao dao, GiftCertificateMapper mapper, TagService tagService) {
         super(dao, mapper);
         this.tagService = tagService;
-        this.preparator = preparator;
     }
 
     @Override
@@ -81,14 +78,15 @@ public class GiftCertificateServiceImpl
         if (model == null) {
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }
+        preparator.prepareForCreate(model);
         List<TagClientModel> tags = new ArrayList<>(model.getTags());
         model.getTags().clear();
         GiftCertificateEntity giftCertificate;
         try {
             giftCertificate = dao.create(mapper.toEntity(model));
         } catch (DataIntegrityViolationException exception) {
-            throw new ResourceWithNameExistsException(ResourceNames.getResourceName(dao.getEntityClass()),
-                    model.getName(), exception);
+            throw new ResourceWithNameExistsException(
+                    ResourceNames.getResourceName(dao.getEntityClass()), model.getName(), exception);
         }
         Long id = giftCertificate.getId();
         if (!tags.isEmpty()) {

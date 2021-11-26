@@ -9,6 +9,7 @@ import com.epam.esm.entity.UserEntity;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.Mapper;
 import com.epam.esm.mapper.OrderMapper;
+import com.epam.esm.preparator.Preparator;
 import com.epam.esm.service.AbstractService;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.OrderService;
@@ -40,6 +41,12 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
      */
     @Autowired
     private Mapper<OrderEntity, OrderClientModel> mapper;
+
+    /**
+     * Preparator for preparing Order client models to service operations .
+     */
+    @Autowired
+    private Preparator<OrderClientModel> preparator;
 
     /**
      * Service for operations with Gift Certificate .
@@ -75,6 +82,7 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
         if (model == null) {
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }
+        preparator.prepareForCreate(model);
         List<GiftCertificateClientModel> certificates = new ArrayList<>(model.getCertificates());
         model.setCost(calculateOrderCost(certificates));
         model.getCertificates().clear();

@@ -8,9 +8,7 @@ import com.epam.esm.entity.TagEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -37,9 +35,6 @@ public class TagDaoImpl extends AbstractDao<TagEntity> implements TagDao {
                     + " GROUP BY public.user.id ORDER BY sum(public.order.cost) DESC LIMIT 1)"
                     + " GROUP BY tag.id ORDER BY count(tag.id) DESC LIMIT 1";
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     /**
      * Query builder for criteria queries .
      */
@@ -47,14 +42,12 @@ public class TagDaoImpl extends AbstractDao<TagEntity> implements TagDao {
     private TagQueryBuilder queryBuilder;
 
     /**
-     * Constructs class <code>TagDaoImpl</code>
-     * with entity manager and criteria query builder .
+     * Constructs class <code>TagDaoImpl</code> with passed query builder .
      *
-     * @param entityManager {@link #entityManager}
-     * @param queryBuilder  {@link #queryBuilder}
+     * @param queryBuilder {@link #queryBuilder}
      */
-    public TagDaoImpl(EntityManager entityManager, TagQueryBuilder queryBuilder) {
-        super(entityManager, queryBuilder);
+    public TagDaoImpl(TagQueryBuilder queryBuilder) {
+        super(queryBuilder);
     }
 
     @Override
