@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 public class OrderPreparator extends Preparator<OrderClientModel> {
     @Override
     public void prepareForCreate(OrderClientModel model) {
+        if (model == null) {
+            throw new IllegalArgumentException("Parameter 'model' is null.");
+        }
         model.setId(null);
     }
 }

@@ -28,7 +28,7 @@ public abstract class AbstractDao<T> implements Dao<T> {
     /**
      * Query builder for criteria queries .
      */
-    private final QueryBuilder<T> queryBuilder;
+    private QueryBuilder<T> queryBuilder;
 
     /**
      * Constructs class <code>AbstractDao</code> with passed query builder .

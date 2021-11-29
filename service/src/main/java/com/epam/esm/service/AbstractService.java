@@ -4,6 +4,7 @@ import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.dao.Dao;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.Mapper;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -16,6 +17,7 @@ import static com.epam.esm.service.ResourceNames.getResourceName;
  * @param <T> type of entity that used in class
  * @param <S> type of client model that used in class,
  */
+@Component
 public abstract class AbstractService<T, S> implements BaseService<S> {
     protected static final int DEFAULT_PAGE_SIZE = 5;
     protected static final int DEFAULT_PAGE_NUMBER = 1;
@@ -23,12 +25,12 @@ public abstract class AbstractService<T, S> implements BaseService<S> {
     /**
      * Dao class for repository operations .
      */
-    private final Dao<T> dao;
+    private Dao<T> dao;
 
     /**
      * Mapper for mapping from entity to client model and otherwise .
      */
-    private final Mapper<T, S> mapper;
+    private Mapper<T, S> mapper;
 
     /**
      * Constructs <code>AbstractService</code> class
@@ -70,6 +72,9 @@ public abstract class AbstractService<T, S> implements BaseService<S> {
     @Override
     @Transactional
     public S delete(Long id) {
+        if(id == null) {
+            throw new IllegalArgumentException("Parameter 'id' is null.");
+        }
         Optional<T> optionalEntity = dao.findById(id);
         if (!optionalEntity.isPresent()) {
             throw new ResourceWithIdNotFoundException(getResourceName(dao.getEntityClass()), id);

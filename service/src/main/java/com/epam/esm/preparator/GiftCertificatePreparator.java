@@ -22,6 +22,9 @@ public class GiftCertificatePreparator extends Preparator<GiftCertificateClientM
      */
     public void prepareForMerge(GiftCertificateClientModel currentModelState,
                                 GiftCertificateClientModel newModelState) {
+        if ((currentModelState == null) || (newModelState == null)) {
+            throw new IllegalArgumentException("Parameter 'currentModelstate' or 'newModelState' is null.");
+        }
         String newName = newModelState.getName();
         String newDescription = newModelState.getDescription();
         String newCreateDate = newModelState.getCreateDate();
@@ -46,6 +49,9 @@ public class GiftCertificatePreparator extends Preparator<GiftCertificateClientM
 
     @Override
     public void prepareForCreate(GiftCertificateClientModel model) {
+        if (model == null) {
+            throw new IllegalArgumentException("Parameter 'model' is null.");
+        }
         model.setId(null);
     }
 }
