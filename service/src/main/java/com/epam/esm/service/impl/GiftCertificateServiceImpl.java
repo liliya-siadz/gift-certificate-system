@@ -33,8 +33,7 @@ import java.util.Objects;
  */
 @Service
 public class GiftCertificateServiceImpl
-        extends AbstractService<GiftCertificateEntity, GiftCertificateClientModel>
-        implements GiftCertificateService {
+        extends AbstractService<GiftCertificateEntity, GiftCertificateClientModel> implements GiftCertificateService {
 
     /**
      * Dao class for repository operations .
@@ -62,16 +61,14 @@ public class GiftCertificateServiceImpl
 
     /**
      * Constructs <code>GiftCertificateServiceImpl</code> class
-     * with dao, mapper, validator, preparator and Tag service .
+     * with dao, mapper, validator and Tag service .
      *
      * @param dao        {@link #dao}
      * @param mapper     {@link #mapper}
      * @param tagService {@link #tagService}
-     * @param preparator {@link #preparator}
      */
-    public GiftCertificateServiceImpl(GiftCertificateDao dao, GiftCertificateMapper mapper,
-                                      TagService tagService, Preparator<GiftCertificateClientModel> preparator) {
-        super(dao, mapper, preparator);
+    public GiftCertificateServiceImpl(GiftCertificateDao dao, GiftCertificateMapper mapper, TagService tagService) {
+        super(dao, mapper);
         this.tagService = tagService;
     }
 
@@ -88,8 +85,8 @@ public class GiftCertificateServiceImpl
         try {
             giftCertificate = dao.create(mapper.toEntity(model));
         } catch (DataIntegrityViolationException exception) {
-            throw new ResourceWithNameExistsException(ResourceNames.getResourceName(dao.getEntityClass()),
-                    model.getName(), exception);
+            throw new ResourceWithNameExistsException(
+                    ResourceNames.getResourceName(dao.getEntityClass()), model.getName(), exception);
         }
         Long id = giftCertificate.getId();
         if (!tags.isEmpty()) {

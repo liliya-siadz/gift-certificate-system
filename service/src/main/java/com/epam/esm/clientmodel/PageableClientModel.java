@@ -3,6 +3,8 @@ package com.epam.esm.clientmodel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
@@ -16,7 +18,8 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class PageableClientModel<S> {
+@EqualsAndHashCode(callSuper = true)
+public class PageableClientModel<S> extends RepresentationModel<PageableClientModel<S>> {
 
     /**
      * List of elements presented on page .

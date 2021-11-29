@@ -43,7 +43,7 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
     private Mapper<OrderEntity, OrderClientModel> mapper;
 
     /**
-     * Preparator for update/create operations with Order
+     * Preparator for preparing Order client models to service operations .
      */
     @Autowired
     private Preparator<OrderClientModel> preparator;
@@ -62,18 +62,16 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
 
     /**
      * Constructs <code>TagServiceImpl</code> class
-     * with dao, mapper, validator, preparator and Gift Certificate service
+     * with dao, mapper, validator and Gift Certificate service
      *
      * @param dao                {@link #dao}
      * @param mapper             {@link #mapper}
-     * @param preparator         {@link #preparator}
      * @param certificateService {@link #certificateService}
      * @param userService        {@link #userService}
      */
-    public OrderServiceImpl(OrderDao dao, OrderMapper mapper, Preparator<OrderClientModel> preparator,
-                            GiftCertificateService certificateService,
+    public OrderServiceImpl(OrderDao dao, OrderMapper mapper, GiftCertificateService certificateService,
                             UserService userService) {
-        super(dao, mapper, preparator);
+        super(dao, mapper);
         this.certificateService = certificateService;
         this.userService = userService;
     }

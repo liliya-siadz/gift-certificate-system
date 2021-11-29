@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -16,7 +17,7 @@ import javax.validation.constraints.Pattern;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserClientModel {
+public class UserClientModel extends RepresentationModel<UserClientModel> {
 
     /**
      * Id of client model .
@@ -29,6 +30,6 @@ public class UserClientModel {
      * User's name .
      */
     @Length(min = 1, max = 200)
-    @Pattern(regexp = "[a-zA-Z]{2,}")
+    @Pattern(regexp = "[\\w\\s()-]{2,}")
     private String name;
 }

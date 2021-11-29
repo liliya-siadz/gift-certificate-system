@@ -9,8 +9,6 @@ import com.epam.esm.entity.PageableEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -27,9 +25,6 @@ import java.util.List;
 public class GiftCertificateDaoImpl extends AbstractDao<GiftCertificateEntity>
         implements GiftCertificateDao {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     /**
      * Query builder for custom criteria queries .
      */
@@ -37,20 +32,12 @@ public class GiftCertificateDaoImpl extends AbstractDao<GiftCertificateEntity>
     private GiftCertificateQueryBuilder queryBuilder;
 
     /**
-     * Criteria builder for building criteria queries
-     */
-    private CriteriaBuilder criteriaBuilder;
-
-    /**
-     * Constructs class <code>GiftCertificateDaoImpl</code>
-     * with entity manager and criteria query builder .
+     * Constructs class <code>GiftCertificateDaoImpl</code> with passed query builder .
      *
-     * @param entityManager {@link #entityManager}
-     * @param queryBuilder  {@link #queryBuilder}
+     * @param queryBuilder {@link #queryBuilder}
      */
-    public GiftCertificateDaoImpl(EntityManager entityManager, GiftCertificateQueryBuilder queryBuilder) {
-        super(entityManager, queryBuilder);
-        this.criteriaBuilder = entityManager.getCriteriaBuilder();
+    public GiftCertificateDaoImpl(GiftCertificateQueryBuilder queryBuilder) {
+        super(queryBuilder);
     }
 
     @Override
@@ -72,6 +59,7 @@ public class GiftCertificateDaoImpl extends AbstractDao<GiftCertificateEntity>
     @Override
     @Transactional
     public void updatePrice(Long id, BigDecimal price) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaUpdate<GiftCertificateEntity> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(getEntityClass());
         Root<GiftCertificateEntity> root = criteriaUpdate.from(getEntityClass());
         criteriaUpdate.set("price", price);
@@ -81,7 +69,8 @@ public class GiftCertificateDaoImpl extends AbstractDao<GiftCertificateEntity>
 
     @Override
     public PageableEntity<GiftCertificateEntity> search(List<String> tags, int pageSize, int pageNumber) {
-        CriteriaQuery<GiftCertificateEntity> searchQuery = queryBuilder.buildSearchQuery(criteriaBuilder, tags);
+        CriteriaQuery<GiftCertificateEntity> searchQuery =
+                queryBuilder.buildSearchQuery(entityManager.getCriteriaBuilder(), tags);
         return runCriteriaQuery(searchQuery, pageSize, pageNumber);
     }
 
@@ -90,7 +79,7 @@ public class GiftCertificateDaoImpl extends AbstractDao<GiftCertificateEntity>
                                                         String sortField, String sortDirection,
                                                         int pageSize, int pageNumber) {
         CriteriaQuery<GiftCertificateEntity> searchQuery = queryBuilder.buildSearchQuery(
-                criteriaBuilder, tagName, name, description, sortField, sortDirection);
+                entityManager.getCriteriaBuilder(), tagName, name, description, sortField, sortDirection);
         return runCriteriaQuery(searchQuery, pageSize, pageNumber);
     }
 

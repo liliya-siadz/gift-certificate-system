@@ -23,7 +23,7 @@ public abstract class AbstractDao<T> implements Dao<T> {
      * Entity manager for using and operation entities .
      */
     @PersistenceContext
-    private final EntityManager entityManager;
+    protected EntityManager entityManager;
 
     /**
      * Query builder for criteria queries .
@@ -31,13 +31,11 @@ public abstract class AbstractDao<T> implements Dao<T> {
     private final QueryBuilder<T> queryBuilder;
 
     /**
-     * Constructs class <code>AbstractDao</code>
-     * with passed entity manager .
+     * Constructs class <code>AbstractDao</code> with passed query builder .
      *
-     * @param entityManager {@link #entityManager}
+     * @param queryBuilder {@link #queryBuilder}
      */
-    public AbstractDao(EntityManager entityManager, QueryBuilder<T> queryBuilder) {
-        this.entityManager = entityManager;
+    public AbstractDao(QueryBuilder<T> queryBuilder) {
         this.queryBuilder = queryBuilder;
     }
 

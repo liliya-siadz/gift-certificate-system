@@ -40,21 +40,19 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
     private Mapper<TagEntity, TagClientModel> mapper;
 
     /**
-     * Preparator for update/create operations with Tag
+     * Preparator for preparing Tag client models to service operations .
      */
     @Autowired
     private Preparator<TagClientModel> preparator;
 
     /**
-     * Constructs <code>TagServiceImpl</code> class
-     * with dao, mapper, validator and preparator.
+     * Constructs <code>TagServiceImpl</code> class with dao, mapper, validator .
      *
-     * @param dao        {@link #dao}
-     * @param mapper     {@link #mapper}
-     * @param preparator {@link #preparator}
+     * @param dao    {@link #dao}
+     * @param mapper {@link #mapper}
      */
-    public TagServiceImpl(TagDao dao, TagMapper mapper, Preparator<TagClientModel> preparator) {
-        super(dao, mapper, preparator);
+    public TagServiceImpl(TagDao dao, TagMapper mapper) {
+        super(dao, mapper);
     }
 
     @Override
@@ -63,12 +61,12 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
         if (model == null) {
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }
-        preparator.prepareForCreate(model);
         try {
+            preparator.prepareForCreate(model);
             return mapper.toClientModel(dao.create(mapper.toEntity(model)));
         } catch (DataIntegrityViolationException exception) {
-            throw new ResourceWithNameExistsException(ResourceNames.getResourceName(dao.getEntityClass()),
-                    model.getName(), exception);
+            throw new ResourceWithNameExistsException(
+                    ResourceNames.getResourceName(dao.getEntityClass()), model.getName(), exception);
         }
     }
 
