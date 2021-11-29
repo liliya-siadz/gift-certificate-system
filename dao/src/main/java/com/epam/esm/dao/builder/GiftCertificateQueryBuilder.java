@@ -4,6 +4,7 @@ import com.epam.esm.entity.GiftCertificateEntity;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import java.util.List;
 
 /**
  * Criteria query builder for repository operations with Gift Certificate .
@@ -28,4 +29,14 @@ public interface GiftCertificateQueryBuilder
     CriteriaQuery<GiftCertificateEntity> buildSearchQuery(CriteriaBuilder criteriaBuilder,
                                                           String tagName, String name, String description,
                                                           String sortField, String sortDirection);
+
+    /**
+     * Builds criteria query for searching Gift Certificate entities
+     * with related passed Tags.
+     *
+     * @param criteriaBuilder criteria builder to build query
+     * @param tags            list of Tags names
+     * @return criteria query with Tags that bound to them
+     */
+    CriteriaQuery<GiftCertificateEntity> buildSearchQuery(CriteriaBuilder criteriaBuilder, List<String> tags);
 }

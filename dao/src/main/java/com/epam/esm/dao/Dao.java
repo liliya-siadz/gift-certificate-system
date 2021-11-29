@@ -22,11 +22,11 @@ public interface Dao<T> {
      * Retrieves passed quantity of entities (page size)
      * from passed page (page number), i.e. one page of entities .
      *
-     * @param pageSize page size, quantity of requested entities
+     * @param pageSize   page size, quantity of requested entities
      * @param pageNumber page number, number of requested page
      * @return one page of entities with passed quantity from passed page
      */
-    PageableEntity<T> findAll (int pageSize, int pageNumber);
+    PageableEntity<T> findAll(int pageSize, int pageNumber);
 
     /**
      * Creates new entity .
@@ -64,11 +64,4 @@ public interface Dao<T> {
      * @return array of primary key attributes .
      */
     String[] getPrimaryKeyAttributeName();
-
-    /**
-     * Retrieves quantity of all entities in database .
-     *
-     * @return quantity of all entities in database
-     */
-    Long countAll();
 }

@@ -43,4 +43,9 @@ public class GiftCertificatePreparator extends Preparator<GiftCertificateClientM
             currentModelState.setPrice(newPrice);
         }
     }
+
+    @Override
+    public void prepareForCreate(GiftCertificateClientModel model) {
+        model.setId(null);
+    }
 }

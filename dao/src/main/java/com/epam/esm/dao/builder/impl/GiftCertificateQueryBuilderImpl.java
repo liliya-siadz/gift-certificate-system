@@ -44,6 +44,25 @@ public class GiftCertificateQueryBuilderImpl implements GiftCertificateQueryBuil
         return query;
     }
 
+    @Override
+    public CriteriaQuery<GiftCertificateEntity> buildSearchQuery(
+            CriteriaBuilder criteriaBuilder, List<String> tagsNames) {
+        CriteriaQuery<GiftCertificateEntity> query = criteriaBuilder.createQuery(GiftCertificateEntity.class);
+        Root<GiftCertificateEntity> certificate = query.from(GiftCertificateEntity.class);
+        Predicate tagNamesPredicate = createSearchRestrictions(criteriaBuilder, certificate, tagsNames);
+        return query.select(certificate).where(tagNamesPredicate);
+    }
+
+    private Predicate createSearchRestrictions(CriteriaBuilder criteriaBuilder,
+                                               Root<GiftCertificateEntity> certificate,
+                                               List<String> tagNames) {
+        return tagNames.stream().map(tagName -> {
+                    Join<GiftCertificateEntity, TagEntity> tags = certificate.join("tags");
+                    return criteriaBuilder.equal(tags.get("name"), tagName);
+                })
+                .reduce(criteriaBuilder.conjunction(), criteriaBuilder::and);
+    }
+
     private Predicate[] createSearchRestrictions(CriteriaBuilder criteriaBuilder,
                                                  Root<GiftCertificateEntity> certificate,
                                                  String tagName, String name, String description) {

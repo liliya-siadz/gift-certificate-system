@@ -51,7 +51,15 @@ public interface TagService extends BaseService<TagClientModel> {
      * @param giftCertificateId id of target Gift Certificate
      * @param tags              list of Tags to execute relative to Gift Certificate
      *                          updates operations
-     * @return list of Tags that bound to target Gift Certificate
      */
     List<TagClientModel> updateNewGiftCertificateTags(Long giftCertificateId, List<TagClientModel> tags);
+
+    /**
+     * Finds most popular Tag of Top User,
+     * i.e. gets the most widely used Tag of a User with the highest cost of all Orders .
+     *
+     * @return most widely used Tag of a User with the highest cost of all Orders
+     * if Tag is present, otherwise - null
+     */
+    TagClientModel findMostPopularTag();
 }

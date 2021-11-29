@@ -20,7 +20,7 @@ public class ResourceContainsDuplicateValuesException extends RuntimeException {
      * Constructs <code>ResourceContainsDuplicateValuesException</code> class
      * with passed name of resource and information about duplicates .
      *
-     * @param resourceName {@link #resourceName}
+     * @param resourceName   {@link #resourceName}
      * @param duplicatesInfo {@link #duplicatesInfo}
      */
     public ResourceContainsDuplicateValuesException(String resourceName, String duplicatesInfo) {
@@ -39,6 +39,7 @@ public class ResourceContainsDuplicateValuesException extends RuntimeException {
 
     /**
      * Retrieves information about duplicates .
+     *
      * @return information about duplicates
      */
     public String getDuplicatesInfo() {

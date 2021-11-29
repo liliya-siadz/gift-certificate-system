@@ -2,7 +2,6 @@ package com.epam.esm.dao.builder;
 
 import com.epam.esm.entity.PageableEntity;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
@@ -20,16 +19,15 @@ public interface QueryBuilder<T> {
      * Builds criteria query for passed class of entity
      * to extract all  ordered by primary key entities of class .
      *
-     * @param entityManager        entity manager for building query
+     * @param criteriaBuilder      criteria builder for building query
      * @param entityClass          class of entity for querying
      * @param primaryKeyAttributes array of attributes names which store primary key
      * @return criteria query for selecting all entities of class
      * ordered by primary key
      */
-    default CriteriaQuery<T> buildGetAllOrderedByPkQuery(EntityManager entityManager,
+    default CriteriaQuery<T> buildGetAllOrderedByPkQuery(CriteriaBuilder criteriaBuilder,
                                                          Class<T> entityClass,
                                                          String[] primaryKeyAttributes) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(entityClass);
         Root<T> root = criteriaQuery.from(entityClass);
         Order[] orders = Arrays.stream(primaryKeyAttributes)
@@ -38,8 +36,7 @@ public interface QueryBuilder<T> {
     }
 
     /**
-     * Retrieves requested page with passed quantity of entities
-     * from passed query of entities  .
+     * Builds page of entities with passed params .
      *
      * @param pageSize      quantity of entities on page
      * @param pageNumber    page number

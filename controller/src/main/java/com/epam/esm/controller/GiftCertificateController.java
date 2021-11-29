@@ -21,14 +21,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Controller for processing REST-api requests for Gift Certificate resource .
  * <p>
  * Works with relative to application context '/gift_certificates'.
  * <p>
- * Maps GET, PUT, POST, DELETE http-requests.
+ * Maps GET, PATCH, POST, DELETE http-requests.
  * As a client model uses object of class
  * {@link GiftCertificateClientModel} .
  */
@@ -43,7 +48,7 @@ public class GiftCertificateController {
     private final GiftCertificateService service;
 
     /**
-     * Constructs controller with injected param .
+     * Constructs controller with injected Gift Certificate service .
      *
      * @param service {@link GiftCertificateController#service}
      */
@@ -62,19 +67,18 @@ public class GiftCertificateController {
      */
     @PostMapping
     public GiftCertificateClientModel create(
-            @RequestBody @Validated({IdChecks.class, CreateChecks.class})
-                    GiftCertificateClientModel certificate) {
+            @RequestBody @Validated({IdChecks.class, CreateChecks.class}) GiftCertificateClientModel certificate) {
         return service.create(certificate);
     }
 
     /**
-     * Gets all Gift Certificate resources of passed quantity from passed page .
+     * Gets all Gift Certificates resources from requested page with requested page size .
      * <p>
      * Handles GET http-request.
      *
-     * @param pageNumber page number to get Gift Certificates from
-     * @param pageSize   quantity of Gift Certificates on page (page size)
-     * @return page of Tag resources of passed quantity
+     * @param pageNumber page number to get Users from
+     * @param pageSize   quantity of Users on page (page size)
+     * @return page of  Gift Certificate resources of passed quantity
      */
     @GetMapping
     public PageableClientModel<GiftCertificateClientModel> getAll(
@@ -127,17 +131,31 @@ public class GiftCertificateController {
     }
 
     /**
-     * Searches (also could sort) passed quantity of Gift Certificate resources
-     * that fits to specified params of search from passed page .
+     * Updates price of Gift Certificate resource with specified id .
+     * <p>
+     * Handles PATCH http-request.
      *
-     * @param tagName       full name of Tag that bound to target Gift Certificate
+     * @param id    id of Gift Certificate to update
+     * @param price new value for Gift Certificate price
+     * @return Gift Certificate with updated price
+     */
+    @PatchMapping("/update-price/{id}")
+    public GiftCertificateClientModel updatePrice(@PathVariable @Range(min = 1, max = 2147483647) Long id,
+                                                  @RequestParam @NotNull @Positive BigDecimal price) {
+        return service.updatePrice(id, price);
+    }
+
+    /**
+     * Searches (also could sort) Gift Certificates resources that fit to passed parameters .
+     *
+     * @param tagName       full name of Tag that bounds to target Gift Certificate
      * @param name          part of name of target Gift Certificate
      * @param description   part of description of target Gift Certificate
      * @param sortField     property of sorting Gift Certificate
      * @param sortDirection direction of sorting Gift Certificates
-     * @param pageNumber page number to get Gift Certificates from
-     * @param pageSize   quantity of Gift Certificates on page (page size)
-     * @return fixed size page of search result
+     * @param pageNumber    page number of found result of Users
+     * @param pageSize      quantity of Users on a page (page size)
+     * @return one page of found Gift Certificates resources
      * see {@link com.epam.esm.service.GiftCertificateService#search}
      */
     @GetMapping("/search")
@@ -153,5 +171,25 @@ public class GiftCertificateController {
             @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
             @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
         return service.search(tagName, name, description, sortField, sortDirection, pageSize, pageNumber);
+    }
+
+    /**
+     * Searches Gift Certificates resources by bound Tags .
+     * <p>
+     * Handles GET http-request.
+     *
+     * @param tags       names of Tags that bound to Gift Certificates
+     * @param pageNumber page number of found result of Users
+     * @param pageSize   quantity of Users on a page (page size)
+     * @return one page of found Gift Certificates
+     * see {@link com.epam.esm.service.GiftCertificateService#search}
+     */
+    @GetMapping("/search-by-tags")
+    public PageableClientModel<GiftCertificateClientModel> searchByTags(
+            @RequestParam(required = false) @NotNull @Size(min = 1)
+                    List<@Pattern(regexp = ".*[a-zA-Z]+.*") String> tags,
+            @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
+            @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
+        return service.search(tags, pageSize, pageNumber);
     }
 }

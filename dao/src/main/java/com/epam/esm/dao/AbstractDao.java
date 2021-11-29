@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -49,17 +48,17 @@ public abstract class AbstractDao<T> implements Dao<T> {
 
     @Override
     public PageableEntity<T> findAll(int pageSize, int pageNumber) {
-        CriteriaQuery<T> getAllOrderedByPkQuery = queryBuilder.buildGetAllOrderedByPkQuery(
-                entityManager, getEntityClass(), getPrimaryKeyAttributeName());
-        TypedQuery<T> typedQuery = entityManager.createQuery(getAllOrderedByPkQuery);
-        return runTypedQuery(typedQuery, pageSize, pageNumber, countAll());
+        CriteriaQuery<T> getAllOrderedByPkQuery =
+                queryBuilder.buildGetAllOrderedByPkQuery(entityManager.getCriteriaBuilder(),
+                        getEntityClass(), getPrimaryKeyAttributeName());
+        return runCriteriaQuery(getAllOrderedByPkQuery, pageSize, pageNumber);
     }
 
     @Override
     @Transactional
     public T create(T entity) {
         entityManager.persist(entity);
-        Object id = retrieveEntityId(entity);
+        Object id = entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
         return entityManager.find(getEntityClass(), id);
     }
 
@@ -76,34 +75,23 @@ public abstract class AbstractDao<T> implements Dao<T> {
     }
 
     @Override
-    public Long countAll() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> countAllQuery = criteriaBuilder.createQuery(Long.class);
-        countAllQuery.select(criteriaBuilder.count(countAllQuery.from(getEntityClass())));
-        return entityManager.createQuery(countAllQuery).getSingleResult();
-    }
-
-    @Override
     public abstract Class<T> getEntityClass();
 
     @Override
     public abstract String[] getPrimaryKeyAttributeName();
 
     protected PageableEntity<T> runTypedQuery(TypedQuery<T> typedQuery, int pageSize, int pageNumber,
-                                 long totalEntities) {
+                                              long totalEntities) {
         PageableEntity<T> pageableEntity = queryBuilder.buildPage(pageSize, pageNumber, totalEntities);
         typedQuery.setFirstResult((pageNumber - 1) * pageSize).setMaxResults(pageSize);
         pageableEntity.setElements(typedQuery.getResultList());
         return pageableEntity;
     }
 
-    /**
-     * Retrieves id of entity .
-     *
-     * @param entity entity to extract id from
-     * @return extracted id of entity
-     */
-    protected Object retrieveEntityId(T entity) {
-        return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+    protected PageableEntity<T> runCriteriaQuery(CriteriaQuery<T> criteriaQuery, int pageSize, int pageNumber) {
+        TypedQuery<T> typedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<T> temp = entityManager.createQuery(criteriaQuery);
+        long totalSearchedEntities = temp.getResultList().size();
+        return runTypedQuery(typedQuery, pageSize, pageNumber, totalSearchedEntities);
     }
 }

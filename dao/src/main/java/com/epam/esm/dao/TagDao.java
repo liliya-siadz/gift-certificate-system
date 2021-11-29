@@ -17,6 +17,15 @@ public interface TagDao extends Dao<TagEntity> {
     List<TagEntity> findAllTagsBoundToGiftCertificate(long certificateId);
 
     /**
+     * Finds most popular Tag of Top User,
+     * i.e. gets the most widely used Tag of a User with the highest cost of all Orders .
+     *
+     * @return entity of most widely used Tag of a User with the highest cost of all Orders
+     * if Tag is present, otherwise - null
+     */
+    TagEntity findMostPopularTag();
+
+    /**
      * Creates relation between Tag and Gift Certificate,
      * if relation didn't exist .
      *
@@ -43,3 +52,4 @@ public interface TagDao extends Dao<TagEntity> {
      */
     boolean isTagBoundToGiftCertificate(long id, long giftCertificateId);
 }
+

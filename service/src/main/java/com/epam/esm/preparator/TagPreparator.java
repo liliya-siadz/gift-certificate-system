@@ -9,4 +9,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TagPreparator extends Preparator<TagClientModel> {
+    @Override
+    public void prepareForCreate(TagClientModel model) {
+        model.setId(null);
+    }
 }

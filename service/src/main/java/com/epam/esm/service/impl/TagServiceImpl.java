@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.clientmodel.TagClientModel;
-import com.epam.esm.dao.Dao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.exception.ResourceWithNameExistsException;
@@ -32,7 +31,7 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
      * Dao class for repository operations .
      */
     @Autowired
-    private Dao<TagEntity> dao;
+    private TagDao dao;
 
     /**
      * Mapper for mapping from entity to client model and otherwise .
@@ -48,13 +47,14 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
 
     /**
      * Constructs <code>TagServiceImpl</code> class
-     * with dao, mapper and validator .
+     * with dao, mapper, validator and preparator.
      *
-     * @param dao    {@link #dao}
-     * @param mapper {@link #mapper}
+     * @param dao        {@link #dao}
+     * @param mapper     {@link #mapper}
+     * @param preparator {@link #preparator}
      */
-    public TagServiceImpl(TagDao dao, TagMapper mapper) {
-        super(dao, mapper);
+    public TagServiceImpl(TagDao dao, TagMapper mapper, Preparator<TagClientModel> preparator) {
+        super(dao, mapper, preparator);
     }
 
     @Override
@@ -77,8 +77,7 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
         if (certificateId == null) {
             throw new IllegalArgumentException("Parameter 'certificateId' is null.");
         }
-        TagDao temp = (TagDao) dao;
-        return temp.findAllTagsBoundToGiftCertificate(certificateId)
+        return dao.findAllTagsBoundToGiftCertificate(certificateId)
                 .stream()
                 .map(mapper::toClientModel)
                 .collect(Collectors.toList());
@@ -126,23 +125,26 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
         return tags.stream().filter(tag -> tag.getName() != null).collect(Collectors.toList());
     }
 
+    @Override
+    public TagClientModel findMostPopularTag() {
+        return mapper.toClientModel(dao.findMostPopularTag());
+    }
+
     private void boundTagToGiftCertificate(Long id, Long certificateId) {
         if (!isExist(id)) {
-            throw new ResourceWithIdNotFoundException(TagEntity.class.getSimpleName(), id);
+            throw new ResourceWithIdNotFoundException(ResourceNames.getResourceName(TagEntity.class), id);
         }
         if (!isTagBoundToGiftCertificate(id, certificateId)) {
-            TagDao temp = (TagDao) dao;
-            temp.boundTagToGiftCertificate(id, certificateId);
+            dao.boundTagToGiftCertificate(id, certificateId);
         }
     }
 
     private void unboundTagFromGiftCertificate(Long id, Long certificateId) {
         if (!isExist(id)) {
-            throw new ResourceWithIdNotFoundException(TagEntity.class.getSimpleName(), id);
+            throw new ResourceWithIdNotFoundException(ResourceNames.getResourceName(TagEntity.class), id);
         }
         if (isTagBoundToGiftCertificate(id, certificateId)) {
-            TagDao temp = (TagDao) dao;
-            temp.unboundTagFromGiftCertificate(id, certificateId);
+            dao.unboundTagFromGiftCertificate(id, certificateId);
         }
     }
 
@@ -150,7 +152,6 @@ public class TagServiceImpl extends AbstractService<TagEntity, TagClientModel> i
         if ((id == null) || (certificateId == null)) {
             throw new IllegalArgumentException("Parameter 'id' or 'certificateId' is null.");
         }
-        TagDao temp = (TagDao) dao;
-        return temp.isTagBoundToGiftCertificate(id, certificateId);
+        return dao.isTagBoundToGiftCertificate(id, certificateId);
     }
 }
