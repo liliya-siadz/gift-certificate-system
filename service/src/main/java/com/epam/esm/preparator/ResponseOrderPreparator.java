@@ -1,6 +1,6 @@
 package com.epam.esm.preparator;
 
-import com.epam.esm.clientmodel.OrderClientModel;
+import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
  * for preparing Order client models for service operations .
  */
 @Component
-public class OrderPreparator extends Preparator<OrderClientModel> {
+public class ResponseOrderPreparator extends Preparator<ResponseOrderClientModel> {
     @Override
-    public void prepareForCreate(OrderClientModel model) {
+    public void prepareForCreate(ResponseOrderClientModel model) {
         if (model == null) {
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }

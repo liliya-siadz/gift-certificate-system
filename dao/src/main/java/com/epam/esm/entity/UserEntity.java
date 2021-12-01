@@ -7,10 +7,14 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "\"user\"")
@@ -32,4 +36,7 @@ public class UserEntity {
      */
     @Column(name = "name", unique = true, nullable = false, length = 200)
     private String name;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<OrderEntity> orders = new ArrayList<>();
 }

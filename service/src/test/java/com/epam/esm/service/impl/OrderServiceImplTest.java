@@ -1,8 +1,9 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
-import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
+import com.epam.esm.clientmodel.RequestOrderClientModel;
+import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.dao.OrderDao;
@@ -13,9 +14,12 @@ import com.epam.esm.entity.PageableEntity;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.entity.UserEntity;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
-import com.epam.esm.mapper.Mapper;
-import com.epam.esm.mapper.OrderMapperImpl;
-import com.epam.esm.preparator.OrderPreparator;
+import com.epam.esm.mapper.RequestOrderMapper;
+import com.epam.esm.mapper.RequestOrderMapperImpl;
+import com.epam.esm.mapper.ResponseOrderMapper;
+import com.epam.esm.mapper.ResponseOrderMapperImpl;
+import com.epam.esm.preparator.RequestOrderPreparator;
+import com.epam.esm.preparator.ResponseOrderPreparator;
 import com.epam.esm.preparator.Preparator;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.UserService;
@@ -40,8 +44,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {OrderDaoImpl.class, OrderMapperImpl.class, OrderPreparator.class,
-        GiftCertificateServiceImpl.class, UserServiceImpl.class})
+@SpringBootTest(classes = {OrderDaoImpl.class, ResponseOrderMapperImpl.class, ResponseOrderPreparator.class,
+        RequestOrderMapperImpl.class, RequestOrderPreparator.class, GiftCertificateServiceImpl.class,
+        UserServiceImpl.class})
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
     @InjectMocks
@@ -49,9 +54,13 @@ class OrderServiceImplTest {
     @MockBean
     private OrderDao dao;
     @Mock
-    private Mapper<OrderEntity, OrderClientModel> mapper;
+    private ResponseOrderMapper responseModelMapper;
     @Mock
-    private Preparator<OrderClientModel> preparator;
+    private RequestOrderMapper requestModelMapper;
+    @Mock
+    private Preparator<RequestOrderClientModel> preparator;
+    @Mock
+    private Preparator<ResponseOrderPreparator> responsePreparator;
     @MockBean
     private GiftCertificateService certificateService;
     @MockBean
@@ -64,22 +73,24 @@ class OrderServiceImplTest {
     private int pageSize = 3;
     private int pageNumber = 1;
 
-    private GiftCertificateClientModel certificateClientModel;
-    private GiftCertificateEntity certificateEntity;
-
-    private OrderEntity entity;
-    private OrderClientModel clientModel;
     private UserEntity entityUser;
+    private UserClientModel userClientModel;
     private List<GiftCertificateEntity> entityCertificates;
 
-    private PageableEntity<OrderEntity> entityPage;
-    private PageableClientModel<OrderClientModel> clientModelPage;
-    private UserClientModel clientModelUser;
+    private GiftCertificateClientModel certificateClientModel;
+    private GiftCertificateEntity certificateEntity;
     private List<GiftCertificateClientModel> clientCertificates;
+
+    private OrderEntity entity;
+    private PageableEntity<OrderEntity> entityPage;
+
+    private ResponseOrderClientModel clientModel;
+    private RequestOrderClientModel clientModelForCreate;
+    private PageableClientModel<ResponseOrderClientModel> clientModelPage;
 
     @BeforeEach
     void setUpEntities() {
-        entityUser = new UserEntity(userId, "Peter Johnson");
+        entityUser = UserEntity.builder().id(userId).build();
         List<TagEntity> tags = new ArrayList<>();
         TagEntity tagEntity = new TagEntity(3, "New Tag");
         tags.add(tagEntity);
@@ -102,8 +113,8 @@ class OrderServiceImplTest {
     }
 
     @BeforeEach
-    void setUpClientModels() {
-        clientModelUser = new UserClientModel(userId, "Peter Johnson");
+    void setUpClientModelForCreate() {
+        userClientModel = UserClientModel.builder().id(userId).build();
         List<TagClientModel> tags = new ArrayList<>();
         TagClientModel tag = new TagClientModel(3L, "New Tag");
         tags.add(tag);
@@ -114,11 +125,29 @@ class OrderServiceImplTest {
                 LocalDateTime.of(2021, 10, 29, 6, 12, 15, 156).toString(),
                 tags);
         clientCertificates.add(certificateClientModel);
-        clientModel = new OrderClientModel(id, clientModelUser, new BigDecimal("550.23"),
+        UserClientModel user = UserClientModel.builder().id(userId).name("User").build();
+        clientModelForCreate = new RequestOrderClientModel(id, user, new BigDecimal("550.23"),
+                LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString(),
+                clientCertificates);
+    }
+
+    @BeforeEach
+    void setUpClientModels() {
+        List<TagClientModel> tags = new ArrayList<>();
+        TagClientModel tag = new TagClientModel(3L, "New Tag");
+        tags.add(tag);
+        clientCertificates = new ArrayList<>();
+        certificateClientModel = new GiftCertificateClientModel(
+                certificateId, "Yellow Beach", "Interesting and fresh", new BigDecimal("550.23"), 10,
+                LocalDateTime.of(2021, 10, 29, 6, 12, 15, 156).toString(),
+                LocalDateTime.of(2021, 10, 29, 6, 12, 15, 156).toString(),
+                tags);
+        clientCertificates.add(certificateClientModel);
+        clientModel = new ResponseOrderClientModel(id, new BigDecimal("550.23"),
                 LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString(),
                 clientCertificates);
 
-        List<OrderClientModel> clientModelList = new ArrayList<>();
+        List<ResponseOrderClientModel> clientModelList = new ArrayList<>();
         clientModelList.add(clientModel);
         clientModelList.add(clientModel);
         clientModelList.add(clientModel);
@@ -127,46 +156,45 @@ class OrderServiceImplTest {
 
     @Test
     void createShouldReturnResult() {
-        doNothing().when(preparator).prepareForCreate(clientModel);
+        doNothing().when(preparator).prepareForCreate(clientModelForCreate);
         when(certificateService.findById(certificateId)).thenReturn(certificateClientModel);
-        when(userService.findById(userId)).thenReturn(clientModelUser);
-        when(mapper.toEntity(clientModel)).thenReturn(entity);
+        when(userService.findById(userId)).thenReturn(userClientModel);
+        when(requestModelMapper.toEntity(clientModelForCreate)).thenReturn(entity);
         when(dao.create(entity)).thenReturn(entity);
         doNothing().when(certificateService).updateNewOrderCertificates(id, clientCertificates);
         when(dao.findById(id)).thenReturn(Optional.of(entity));
-        when(mapper.toClientModel(entity)).thenReturn(clientModel);
-        assertEquals(clientModel, service.create(clientModel));
-        verify(preparator).prepareForCreate(clientModel);
+        service.create(clientModelForCreate);
+        verify(preparator).prepareForCreate(clientModelForCreate);
         verify(certificateService).findById(certificateId);
         verify(userService).findById(userId);
-        verify(mapper).toEntity(clientModel);
+        verify(requestModelMapper).toEntity(clientModelForCreate);
         verify(dao).create(entity);
         verify(dao).findById(id);
-        verify(mapper).toClientModel(entity);
     }
 
     @Test
     void createShouldThrowIllegalArgumentExceptionIfNull() {
-        assertThrows(IllegalArgumentException.class, () -> service.create(null));
+        RequestOrderClientModel orderClientModel = null;
+        assertThrows(IllegalArgumentException.class, () -> service.create(orderClientModel));
     }
 
     @Test
     void createShouldThrowResourceWithIdNotFoundIfUserNotFound() {
-        doNothing().when(preparator).prepareForCreate(clientModel);
+        doNothing().when(preparator).prepareForCreate(clientModelForCreate);
         when(certificateService.findById(certificateId)).thenReturn(certificateClientModel);
         when(userService.findById(userId)).thenThrow(ResourceWithIdNotFoundException.class);
-        assertThrows(ResourceWithIdNotFoundException.class, () -> service.create(clientModel));
-        verify(preparator).prepareForCreate(clientModel);
+        assertThrows(ResourceWithIdNotFoundException.class, () -> service.create(clientModelForCreate));
+        verify(preparator).prepareForCreate(clientModelForCreate);
         verify(certificateService).findById(certificateId);
         verify(userService).findById(userId);
     }
 
     @Test
     void createShouldThrowResourceWithIdNotFoundIfCertificateNotFound() {
-        doNothing().when(preparator).prepareForCreate(clientModel);
+        doNothing().when(preparator).prepareForCreate(clientModelForCreate);
         when(certificateService.findById(certificateId)).thenThrow(ResourceWithIdNotFoundException.class);
-        assertThrows(ResourceWithIdNotFoundException.class, () -> service.create(clientModel));
-        verify(preparator).prepareForCreate(clientModel);
+        assertThrows(ResourceWithIdNotFoundException.class, () -> service.create(clientModelForCreate));
+        verify(preparator).prepareForCreate(clientModelForCreate);
         verify(certificateService).findById(certificateId);
     }
 
@@ -196,11 +224,11 @@ class OrderServiceImplTest {
     void findUserOrdersShouldReturnResult() {
         when(userService.isExist(userId)).thenReturn(true);
         when(dao.findUserOrders(userId, pageSize, pageNumber)).thenReturn(entityPage);
-        when(mapper.toClientModel(entityPage)).thenReturn(clientModelPage);
+        when(responseModelMapper.toClientModel(entityPage)).thenReturn(clientModelPage);
         assertEquals(clientModelPage, service.findUserOrders(userId, pageSize, pageNumber));
         verify(userService).isExist(userId);
         verify(dao).findUserOrders(userId, pageSize, pageNumber);
-        verify(mapper).toClientModel(entityPage);
+        verify(responseModelMapper).toClientModel(entityPage);
     }
 
     @Test
@@ -214,14 +242,14 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void findUserShouldThrowResourceWithIdNotFoundExceptionIfUserNotFound() {
+    void findUserOrderShouldThrowResourceWithIdNotFoundExceptionIfUserNotFound() {
         when(userService.isExist(userId)).thenReturn(false);
         assertThrows(ResourceWithIdNotFoundException.class, () -> service.findUserOrder(userId, id));
         verify(userService).isExist(userId);
     }
 
     @Test
-    void findUserShouldThrowResourceWithIdNotFoundExceptionIfOrderNotFound() {
+    void findUserOrderShouldThrowResourceWithIdNotFoundExceptionIfOrderNotFound() {
         when(userService.isExist(userId)).thenReturn(true);
         when(dao.isExist(id)).thenReturn(false);
         assertThrows(ResourceWithIdNotFoundException.class, () -> service.findUserOrder(userId, id));
@@ -230,15 +258,15 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void findUserShouldReturnResult() {
+    void findUserOrderShouldReturnResult() {
         when(userService.isExist(userId)).thenReturn(true);
         when(dao.isExist(id)).thenReturn(true);
         when(dao.findUserOrder(userId, id)).thenReturn(entity);
-        when(mapper.toClientModel(entity)).thenReturn(clientModel);
+        when(responseModelMapper.toClientModel(entity)).thenReturn(clientModel);
         assertEquals(clientModel, service.findUserOrder(userId, id));
         verify(userService).isExist(userId);
         verify(dao).isExist(id);
         verify(dao).findUserOrder(userId, id);
-        verify(mapper).toClientModel(entity);
+        verify(responseModelMapper).toClientModel(entity);
     }
 }

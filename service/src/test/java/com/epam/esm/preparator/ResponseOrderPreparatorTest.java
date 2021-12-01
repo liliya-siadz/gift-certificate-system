@@ -1,7 +1,7 @@
 package com.epam.esm.preparator;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
-import com.epam.esm.clientmodel.OrderClientModel;
+import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,16 +17,16 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = OrderPreparator.class)
-class OrderPreparatorTest {
+@SpringBootTest(classes = ResponseOrderPreparator.class)
+class ResponseOrderPreparatorTest {
     @Autowired
-    private Preparator<OrderClientModel> preparator;
+    private Preparator<ResponseOrderClientModel> preparator;
 
-    private OrderClientModel order;
+    private ResponseOrderClientModel order;
 
     @BeforeEach
     private void setUp() {
-        UserClientModel user = new UserClientModel(2L, "Peter Johnson");
+        UserClientModel user = UserClientModel.builder().id(2L).name("Peter Johnson").build();
         List<TagClientModel> tags = new ArrayList<>();
         TagClientModel tag = new TagClientModel(3L, "New Tag");
         tags.add(tag);
@@ -37,9 +37,9 @@ class OrderPreparatorTest {
                 LocalDateTime.of(2021, 10, 29, 6, 12, 15, 156).toString(),
                 tags);
         certificates.add(certificate);
-        order = new OrderClientModel(1L, user, new BigDecimal("100.01"),
-                LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString(),
-                certificates);
+        order = ResponseOrderClientModel.builder().id(1L).cost(new BigDecimal("100.01"))
+                .purchaseDate(LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString())
+                .certificates(certificates).build();
     }
 
     @Test
@@ -50,7 +50,6 @@ class OrderPreparatorTest {
 
     @Test
     void prepareForCreateShouldThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> preparator.prepareForCreate(null));
+        assertThrows(IllegalArgumentException.class, () -> preparator.prepareForCreate(null));
     }
 }

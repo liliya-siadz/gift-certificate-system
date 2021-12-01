@@ -5,6 +5,7 @@ import com.epam.esm.validator.constraint.PastOrPresent;
 import com.epam.esm.validator.group.IdChecks;
 import com.epam.esm.validator.group.OrderChecks;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
@@ -20,12 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Client model of Order .
+ * Client model of Order for request .
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderClientModel extends RepresentationModel<OrderClientModel> {
+public class RequestOrderClientModel extends RepresentationModel<RequestOrderClientModel> {
 
     /**
      * Order's id.

@@ -43,14 +43,14 @@ public class GiftCertificateClientModel extends RepresentationModel<GiftCertific
      */
     @NotNull(groups = CreateChecks.class)
     @Length(min = 1, max = 200, groups = {CreateChecks.class, UpdateChecks.class})
-    @Pattern(regexp = "[\\w\\s,()-]{2,}", groups = {CreateChecks.class, UpdateChecks.class})
+    @Pattern(regexp = "[\\w\\s',&×.()-]{2,}", groups = {CreateChecks.class, UpdateChecks.class})
     private String name;
 
     /**
      * Gift Certificate's description .
      */
     @Length(min = 1, max = 2000, groups = {CreateChecks.class, UpdateChecks.class})
-    @Pattern(regexp = ".*[\\w\\s,()-]+.*", groups = {CreateChecks.class, UpdateChecks.class})
+    @Pattern(regexp = ".*[\\w\\s'&×,.()-]+.*", groups = {CreateChecks.class, UpdateChecks.class})
     private String description;
 
     /**

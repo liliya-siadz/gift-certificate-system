@@ -1,12 +1,13 @@
 package com.epam.esm.service;
 
-import com.epam.esm.clientmodel.OrderClientModel;
+import com.epam.esm.clientmodel.RequestOrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
+import com.epam.esm.clientmodel.ResponseOrderClientModel;
 
 /**
  * Presents access to service operations with Order .
  */
-public interface OrderService extends BaseService<OrderClientModel> {
+public interface OrderService extends BaseService<ResponseOrderClientModel> {
 
     /**
      * Finds all Orders for target User by id of User .
@@ -16,7 +17,7 @@ public interface OrderService extends BaseService<OrderClientModel> {
      * @param pageSize   quantity of Users on a page (page size)
      * @return one page of found Users
      */
-    PageableClientModel<OrderClientModel> findUserOrders(Long id, Integer pageSize, Integer pageNumber);
+    PageableClientModel<ResponseOrderClientModel> findUserOrders(Long id, Integer pageSize, Integer pageNumber);
 
     /**
      * Finds Order of User by id of Order and id of User .
@@ -25,5 +26,14 @@ public interface OrderService extends BaseService<OrderClientModel> {
      * @param orderId id of target Order
      * @return client model of Order that was found
      */
-    OrderClientModel findUserOrder(Long userId, Long orderId);
+    ResponseOrderClientModel findUserOrder(Long userId, Long orderId);
+
+    /**
+     * Creates Order from request client model of Order
+     * and returns response client model of Order .
+     *
+     * @param model Order model to create
+     * @return model of Order that was created
+     */
+    ResponseOrderClientModel create(RequestOrderClientModel model);
 }

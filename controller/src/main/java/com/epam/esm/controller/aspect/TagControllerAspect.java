@@ -38,8 +38,25 @@ public class TagControllerAspect {
     }
 
     /**
+     * Adds links to returning value of method {@link TagController#getAll} .
+     *
+     * @param proceedingJoinPoint joint point for method
+     * @return result of executed method with added HATEOAS links
+     * @throws Throwable if invoked method throws anything
+     */
+    @Around("execution(* com.epam.esm.controller.TagController.getAll(..)))")
+    public Object addLinksToGetAll(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        PageableClientModel<TagClientModel> page = (PageableClientModel<TagClientModel>) proceedingJoinPoint
+                .proceed(proceedingJoinPoint.getArgs());
+        page.getElements().forEach(hateoasLinker::addLinks);
+        hateoasLinker.addLinks(linkTo(methodOn(TagController.class)
+                .getAll(page.getPageSize(), page.getPageNumber())).withSelfRel(), page);
+        return page;
+    }
+
+    /**
      * Adds links to returning value of methods {@link TagController#getById}, {@link TagController#create},
-     * {@link TagController#findMostPopularTag()},
+     * {@link TagController#findMostPopularTag()} .
      *
      * @param proceedingJoinPoint joint point for method
      * @return result of executed method with added HATEOAS links
@@ -54,21 +71,5 @@ public class TagControllerAspect {
                 ((args != null) ? proceedingJoinPoint.proceed(args) : proceedingJoinPoint.proceed());
         hateoasLinker.addLinks(tag);
         return tag;
-    }
-
-    /**
-     * Adds links to returning value of method {@link TagController#getAll} .
-     *
-     * @param proceedingJoinPoint joint point for method
-     * @return result of executed method with added HATEOAS links
-     * @throws Throwable if invoked method throws anything
-     */
-    @Around("execution(* com.epam.esm.controller.TagController.getAll(..)))")
-    public Object addLinksToGetAll(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        PageableClientModel<TagClientModel> page = (PageableClientModel<TagClientModel>) proceedingJoinPoint.proceed();
-        page.getElements().forEach(hateoasLinker::addLinks);
-        hateoasLinker.addLinks(linkTo(methodOn(TagController.class)
-                .getAll(page.getPageSize(), page.getPageNumber())).withSelfRel(), page);
-        return page;
     }
 }

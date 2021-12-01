@@ -1,7 +1,7 @@
 package com.epam.esm.controller.aspect;
 
-import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
+import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.controller.UserController;
 import com.epam.esm.controller.hateoas.HateoasLinker;
@@ -66,8 +66,8 @@ public class UserControllerAspect {
             + " && args(id, pageSize, pageNumber)")
     public Object addLinksToGetUserOrders(ProceedingJoinPoint proceedingJoinPoint, Long id,
                                           Integer pageSize, Integer pageNumber) throws Throwable {
-        PageableClientModel<OrderClientModel> page =
-                (PageableClientModel<OrderClientModel>) proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
+        PageableClientModel<ResponseOrderClientModel> page = (PageableClientModel<ResponseOrderClientModel>)
+                proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         page.getElements().forEach(hateoasLinker::addLinks);
         hateoasLinker.addLinks(linkTo(methodOn(UserController.class)
                 .getUserOrders(id, pageSize, pageNumber)).withSelfRel(), page);
@@ -83,9 +83,7 @@ public class UserControllerAspect {
      */
     @Around("execution(* com.epam.esm.controller.UserController.getById(..))")
     public Object addLinks(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        Object[] args = proceedingJoinPoint.getArgs();
-        UserClientModel user = (UserClientModel)
-                ((args != null) ? proceedingJoinPoint.proceed(args) : proceedingJoinPoint.proceed());
+        UserClientModel user = (UserClientModel) proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         hateoasLinker.addLinks(user);
         return user;
     }
@@ -99,9 +97,8 @@ public class UserControllerAspect {
      */
     @Around("execution(* com.epam.esm.controller.UserController.getUserOrderById(..))")
     public Object addLinksToGetUserOrderById(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        Object[] args = proceedingJoinPoint.getArgs();
-        OrderClientModel order = (OrderClientModel)
-                ((args != null) ? proceedingJoinPoint.proceed(args) : proceedingJoinPoint.proceed());
+        ResponseOrderClientModel order = (ResponseOrderClientModel) proceedingJoinPoint
+                .proceed(proceedingJoinPoint.getArgs());
         hateoasLinker.addLinks(order);
         return order;
     }

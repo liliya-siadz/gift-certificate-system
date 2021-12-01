@@ -9,6 +9,7 @@ import com.epam.esm.mapper.Mapper;
 import com.epam.esm.mapper.UserMapperImpl;
 import com.epam.esm.preparator.Preparator;
 import com.epam.esm.preparator.UserPreparator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,8 +39,14 @@ class UserServiceImplTest {
 
     private long id = 2;
     private String name = "COOL GUY";
-    private UserClientModel clientModel = new UserClientModel(id, name);
-    private UserEntity entity = new UserEntity(id, name);
+    private UserClientModel clientModel;
+    private UserEntity entity;
+
+    @BeforeEach
+    void setUp() {
+        clientModel = UserClientModel.builder().id(id).name(name).build();
+        entity = UserEntity.builder().id(id).name(name).build();
+    }
 
     @Test
     void createShouldThrowIllegalArgumentExceptionIfNull() {
