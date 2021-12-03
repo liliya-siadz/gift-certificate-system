@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.clientmodel.OrderClientModel;
+import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.validator.group.OrderChecks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 
 /**
@@ -44,6 +47,22 @@ public class OrderController {
     }
 
     /**
+     * Gets all Order resources from target page with requested page size .
+     * <p>
+     * Handles GET http-request.
+     *
+     * @param pageNumber page number to get Orders from
+     * @param pageSize   quantity of Orders on page (page size)
+     * @return page of Order resources of passed quantity
+     */
+    @GetMapping
+    public PageableClientModel<OrderClientModel> getAll(
+            @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
+            @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
+        return service.findAll(pageSize, pageNumber);
+    }
+
+    /**
      * Creates resource Order.
      * <p>
      * Handles POST http-request.
@@ -52,7 +71,8 @@ public class OrderController {
      * @return Order that was created
      */
     @PostMapping
-    public OrderClientModel create(@RequestBody @Validated({OrderChecks.class}) OrderClientModel order) {
+    public OrderClientModel create(
+            @RequestBody @Validated({OrderChecks.class}) OrderClientModel order) {
         return service.create(order);
     }
 

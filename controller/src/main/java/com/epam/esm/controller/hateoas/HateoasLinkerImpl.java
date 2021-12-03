@@ -56,15 +56,13 @@ public class HateoasLinkerImpl implements HateoasLinker {
     @Override
     public void addLinks(OrderClientModel order) {
         order.getCertificates().forEach(this::addLinks);
-        addLinks(order.getUser());
         order.add(linkTo(OrderController.class).slash(order.getId()).withSelfRel());
     }
 
     @Override
     public void addLinks(UserClientModel user) {
-        user.add(linkTo(methodOn(UserController.class)
-                        .getUserOrders(user.getId(), 5, 1)).withRel("orders"))
-                .add(linkTo(UserController.class).slash(user.getId()).withSelfRel());
+        user.getOrders().forEach(this::addLinks);
+        user.add(linkTo(UserController.class).slash(user.getId()).withSelfRel());
     }
 
     @Override

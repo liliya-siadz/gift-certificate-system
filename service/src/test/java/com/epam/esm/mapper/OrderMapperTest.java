@@ -4,12 +4,10 @@ import com.epam.esm.clientmodel.GiftCertificateClientModel;
 import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
-import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.OrderEntity;
 import com.epam.esm.entity.PageableEntity;
 import com.epam.esm.entity.TagEntity;
-import com.epam.esm.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ public class OrderMapperTest {
     @Autowired
     private OrderMapper orderMapper;
 
+    private long userId = 5L;
     private OrderEntity entity;
     private PageableEntity<OrderEntity> entityPage;
     private OrderClientModel clientModel;
@@ -34,7 +33,6 @@ public class OrderMapperTest {
 
     @BeforeEach
     private void setUpEntities() {
-        UserEntity user = new UserEntity(2, "Peter Johnson");
         List<TagEntity> tags = new ArrayList<>();
         TagEntity tagEntity = new TagEntity(3, "New Tag");
         tags.add(tagEntity);
@@ -45,9 +43,9 @@ public class OrderMapperTest {
                 LocalDateTime.of(2021, 10, 29, 6, 12, 15, 156),
                 tags);
         certificates.add(certificate);
-        entity = new OrderEntity(1, new BigDecimal("100.01"),
-                LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156),
-                user, certificates);
+        entity = OrderEntity.builder().id(1).cost(new BigDecimal("100.01"))
+                .purchaseDate(LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156))
+                .certificates(certificates).userId(userId).build();
 
         List<OrderEntity> entityList = new ArrayList<>();
         entityList.add(entity);
@@ -58,7 +56,6 @@ public class OrderMapperTest {
 
     @BeforeEach
     public void setUpClientModels() {
-        UserClientModel user = new UserClientModel(2L, "Peter Johnson");
         List<TagClientModel> tags = new ArrayList<>();
         TagClientModel tag = new TagClientModel(3L, "New Tag");
         tags.add(tag);
@@ -69,9 +66,9 @@ public class OrderMapperTest {
                 LocalDateTime.of(2021, 10, 29, 6, 12, 15, 156).toString(),
                 tags);
         certificates.add(certificate);
-        clientModel = new OrderClientModel(1L, user, new BigDecimal("100.01"),
-                LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString(),
-                certificates);
+        clientModel = OrderClientModel.builder().id(1L).cost(new BigDecimal("100.01"))
+                .purchaseDate(LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString())
+                .certificates(certificates).userId(userId).build();
 
         List<OrderClientModel> clientModelList = new ArrayList<>();
         clientModelList.add(clientModel);

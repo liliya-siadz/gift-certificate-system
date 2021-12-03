@@ -48,8 +48,8 @@ public class GiftCertificateControllerAspect {
      */
     @Around("execution(* com.epam.esm.controller.GiftCertificateController.getAll(..)))")
     public Object addLinksToGetAll(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        PageableClientModel<GiftCertificateClientModel> page =
-                (PageableClientModel<GiftCertificateClientModel>) proceedingJoinPoint.proceed();
+        PageableClientModel<GiftCertificateClientModel> page = (PageableClientModel<GiftCertificateClientModel>)
+                proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         page.getElements().forEach(hateoasLinker::addLinks);
         hateoasLinker.addLinks(linkTo(methodOn(GiftCertificateController.class)
                 .getAll(page.getPageSize(), page.getPageNumber())).withSelfRel(), page);
@@ -76,9 +76,8 @@ public class GiftCertificateControllerAspect {
                                    String tagName, String name, String description,
                                    String sortField, String sortDirection,
                                    Integer pageSize, Integer pageNumber) throws Throwable {
-        Object[] args = proceedingJoinPoint.getArgs();
         PageableClientModel<GiftCertificateClientModel> page = (PageableClientModel<GiftCertificateClientModel>)
-                ((args != null) ? proceedingJoinPoint.proceed(args) : proceedingJoinPoint.proceed());
+                proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         page.getElements().forEach(hateoasLinker::addLinks);
         hateoasLinker.addLinks(linkTo(methodOn(GiftCertificateController.class)
                 .search(tagName, name, description, sortField, sortDirection, pageSize, pageNumber))
@@ -100,9 +99,8 @@ public class GiftCertificateControllerAspect {
             + "&& args(tags, pageSize, pageNumber)")
     public Object addLinksToSearchByTags(ProceedingJoinPoint proceedingJoinPoint, List<String> tags,
                                          Integer pageSize, Integer pageNumber) throws Throwable {
-        Object[] args = proceedingJoinPoint.getArgs();
         PageableClientModel<GiftCertificateClientModel> page = (PageableClientModel<GiftCertificateClientModel>)
-                ((args != null) ? proceedingJoinPoint.proceed(args) : proceedingJoinPoint.proceed());
+                proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         page.getElements().forEach(hateoasLinker::addLinks);
         hateoasLinker.addLinks(linkTo(methodOn(GiftCertificateController.class)
                 .searchByTags(tags, pageSize, pageNumber)).withSelfRel().expand(), page);
@@ -113,7 +111,7 @@ public class GiftCertificateControllerAspect {
      * Adds links to returning value of methods {@link GiftCertificateController#create},
      * {@link com.epam.esm.controller.GiftCertificateController#getById},
      * {@link com.epam.esm.controller.GiftCertificateController#update},
-     * {@link com.epam.esm.controller.GiftCertificateController#updatePrice}.
+     * {@link com.epam.esm.controller.GiftCertificateController#updatePrice} .
      *
      * @param proceedingJoinPoint joint point for method
      * @return result of executed method with added HATEOAS links
@@ -124,9 +122,8 @@ public class GiftCertificateControllerAspect {
             + "|| execution(* com.epam.esm.controller.GiftCertificateController.update(..))"
             + "|| execution(* com.epam.esm.controller.GiftCertificateController.updatePrice(..))")
     public Object addLinks(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        Object[] args = proceedingJoinPoint.getArgs();
-        GiftCertificateClientModel certificate = (GiftCertificateClientModel)
-                ((args != null) ? proceedingJoinPoint.proceed(args) : proceedingJoinPoint.proceed());
+        GiftCertificateClientModel certificate = (GiftCertificateClientModel) proceedingJoinPoint
+                .proceed(proceedingJoinPoint.getArgs());
         hateoasLinker.addLinks(certificate);
         return certificate;
     }

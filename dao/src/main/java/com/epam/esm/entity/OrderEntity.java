@@ -1,6 +1,7 @@
 package com.epam.esm.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -27,6 +27,7 @@ import java.util.List;
 @Entity
 @Table(name = "\"order\"")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderEntity {
@@ -51,11 +52,10 @@ public class OrderEntity {
     private LocalDateTime purchaseDate;
 
     /**
-     * Represents related User .
+     * Represents column 'user_id' .
      */
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @Column(name = "user_id", nullable = false, updatable = false)
+    private long userId;
 
     /**
      * Represents related Gift Certificates .

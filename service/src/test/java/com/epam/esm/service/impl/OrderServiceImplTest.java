@@ -13,7 +13,7 @@ import com.epam.esm.entity.PageableEntity;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.entity.UserEntity;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
-import com.epam.esm.mapper.Mapper;
+import com.epam.esm.mapper.OrderMapper;
 import com.epam.esm.mapper.OrderMapperImpl;
 import com.epam.esm.preparator.OrderPreparator;
 import com.epam.esm.preparator.Preparator;
@@ -49,7 +49,7 @@ class OrderServiceImplTest {
     @MockBean
     private OrderDao dao;
     @Mock
-    private Mapper<OrderEntity, OrderClientModel> mapper;
+    private OrderMapper mapper;
     @Mock
     private Preparator<OrderClientModel> preparator;
     @MockBean
@@ -64,22 +64,23 @@ class OrderServiceImplTest {
     private int pageSize = 3;
     private int pageNumber = 1;
 
-    private GiftCertificateClientModel certificateClientModel;
-    private GiftCertificateEntity certificateEntity;
-
-    private OrderEntity entity;
-    private OrderClientModel clientModel;
     private UserEntity entityUser;
+    private UserClientModel userClientModel;
     private List<GiftCertificateEntity> entityCertificates;
 
-    private PageableEntity<OrderEntity> entityPage;
-    private PageableClientModel<OrderClientModel> clientModelPage;
-    private UserClientModel clientModelUser;
+    private GiftCertificateClientModel certificateClientModel;
+    private GiftCertificateEntity certificateEntity;
     private List<GiftCertificateClientModel> clientCertificates;
+
+    private OrderEntity entity;
+    private PageableEntity<OrderEntity> entityPage;
+
+    private OrderClientModel clientModel;
+    private PageableClientModel<OrderClientModel> clientModelPage;
 
     @BeforeEach
     void setUpEntities() {
-        entityUser = new UserEntity(userId, "Peter Johnson");
+        entityUser = UserEntity.builder().id(userId).build();
         List<TagEntity> tags = new ArrayList<>();
         TagEntity tagEntity = new TagEntity(3, "New Tag");
         tags.add(tagEntity);
@@ -92,7 +93,7 @@ class OrderServiceImplTest {
         entityCertificates.add(certificateEntity);
         entity = new OrderEntity(id, new BigDecimal("550.23"),
                 LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156),
-                entityUser, entityCertificates);
+                userId, entityCertificates);
 
         List<OrderEntity> entityList = new ArrayList<>();
         entityList.add(entity);
@@ -103,7 +104,6 @@ class OrderServiceImplTest {
 
     @BeforeEach
     void setUpClientModels() {
-        clientModelUser = new UserClientModel(userId, "Peter Johnson");
         List<TagClientModel> tags = new ArrayList<>();
         TagClientModel tag = new TagClientModel(3L, "New Tag");
         tags.add(tag);
@@ -114,7 +114,7 @@ class OrderServiceImplTest {
                 LocalDateTime.of(2021, 10, 29, 6, 12, 15, 156).toString(),
                 tags);
         clientCertificates.add(certificateClientModel);
-        clientModel = new OrderClientModel(id, clientModelUser, new BigDecimal("550.23"),
+        clientModel = new OrderClientModel(id, userId, new BigDecimal("550.23"),
                 LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString(),
                 clientCertificates);
 
@@ -128,8 +128,8 @@ class OrderServiceImplTest {
     @Test
     void createShouldReturnResult() {
         doNothing().when(preparator).prepareForCreate(clientModel);
+        when(userService.findById(userId)).thenReturn(userClientModel);
         when(certificateService.findById(certificateId)).thenReturn(certificateClientModel);
-        when(userService.findById(userId)).thenReturn(clientModelUser);
         when(mapper.toEntity(clientModel)).thenReturn(entity);
         when(dao.create(entity)).thenReturn(entity);
         doNothing().when(certificateService).updateNewOrderCertificates(id, clientCertificates);
@@ -142,22 +142,20 @@ class OrderServiceImplTest {
         verify(mapper).toEntity(clientModel);
         verify(dao).create(entity);
         verify(dao).findById(id);
-        verify(mapper).toClientModel(entity);
     }
 
     @Test
     void createShouldThrowIllegalArgumentExceptionIfNull() {
-        assertThrows(IllegalArgumentException.class, () -> service.create(null));
+        OrderClientModel orderClientModel = null;
+        assertThrows(IllegalArgumentException.class, () -> service.create(orderClientModel));
     }
 
     @Test
     void createShouldThrowResourceWithIdNotFoundIfUserNotFound() {
         doNothing().when(preparator).prepareForCreate(clientModel);
-        when(certificateService.findById(certificateId)).thenReturn(certificateClientModel);
         when(userService.findById(userId)).thenThrow(ResourceWithIdNotFoundException.class);
         assertThrows(ResourceWithIdNotFoundException.class, () -> service.create(clientModel));
         verify(preparator).prepareForCreate(clientModel);
-        verify(certificateService).findById(certificateId);
         verify(userService).findById(userId);
     }
 
@@ -214,14 +212,14 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void findUserShouldThrowResourceWithIdNotFoundExceptionIfUserNotFound() {
+    void findUserOrderShouldThrowResourceWithIdNotFoundExceptionIfUserNotFound() {
         when(userService.isExist(userId)).thenReturn(false);
         assertThrows(ResourceWithIdNotFoundException.class, () -> service.findUserOrder(userId, id));
         verify(userService).isExist(userId);
     }
 
     @Test
-    void findUserShouldThrowResourceWithIdNotFoundExceptionIfOrderNotFound() {
+    void findUserOrderShouldThrowResourceWithIdNotFoundExceptionIfOrderNotFound() {
         when(userService.isExist(userId)).thenReturn(true);
         when(dao.isExist(id)).thenReturn(false);
         assertThrows(ResourceWithIdNotFoundException.class, () -> service.findUserOrder(userId, id));
@@ -230,7 +228,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void findUserShouldReturnResult() {
+    void findUserOrderShouldReturnResult() {
         when(userService.isExist(userId)).thenReturn(true);
         when(dao.isExist(id)).thenReturn(true);
         when(dao.findUserOrder(userId, id)).thenReturn(entity);

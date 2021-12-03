@@ -1,6 +1,7 @@
 package com.epam.esm.preparator;
 
 import com.epam.esm.clientmodel.UserClientModel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +14,12 @@ class UserPreparatorTest {
     @Autowired
     private Preparator<UserClientModel> preparator;
 
-    private UserClientModel user = new UserClientModel(555L, "Verginia Pink");
+    private UserClientModel user;
+
+    @BeforeEach
+    void setUp() {
+        user = UserClientModel.builder().id(555L).name("Verginia Pink").build();
+    }
 
     @Test
     void prepareForCreateShouldSetIdToNull() {
@@ -23,7 +29,6 @@ class UserPreparatorTest {
 
     @Test
     void prepareForCreateShouldThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> preparator.prepareForCreate(null));
+        assertThrows(IllegalArgumentException.class, () -> preparator.prepareForCreate(null));
     }
 }

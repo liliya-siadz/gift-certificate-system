@@ -26,20 +26,19 @@ class UserMapperTest {
 
     @BeforeEach
     private void setUp() {
-        entity = new UserEntity(3L, "name");
+        entity = UserEntity.builder().id(3L).name("name").build();
         List<UserEntity> entityList = new ArrayList<>();
         entityList.add(entity);
         entityList.add(entity);
         entityList.add(entity);
-        entityPage = new PageableEntity<UserEntity>(entityList, 3, 1,3, 1);
+        entityPage = new PageableEntity<>(entityList, 3, 1, 3, 1);
 
-        clientModel = new UserClientModel(3L, "name");
+        clientModel = UserClientModel.builder().id(3L).name("name").build();
         List<UserClientModel> clientModelList = new ArrayList<>();
         clientModelList.add(clientModel);
         clientModelList.add(clientModel);
         clientModelList.add(clientModel);
-        clientModelPage = new PageableClientModel<UserClientModel>(
-                clientModelList, 3, 1,3L, 1L);
+        clientModelPage = new PageableClientModel<>(clientModelList, 3, 1, 3L, 1L);
     }
 
     @Test

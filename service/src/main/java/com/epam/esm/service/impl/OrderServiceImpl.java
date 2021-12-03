@@ -28,7 +28,8 @@ import java.util.List;
  * for presenting access to service operations with Order .
  */
 @Service
-public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientModel> implements OrderService {
+public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientModel>
+        implements OrderService {
 
     /**
      * Dao class for repository operations .
@@ -37,13 +38,13 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
     private OrderDao dao;
 
     /**
-     * Mapper for mapping from entity to client model and otherwise .
+     * Mapper for mapping from entity to request client model and otherwise .
      */
     @Autowired
     private Mapper<OrderEntity, OrderClientModel> mapper;
 
     /**
-     * Preparator for preparing Order client models to service operations .
+     * Preparator for preparing Order request client models to service operations .
      */
     @Autowired
     private Preparator<OrderClientModel> preparator;
@@ -69,7 +70,8 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
      * @param certificateService {@link #certificateService}
      * @param userService        {@link #userService}
      */
-    public OrderServiceImpl(OrderDao dao, OrderMapper mapper, GiftCertificateService certificateService,
+    public OrderServiceImpl(OrderDao dao, OrderMapper mapper,
+                            GiftCertificateService certificateService,
                             UserService userService) {
         super(dao, mapper);
         this.certificateService = certificateService;
@@ -83,17 +85,19 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientMo
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }
         preparator.prepareForCreate(model);
+        long userId = model.getUserId();
+        userService.findById(userId);
         List<GiftCertificateClientModel> certificates = new ArrayList<>(model.getCertificates());
         model.setCost(calculateOrderCost(certificates));
         model.getCertificates().clear();
-        model.setUser(userService.findById(model.getUser().getId()));
         long orderId = dao.create(mapper.toEntity(model)).getId();
         certificateService.updateNewOrderCertificates(orderId, certificates);
         return findById(orderId);
     }
 
     @Override
-    public PageableClientModel<OrderClientModel> findUserOrders(Long userId, Integer pageSize, Integer pageNumber) {
+    public PageableClientModel<OrderClientModel> findUserOrders(Long userId,
+                                                                Integer pageSize, Integer pageNumber) {
         if ((userId == null) || (pageSize == null) || (pageNumber == null)) {
             throw new IllegalArgumentException("Parameter 'id' or 'pageSize' or 'pageNumber' is null.");
         }

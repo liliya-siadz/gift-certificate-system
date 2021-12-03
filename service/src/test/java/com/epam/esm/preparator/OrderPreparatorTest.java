@@ -26,7 +26,7 @@ class OrderPreparatorTest {
 
     @BeforeEach
     private void setUp() {
-        UserClientModel user = new UserClientModel(2L, "Peter Johnson");
+        UserClientModel user = UserClientModel.builder().id(2L).name("Peter Johnson").build();
         List<TagClientModel> tags = new ArrayList<>();
         TagClientModel tag = new TagClientModel(3L, "New Tag");
         tags.add(tag);
@@ -37,7 +37,7 @@ class OrderPreparatorTest {
                 LocalDateTime.of(2021, 10, 29, 6, 12, 15, 156).toString(),
                 tags);
         certificates.add(certificate);
-        order = new OrderClientModel(1L, user, new BigDecimal("100.01"),
+        order = new OrderClientModel(1L, 3L, new BigDecimal("100.01"),
                 LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString(),
                 certificates);
     }
@@ -50,7 +50,6 @@ class OrderPreparatorTest {
 
     @Test
     void prepareForCreateShouldThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> preparator.prepareForCreate(null));
+        assertThrows(IllegalArgumentException.class, () -> preparator.prepareForCreate(null));
     }
 }

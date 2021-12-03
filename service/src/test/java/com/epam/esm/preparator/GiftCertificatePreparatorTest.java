@@ -42,7 +42,6 @@ class GiftCertificatePreparatorTest {
 
     @Test
     void prepareForCreateShouldThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> preparator.prepareForCreate(null));
+        assertThrows(IllegalArgumentException.class, () -> preparator.prepareForCreate(null));
     }
 }

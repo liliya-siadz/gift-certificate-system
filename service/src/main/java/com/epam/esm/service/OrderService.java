@@ -26,4 +26,12 @@ public interface OrderService extends BaseService<OrderClientModel> {
      * @return client model of Order that was found
      */
     OrderClientModel findUserOrder(Long userId, Long orderId);
+
+    /**
+     * Creates Order from client model of Order .
+     *
+     * @param model Order model to create
+     * @return model of Order that was created
+     */
+    OrderClientModel create(OrderClientModel model);
 }
