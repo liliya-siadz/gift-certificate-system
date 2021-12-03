@@ -1,7 +1,7 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.service.impl.OrderServiceImpl;
 import com.epam.esm.service.impl.UserServiceImpl;
@@ -92,7 +92,7 @@ public class UserController {
      * @return page of Orders resources for target User
      */
     @GetMapping("/{id}/orders")
-    public PageableClientModel<ResponseOrderClientModel> getUserOrders(
+    public PageableClientModel<OrderClientModel> getUserOrders(
             @PathVariable @NotNull @Positive Long id,
             @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
             @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
@@ -109,7 +109,7 @@ public class UserController {
      * @return Order that was found
      */
     @GetMapping("/{userId}/orders/{orderId}")
-    public ResponseOrderClientModel getUserOrderById(
+    public OrderClientModel getUserOrderById(
             @PathVariable @NotNull @Positive Long userId,
             @PathVariable @NotNull @Positive Long orderId) {
         return orderService.findUserOrder(userId, orderId);

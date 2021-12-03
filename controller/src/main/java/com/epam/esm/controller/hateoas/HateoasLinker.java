@@ -1,9 +1,8 @@
 package com.epam.esm.controller.hateoas;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.clientmodel.RequestOrderClientModel;
-import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import org.springframework.hateoas.Link;
@@ -29,18 +28,11 @@ public interface HateoasLinker {
     void addLinks(TagClientModel tag);
 
     /**
-     * Adds links to client model type of {@link RequestOrderClientModel} .
+     * Adds links to client model type of {@link OrderClientModel} .
      *
      * @param order current client model of Order resource to add links
      */
-    void addLinks(RequestOrderClientModel order);
-
-    /**
-     * Adds links to client model type of {@link ResponseOrderClientModel} .
-     *
-     * @param order current client model of Order resource to add links
-     */
-    void addLinks(ResponseOrderClientModel order);
+    void addLinks(OrderClientModel order);
 
     /**
      * Adds links to client model type of {@link UserClientModel} .

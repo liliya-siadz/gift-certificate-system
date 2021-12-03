@@ -49,7 +49,7 @@ public class OrderDaoImpl extends AbstractDao<OrderEntity> implements OrderDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderEntity> criteriaQuery = criteriaBuilder.createQuery(OrderEntity.class);
         Root<OrderEntity> order = criteriaQuery.from(OrderEntity.class);
-        criteriaQuery.select(order).where(criteriaBuilder.equal(order.get("user").get("id"), id))
+        criteriaQuery.select(order).where(criteriaBuilder.equal(order.get("userId"), id))
                 .orderBy(criteriaBuilder.asc(order.get("id")));
         return runTypedQuery(entityManager.createQuery(criteriaQuery), pageSize, pageNumber, countUserOrders(id));
     }
@@ -59,7 +59,7 @@ public class OrderDaoImpl extends AbstractDao<OrderEntity> implements OrderDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderEntity> criteriaQuery = criteriaBuilder.createQuery(OrderEntity.class);
         Root<OrderEntity> order = criteriaQuery.from(OrderEntity.class);
-        criteriaQuery.select(order).where(criteriaBuilder.equal(order.get("user").get("id"), userId))
+        criteriaQuery.select(order).where(criteriaBuilder.equal(order.get("userId"), userId))
                 .where(criteriaBuilder.equal(order.get("id"), orderId));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
@@ -69,7 +69,7 @@ public class OrderDaoImpl extends AbstractDao<OrderEntity> implements OrderDao {
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<OrderEntity> order = criteriaQuery.from(OrderEntity.class);
         criteriaQuery.select(criteriaBuilder.count(order))
-                .where(criteriaBuilder.equal(order.get("user").get("id"), id));
+                .where(criteriaBuilder.equal(order.get("userId"), id));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 }

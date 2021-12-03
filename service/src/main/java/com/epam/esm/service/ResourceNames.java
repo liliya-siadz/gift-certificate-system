@@ -1,8 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
-import com.epam.esm.clientmodel.RequestOrderClientModel;
-import com.epam.esm.clientmodel.ResponseOrderClientModel;
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.entity.GiftCertificateEntity;
@@ -30,8 +29,7 @@ public class ResourceNames {
         resourceNames.put(TagEntity.class, "Tag");
         resourceNames.put(UserClientModel.class, "User");
         resourceNames.put(UserEntity.class, "User");
-        resourceNames.put(RequestOrderClientModel.class, "Order");
-        resourceNames.put(ResponseOrderClientModel.class, "Order");
+        resourceNames.put(OrderClientModel.class, "Order");
         resourceNames.put(OrderEntity.class, "Order");
     }
 

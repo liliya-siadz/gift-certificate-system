@@ -40,5 +40,5 @@ public class UserClientModel extends RepresentationModel<UserClientModel> {
     /**
      * User's orders .
      */
-    private List<ResponseOrderClientModel> orders = new ArrayList<>();
+    private List<OrderClientModel> orders = new ArrayList<>();
 }

@@ -1,7 +1,7 @@
 package com.epam.esm.preparator;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
-import com.epam.esm.clientmodel.ResponseOrderClientModel;
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,12 +17,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = ResponseOrderPreparator.class)
-class ResponseOrderPreparatorTest {
+@SpringBootTest(classes = OrderPreparator.class)
+class OrderPreparatorTest {
     @Autowired
-    private Preparator<ResponseOrderClientModel> preparator;
+    private Preparator<OrderClientModel> preparator;
 
-    private ResponseOrderClientModel order;
+    private OrderClientModel order;
 
     @BeforeEach
     private void setUp() {
@@ -37,9 +37,9 @@ class ResponseOrderPreparatorTest {
                 LocalDateTime.of(2021, 10, 29, 6, 12, 15, 156).toString(),
                 tags);
         certificates.add(certificate);
-        order = ResponseOrderClientModel.builder().id(1L).cost(new BigDecimal("100.01"))
-                .purchaseDate(LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString())
-                .certificates(certificates).build();
+        order = new OrderClientModel(1L, 3L, new BigDecimal("100.01"),
+                LocalDateTime.of(2020, 8, 29, 6, 12, 15, 156).toString(),
+                certificates);
     }
 
     @Test

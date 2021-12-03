@@ -27,7 +27,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestOrderClientModel extends RepresentationModel<RequestOrderClientModel> {
+public class OrderClientModel extends RepresentationModel<OrderClientModel> {
 
     /**
      * Order's id.
@@ -36,11 +36,11 @@ public class RequestOrderClientModel extends RepresentationModel<RequestOrderCli
     private Long id;
 
     /**
-     * Order's user .
+     * User's id of order .
      */
     @NotNull(groups = OrderChecks.class)
-    @Valid
-    private UserClientModel user;
+    @Range(min = 1, max = 2147483647, groups = OrderChecks.class)
+    private Long userId;
 
     /**
      * Order's price .

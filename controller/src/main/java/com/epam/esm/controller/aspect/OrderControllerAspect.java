@@ -1,7 +1,7 @@
 package com.epam.esm.controller.aspect;
 
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.controller.OrderController;
 import com.epam.esm.controller.hateoas.HateoasLinker;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -46,7 +46,7 @@ public class OrderControllerAspect {
      */
     @Around("execution(* com.epam.esm.controller.OrderController.getAll(..)))")
     public Object addLinksToGetAll(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        PageableClientModel<ResponseOrderClientModel> page = (PageableClientModel<ResponseOrderClientModel>)
+        PageableClientModel<OrderClientModel> page = (PageableClientModel<OrderClientModel>)
                 proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         page.getElements().forEach(hateoasLinker::addLinks);
         hateoasLinker.addLinks(linkTo(methodOn(OrderController.class)
@@ -65,8 +65,7 @@ public class OrderControllerAspect {
     @Around("execution(* com.epam.esm.controller.OrderController.getById(..))"
             + "|| execution(* com.epam.esm.controller.OrderController.create(..))")
     public Object addLinksToResponseModel(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        ResponseOrderClientModel order = (ResponseOrderClientModel)
-                proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
+        OrderClientModel order = (OrderClientModel) proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         hateoasLinker.addLinks(order);
         return order;
     }

@@ -1,7 +1,7 @@
 package com.epam.esm.controller.aspect;
 
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.controller.UserController;
 import com.epam.esm.controller.hateoas.HateoasLinker;
@@ -66,7 +66,7 @@ public class UserControllerAspect {
             + " && args(id, pageSize, pageNumber)")
     public Object addLinksToGetUserOrders(ProceedingJoinPoint proceedingJoinPoint, Long id,
                                           Integer pageSize, Integer pageNumber) throws Throwable {
-        PageableClientModel<ResponseOrderClientModel> page = (PageableClientModel<ResponseOrderClientModel>)
+        PageableClientModel<OrderClientModel> page = (PageableClientModel<OrderClientModel>)
                 proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         page.getElements().forEach(hateoasLinker::addLinks);
         hateoasLinker.addLinks(linkTo(methodOn(UserController.class)
@@ -97,7 +97,7 @@ public class UserControllerAspect {
      */
     @Around("execution(* com.epam.esm.controller.UserController.getUserOrderById(..))")
     public Object addLinksToGetUserOrderById(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        ResponseOrderClientModel order = (ResponseOrderClientModel) proceedingJoinPoint
+        OrderClientModel order = (OrderClientModel) proceedingJoinPoint
                 .proceed(proceedingJoinPoint.getArgs());
         hateoasLinker.addLinks(order);
         return order;

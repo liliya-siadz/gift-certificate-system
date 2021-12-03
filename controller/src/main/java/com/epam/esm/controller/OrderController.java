@@ -1,8 +1,7 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.clientmodel.RequestOrderClientModel;
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.validator.group.OrderChecks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import javax.validation.constraints.Positive;
  * <p>
  * Maps GET http-requests.
  * As a client model uses object of class
- * {@link RequestOrderClientModel} .
+ * {@link OrderClientModel} .
  */
 @RestController
 @Validated
@@ -57,7 +56,7 @@ public class OrderController {
      * @return page of Order resources of passed quantity
      */
     @GetMapping
-    public PageableClientModel<ResponseOrderClientModel> getAll(
+    public PageableClientModel<OrderClientModel> getAll(
             @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
             @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
         return service.findAll(pageSize, pageNumber);
@@ -72,8 +71,8 @@ public class OrderController {
      * @return Order that was created
      */
     @PostMapping
-    public ResponseOrderClientModel create(
-            @RequestBody @Validated({OrderChecks.class}) RequestOrderClientModel order) {
+    public OrderClientModel create(
+            @RequestBody @Validated({OrderChecks.class}) OrderClientModel order) {
         return service.create(order);
     }
 
@@ -86,7 +85,7 @@ public class OrderController {
      * @return Order that was found
      */
     @GetMapping("/{id}")
-    public ResponseOrderClientModel getById(@PathVariable @Positive Long id) {
+    public OrderClientModel getById(@PathVariable @Positive Long id) {
         return service.findById(id);
     }
 }

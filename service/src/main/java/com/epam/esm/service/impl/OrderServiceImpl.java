@@ -1,15 +1,14 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
-import com.epam.esm.clientmodel.RequestOrderClientModel;
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.dao.OrderDao;
 import com.epam.esm.entity.OrderEntity;
 import com.epam.esm.entity.UserEntity;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.Mapper;
-import com.epam.esm.mapper.ResponseOrderMapper;
+import com.epam.esm.mapper.OrderMapper;
 import com.epam.esm.preparator.Preparator;
 import com.epam.esm.service.AbstractService;
 import com.epam.esm.service.GiftCertificateService;
@@ -29,7 +28,7 @@ import java.util.List;
  * for presenting access to service operations with Order .
  */
 @Service
-public class OrderServiceImpl extends AbstractService<OrderEntity, ResponseOrderClientModel>
+public class OrderServiceImpl extends AbstractService<OrderEntity, OrderClientModel>
         implements OrderService {
 
     /**
@@ -42,25 +41,13 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, ResponseOrder
      * Mapper for mapping from entity to request client model and otherwise .
      */
     @Autowired
-    private Mapper<OrderEntity, RequestOrderClientModel> requestModelMapper;
-
-    /**
-     * Mapper for mapping from entity to response client model and otherwise .
-     */
-    @Autowired
-    private Mapper<OrderEntity, ResponseOrderClientModel> responseModelMapper;
+    private Mapper<OrderEntity, OrderClientModel> mapper;
 
     /**
      * Preparator for preparing Order request client models to service operations .
      */
     @Autowired
-    private Preparator<RequestOrderClientModel> preparator;
-
-    /**
-     * Preparator for preparing Order response client models to service operations .
-     */
-    @Autowired
-    private Preparator<ResponseOrderClientModel> responsePreparator;
+    private Preparator<OrderClientModel> preparator;
 
     /**
      * Service for operations with Gift Certificate .
@@ -78,49 +65,50 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, ResponseOrder
      * Constructs <code>TagServiceImpl</code> class
      * with dao, mapper, validator and Gift Certificate service
      *
-     * @param dao                 {@link #dao}
-     * @param responseModelMapper {@link #responseModelMapper}
-     * @param certificateService  {@link #certificateService}
-     * @param userService         {@link #userService}
+     * @param dao                {@link #dao}
+     * @param mapper             {@link #mapper}
+     * @param certificateService {@link #certificateService}
+     * @param userService        {@link #userService}
      */
-    public OrderServiceImpl(OrderDao dao, ResponseOrderMapper responseModelMapper,
+    public OrderServiceImpl(OrderDao dao, OrderMapper mapper,
                             GiftCertificateService certificateService,
                             UserService userService) {
-        super(dao, responseModelMapper);
+        super(dao, mapper);
         this.certificateService = certificateService;
         this.userService = userService;
     }
 
     @Override
     @Transactional
-    public ResponseOrderClientModel create(RequestOrderClientModel model) {
+    public OrderClientModel create(OrderClientModel model) {
         if (model == null) {
             throw new IllegalArgumentException("Parameter 'model' is null.");
         }
         preparator.prepareForCreate(model);
+        long userId = model.getUserId();
+        userService.findById(userId);
         List<GiftCertificateClientModel> certificates = new ArrayList<>(model.getCertificates());
         model.setCost(calculateOrderCost(certificates));
         model.getCertificates().clear();
-        model.setUser(userService.findById(model.getUser().getId()));
-        long orderId = dao.create(requestModelMapper.toEntity(model)).getId();
+        long orderId = dao.create(mapper.toEntity(model)).getId();
         certificateService.updateNewOrderCertificates(orderId, certificates);
         return findById(orderId);
     }
 
     @Override
-    public PageableClientModel<ResponseOrderClientModel> findUserOrders(Long userId,
-                                                                        Integer pageSize, Integer pageNumber) {
+    public PageableClientModel<OrderClientModel> findUserOrders(Long userId,
+                                                                Integer pageSize, Integer pageNumber) {
         if ((userId == null) || (pageSize == null) || (pageNumber == null)) {
             throw new IllegalArgumentException("Parameter 'id' or 'pageSize' or 'pageNumber' is null.");
         }
         if (!userService.isExist(userId)) {
             throw new ResourceWithIdNotFoundException(ResourceNames.getResourceName(UserEntity.class), userId);
         }
-        return responseModelMapper.toClientModel(dao.findUserOrders(userId, pageSize, pageNumber));
+        return mapper.toClientModel(dao.findUserOrders(userId, pageSize, pageNumber));
     }
 
     @Override
-    public ResponseOrderClientModel findUserOrder(Long userId, Long orderId) {
+    public OrderClientModel findUserOrder(Long userId, Long orderId) {
         if ((userId == null) || (orderId == null)) {
             throw new IllegalArgumentException("Parameter 'userId' or 'orderId' is null.");
         }
@@ -130,22 +118,7 @@ public class OrderServiceImpl extends AbstractService<OrderEntity, ResponseOrder
         if (!isExist(orderId)) {
             throw new ResourceWithIdNotFoundException(ResourceNames.getResourceName(OrderEntity.class), orderId);
         }
-        return responseModelMapper.toClientModel(dao.findUserOrder(userId, orderId));
-    }
-
-    @Override
-    @Transactional
-    public ResponseOrderClientModel create(ResponseOrderClientModel model) {
-        if (model == null) {
-            throw new IllegalArgumentException("Parameter 'model' is null.");
-        }
-        responsePreparator.prepareForCreate(model);
-        List<GiftCertificateClientModel> certificates = new ArrayList<>(model.getCertificates());
-        model.setCost(calculateOrderCost(certificates));
-        model.getCertificates().clear();
-        long orderId = dao.create(responseModelMapper.toEntity(model)).getId();
-        certificateService.updateNewOrderCertificates(orderId, certificates);
-        return findById(orderId);
+        return mapper.toClientModel(dao.findUserOrder(userId, orderId));
     }
 
     private BigDecimal calculateOrderCost(List<GiftCertificateClientModel> certificates) {

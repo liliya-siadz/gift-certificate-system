@@ -1,9 +1,8 @@
 package com.epam.esm.controller.hateoas;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
+import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.clientmodel.RequestOrderClientModel;
-import com.epam.esm.clientmodel.ResponseOrderClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.controller.GiftCertificateController;
@@ -55,13 +54,7 @@ public class HateoasLinkerImpl implements HateoasLinker {
     }
 
     @Override
-    public void addLinks(RequestOrderClientModel order) {
-        order.getCertificates().forEach(this::addLinks);
-        order.add(linkTo(OrderController.class).slash(order.getId()).withSelfRel());
-    }
-
-    @Override
-    public void addLinks(ResponseOrderClientModel order) {
+    public void addLinks(OrderClientModel order) {
         order.getCertificates().forEach(this::addLinks);
         order.add(linkTo(OrderController.class).slash(order.getId()).withSelfRel());
     }
