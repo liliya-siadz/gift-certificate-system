@@ -1,159 +1,170 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.clientmodel.GiftCertificateClientModel;
+import com.epam.esm.clientmodel.PageableClientModel;
+import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.exception.ResourceWithNameIsExistException;
+import com.epam.esm.dao.builder.sort.UnknownSortFieldException;
+import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
+import com.epam.esm.exception.ResourceWithNameExistsException;
 import com.epam.esm.exception.UnknownSortParamException;
-import com.epam.esm.mapper.GiftCertificateModelMapper;
-import com.epam.esm.model.GiftCertificateClientModel;
-import com.epam.esm.model.TagClientModel;
+import com.epam.esm.mapper.GiftCertificateMapper;
+import com.epam.esm.mapper.Mapper;
+import com.epam.esm.preparator.GiftCertificatePreparator;
+import com.epam.esm.preparator.Preparator;
+import com.epam.esm.service.AbstractService;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.ResourceNames;
 import com.epam.esm.service.TagService;
-import com.epam.esm.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * Implementation of {@link GiftCertificateService} interface,
  * for presenting access to service operations with Gift Certificate .
  */
 @Service
-public class GiftCertificateServiceImpl implements GiftCertificateService {
+public class GiftCertificateServiceImpl
+        extends AbstractService<GiftCertificateEntity, GiftCertificateClientModel> implements GiftCertificateService {
 
     /**
-     * Dao for repository operations with table 'gift_certificate' .
+     * Dao class for repository operations .
      */
-    private final GiftCertificateDao dao;
+    @Autowired
+    private GiftCertificateDao dao;
+
+    /**
+     * Mapper for mapping from entity to client model and otherwise .
+     */
+    @Autowired
+    private Mapper<GiftCertificateEntity, GiftCertificateClientModel> mapper;
 
     /**
      * Service for operations with Tag .
      */
-    private final TagService tagService;
+    @Autowired
+    private TagService tagService;
 
     /**
-     * Mapper from Gift Certificate entity model
-     * to Gift Certificate client model and otherwise .
-     */
-    private final GiftCertificateModelMapper modelMapper;
-
-    /**
-     * Validator for client model of Gift Certificate .
-     */
-    private final Validator<GiftCertificateClientModel> validator;
-
-    /**
-     * Constructs service with injected params .
-     *
-     * @param dao         {@link #dao}
-     * @param tagService  {@link #tagService}
-     * @param modelMapper {@link #modelMapper}
-     * @param validator   {@link #validator}
+     * Preparator for update/create operations with Gift Certificate
      */
     @Autowired
-    public GiftCertificateServiceImpl(
-            GiftCertificateDao dao,
-            TagService tagService, GiftCertificateModelMapper modelMapper,
-            @Qualifier("giftCertificateValidator") Validator<GiftCertificateClientModel> validator) {
-        this.dao = dao;
+    private Preparator<GiftCertificateClientModel> preparator;
+
+    /**
+     * Constructs <code>GiftCertificateServiceImpl</code> class
+     * with dao, mapper, validator and Tag service .
+     *
+     * @param dao        {@link #dao}
+     * @param mapper     {@link #mapper}
+     * @param tagService {@link #tagService}
+     */
+    public GiftCertificateServiceImpl(GiftCertificateDao dao, GiftCertificateMapper mapper, TagService tagService) {
+        super(dao, mapper);
         this.tagService = tagService;
-        this.modelMapper = modelMapper;
-        this.validator = validator;
     }
 
     @Override
     @Transactional
-    public GiftCertificateClientModel create(GiftCertificateClientModel clientModel) {
-        if (clientModel == null) {
-            throw new IllegalArgumentException("Parameter 'clientModel' is null!");
+    public GiftCertificateClientModel create(GiftCertificateClientModel model) {
+        if (model == null) {
+            throw new IllegalArgumentException("Parameter 'model' is null.");
         }
-        validator.validateForCreate(clientModel);
+        preparator.prepareForCreate(model);
+        List<TagClientModel> tags = new ArrayList<>(model.getTags());
+        model.getTags().clear();
+        GiftCertificateEntity giftCertificate;
         try {
-            long generatedId = dao.create(modelMapper.toEntity(clientModel));
-            List<TagClientModel> tags = clientModel.getTags();
-            if (tags != null) {
-                tagService.updateNewGiftCertificateTags(generatedId, tags);
-            }
-            return findById(generatedId);
-        } catch (DuplicateKeyException exception) {
-            throw new ResourceWithNameIsExistException("Gift Certificate", clientModel.getName(), exception);
+            giftCertificate = dao.create(mapper.toEntity(model));
+        } catch (DataIntegrityViolationException exception) {
+            throw new ResourceWithNameExistsException(
+                    ResourceNames.getResourceName(dao.getEntityClass()), model.getName(), exception);
         }
-    }
-
-    @Override
-    public List<GiftCertificateClientModel> findAll() {
-        return dao.findAll().stream()
-                .map(modelMapper::toClientModel)
-                .peek(giftCertificate -> giftCertificate.setTags(
-                        tagService.findAllTagsBoundToGiftCertificate(giftCertificate.getId())))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public GiftCertificateClientModel findById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Gift certificate's id is null!");
+        Long id = giftCertificate.getId();
+        if (!tags.isEmpty()) {
+            tagService.updateNewGiftCertificateTags(id, tags);
         }
-        if (dao.isExist(id)) {
-            GiftCertificateClientModel clientModel =
-                    modelMapper.toClientModel(dao.findById(id).get());
-            clientModel.setTags(tagService.findAllTagsBoundToGiftCertificate(id));
-            return clientModel;
-        } else {
-            throw new ResourceWithIdNotFoundException("Gift certificate", id);
-        }
-    }
-
-    @Override
-    public GiftCertificateClientModel delete(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Gift certificate's id is null!");
-        }
-        if (dao.isExist(id)) {
-            GiftCertificateClientModel clientModel = findById(id);
-            dao.delete(id);
-            return clientModel;
-        } else {
-            throw new ResourceWithIdNotFoundException("Gift certificate", id);
-        }
+        return findById(id);
     }
 
     @Override
     @Transactional
-    public GiftCertificateClientModel update(Long id, GiftCertificateClientModel clientModel) {
-        if (id == null) {
-            throw new IllegalArgumentException("Gift certificate's id is null!");
+    public GiftCertificateClientModel update(Long id, GiftCertificateClientModel newModel) {
+        if ((newModel == null) || (id == null)) {
+            throw new IllegalArgumentException("Parameter 'newModel' or 'id' is null.");
         }
-        if (dao.isExist(id)) {
-            validator.validateForUpdate(clientModel);
-            dao.update(id, modelMapper.toEntity(clientModel));
-            List<TagClientModel> tagsForUpdate = clientModel.getTags();
-            if (tagsForUpdate != null) {
-                tagService.updateExistingGiftCertificateTags(id, tagsForUpdate);
-            }
-            clientModel = findById(id);
-            return clientModel;
-        } else {
-            throw new ResourceWithIdNotFoundException("Gift certificate", id);
+        GiftCertificateClientModel model = findById(id);
+        ((GiftCertificatePreparator) preparator).prepareForMerge(model, newModel);
+        dao.update(mapper.toEntity(model));
+        List<TagClientModel> tags = newModel.getTags();
+        if (tags != null) {
+            tagService.updateExistingGiftCertificateTags(id, tags);
         }
+        return findById(id);
     }
 
     @Override
-    public List<GiftCertificateClientModel> search(
-            String tagName, String name, String description, String sort) {
+    public GiftCertificateClientModel updatePrice(Long id, BigDecimal price) {
+        if ((id == null) || (price == null)) {
+            throw new IllegalArgumentException("Parameter 'id' or 'price' is null!");
+        }
+        if (!isExist(id)) {
+            throw new ResourceWithIdNotFoundException(
+                    ResourceNames.getResourceName(GiftCertificateClientModel.class),id);
+        }
+        dao.updatePrice(id, price);
+        return findById(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateNewOrderCertificates(Long orderId, List<GiftCertificateClientModel> certificates) {
+        if ((orderId == null) || (certificates == null) || (certificates.stream().anyMatch(Objects::isNull))) {
+            throw new IllegalArgumentException(
+                    "Parameter 'orderId' or 'certificates' is null, or list 'certificates' contains null value.");
+        }
+        certificates.forEach(certificate -> boundCertificateToOrder(certificate.getId(), orderId));
+    }
+
+    @Override
+    public PageableClientModel<GiftCertificateClientModel> search(
+            List<String> tagNames, Integer pageSize, Integer pageNumber) {
+        if ((pageSize == null) || (pageNumber == null)) {
+            throw new IllegalArgumentException("Parameter 'pageSize' or 'pageNumber' is null.");
+        }
+        return mapper.toClientModel(dao.search(tagNames, pageSize, pageNumber));
+    }
+
+    @Override
+    public PageableClientModel<GiftCertificateClientModel> search(String tagName, String name, String description,
+                                                                  String sortField, String sortDirection,
+                                                                  Integer pageSize, Integer pageNumber) {
+        if ((pageSize == null) || (pageNumber == null)) {
+            throw new IllegalArgumentException("Parameter 'pageSize' or 'pageNumber' is null.");
+        }
         try {
-            return dao.search(tagName, name, description, sort).stream()
-                    .map(modelMapper::toClientModel)
-                    .peek(giftCertificate -> giftCertificate.setTags(
-                            tagService.findAllTagsBoundToGiftCertificate(giftCertificate.getId())))
-                    .collect(Collectors.toList());
+            return mapper.toClientModel(dao.search(
+                    tagName, name, description, sortField, sortDirection, pageSize, pageNumber));
         } catch (EnumConstantNotPresentException exception) {
-            throw new UnknownSortParamException(sort);
+            throw new UnknownSortParamException(exception.constantName());
+        } catch (UnknownSortFieldException exception) {
+            throw new UnknownSortParamException(exception.getSortFieldValue());
         }
+    }
+
+    private void boundCertificateToOrder(Long certificateId, Long orderId) {
+        if (!isExist(certificateId)) {
+            throw new ResourceWithIdNotFoundException(
+                    ResourceNames.getResourceName(GiftCertificateEntity.class), certificateId);
+        }
+        dao.boundCertificateToOrder(certificateId, orderId);
     }
 }

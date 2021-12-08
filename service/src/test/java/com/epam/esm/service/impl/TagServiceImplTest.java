@@ -1,343 +1,381 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.configuration.TestServiceConfiguration;
+import com.epam.esm.clientmodel.PageableClientModel;
+import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.exception.InvalidFieldValueException;
+import com.epam.esm.dao.impl.TagDaoImpl;
+import com.epam.esm.entity.PageableEntity;
+import com.epam.esm.entity.TagEntity;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
-import com.epam.esm.mapper.TagModelMapper;
-import com.epam.esm.model.TagClientModel;
-import com.epam.esm.model.TagEntityModel;
-import com.epam.esm.validator.Validator;
+import com.epam.esm.exception.ResourceWithNameExistsException;
+import com.epam.esm.mapper.Mapper;
+import com.epam.esm.mapper.TagMapperImpl;
+import com.epam.esm.preparator.Preparator;
+import com.epam.esm.preparator.TagPreparator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.nullable;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ContextConfiguration(classes = {TestServiceConfiguration.class})
-@ActiveProfiles("prod")
+@SpringBootTest(classes = {TagDaoImpl.class, TagMapperImpl.class, TagPreparator.class})
+@ExtendWith(MockitoExtension.class)
 class TagServiceImplTest {
-    private static final Long TAG_ID = 1L;
-    private static final String TAG_NAME = "Test Tag 2021";
-    private static final int LIST_SIZE = 3;
-    private static final long GIFT_CERTIFICATE_ID = 10L;
-
-    @Mock
-    private TagDao tagDao;
-    @Mock
-    private TagModelMapper tagModelMapper;
-    @Mock
-    private Validator<TagClientModel> validator;
     @InjectMocks
-    private TagServiceImpl tagService;
+    private TagServiceImpl service;
+    @MockBean
+    private TagDao dao;
+    @Mock
+    private Mapper<TagEntity, TagClientModel> mapper;
+    @Mock
+    private Preparator<TagClientModel> preparator;
 
-    private TagEntityModel entityModel;
-    private TagClientModel clientModel;
-    private TagClientModel tagForUnbound;
-    private List<TagClientModel> tagsForUnbound;
+    private long id = 5L;
+    private String name = "New Tag";
+    private int pageSize = 3;
+    private int pageNumber = 1;
+    private long certificateId = 4;
 
-    private List<TagEntityModel> entities;
-    private List<TagClientModel> clientModels;
-    private List<TagClientModel> nullTagsList;
+    private TagClientModel tagClientModel;
+    private PageableClientModel<TagClientModel> tagClientModelPage;
+    private List<TagClientModel> clientModelList;
+
+    private PageableEntity<TagEntity> tagEntityPage;
+    private TagEntity tagEntity;
+    private List<TagEntity> entityTagList;
 
     @BeforeEach
-    void setUpCommons() {
-        entityModel = new TagEntityModel(TAG_ID, TAG_NAME);
-        entities = new ArrayList<>();
-        for (int i = 0; i < LIST_SIZE; i++) {
-            entities.add(entityModel);
-        }
-        clientModel = new TagClientModel(TAG_ID, TAG_NAME);
-        clientModels = new ArrayList<>();
-        for (int i = 0; i < LIST_SIZE; i++) {
-            clientModels.add(clientModel);
-        }
-        nullTagsList = new ArrayList<>();
-        nullTagsList.add(null);
-        nullTagsList.add(null);
-        nullTagsList.add(clientModel);
+    void setUpEntities() {
+        tagEntity = new TagEntity(id, name);
+        List<TagEntity> entityTags = new ArrayList<>();
+        entityTags.add(tagEntity);
+        entityTags.add(tagEntity);
+        entityTags.add(tagEntity);
+        tagEntityPage = new PageableEntity(entityTags, pageSize, pageNumber, 3, 1);
+
+        entityTagList = new ArrayList<>();
+        entityTagList.add(tagEntity);
+        entityTagList.add(tagEntity);
+        entityTagList.add(tagEntity);
     }
 
     @BeforeEach
-    public void setUpTagsForUnbound() {
-        tagForUnbound = new TagClientModel(TAG_ID, null);
-        tagsForUnbound = new ArrayList<>();
-        for (int i = 0; i < LIST_SIZE; i++) {
-            tagsForUnbound.add(tagForUnbound);
-        }
+    void setUpClientModels() {
+        tagClientModel = new TagClientModel(id, name);
+        List<TagClientModel> clientModelTags = new ArrayList<>();
+        clientModelTags.add(tagClientModel);
+        clientModelTags.add(tagClientModel);
+        clientModelTags.add(tagClientModel);
+        tagClientModelPage = new PageableClientModel(clientModelTags, pageSize, pageNumber, 3L, 1L);
+
+        clientModelList = new ArrayList<>();
+        clientModelTags.add(tagClientModel);
+        clientModelTags.add(tagClientModel);
+        clientModelTags.add(tagClientModel);
     }
 
     @Test
-    void findByIdShouldReturnResult() {
-        when(tagDao.findById(TAG_ID))
-                .thenReturn(Optional.of(entityModel));
-        when(tagModelMapper.toClientModel(entityModel))
-                .thenReturn(clientModel);
-        assertEquals(clientModel, tagService.findById(TAG_ID));
-        verify(tagDao).findById(TAG_ID);
-        verify(tagModelMapper).toClientModel(entityModel);
+    void findAllShouldThrowIllegalArgumentExceptionIfNullPageSize() {
+        assertThrows(IllegalArgumentException.class, () -> service.findAll(null, 1));
     }
 
     @Test
-    void findByIdShouldThrowResourceWithIdNotFoundException() {
-        when(tagDao.findById(TAG_ID))
-                .thenReturn(Optional.empty());
-        assertThrows(ResourceWithIdNotFoundException.class,
-                () -> tagService.findById(TAG_ID));
-        verify(tagDao).findById(TAG_ID);
-        verify(tagModelMapper, never()).toClientModel(entityModel);
+    void findAllShouldThrowIllegalArgumentExceptionIfNullPageNumber() {
+        assertThrows(IllegalArgumentException.class, () -> service.findAll(1, null));
+    }
+
+    @Test
+    void findAllShouldReturnTagPage() {
+        when(dao.findAll(pageSize, pageNumber)).thenReturn(tagEntityPage);
+        when(mapper.toClientModel(tagEntityPage)).thenReturn(tagClientModelPage);
+        assertEquals(tagClientModelPage, service.findAll(pageSize, pageNumber));
+        verify(dao).findAll(pageSize, pageNumber);
+        verify(mapper).toClientModel(tagEntityPage);
     }
 
     @Test
     void findByIdShouldThrowIllegalArgumentExceptionIfNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> tagService.findById(null));
+        assertThrows(IllegalArgumentException.class, () -> service.findById(null));
+    }
+
+    @Test
+    void findByIdShouldThrowResourceWithIdNotFoundExceptionIfNotFound() {
+        when(dao.findById(id)).thenReturn(Optional.empty());
+        when(dao.getEntityClass()).thenReturn(TagEntity.class);
+        ResourceWithIdNotFoundException exception =
+                assertThrows(ResourceWithIdNotFoundException.class, () -> service.findById(id));
+        assertEquals(id, exception.getResourceId());
+    }
+
+    @Test
+    void findByIdShouldReturnResult() {
+        when(dao.findById(id)).thenReturn(Optional.of(tagEntity));
+        when(mapper.toClientModel(tagEntity)).thenReturn(tagClientModel);
+        assertEquals(tagClientModel, service.findById(id));
+        verify(dao).findById(id);
+        verify(mapper).toClientModel(tagEntity);
+    }
+
+    @Test
+    void deleteShouldThrowIllegalArgumentExceptionIfNull() {
+        assertThrows(IllegalArgumentException.class, () -> service.delete(null));
+    }
+
+    @Test
+    void deleteShouldThrowResourceWithIdNotFoundExceptionIfNotFound() {
+        when(dao.findById(id)).thenReturn(Optional.empty());
+        when(dao.getEntityClass()).thenReturn(TagEntity.class);
+        ResourceWithIdNotFoundException exception =
+                assertThrows(ResourceWithIdNotFoundException.class, () -> service.delete(id));
+        assertEquals(id, exception.getResourceId());
     }
 
     @Test
     void deleteShouldReturnResult() {
-        when(tagDao.isExist(TAG_ID))
-                .thenReturn(Boolean.TRUE);
-        when(tagDao.findById(TAG_ID))
-                .thenReturn(Optional.ofNullable(entityModel));
-        when(tagDao.delete(TAG_ID))
-                .thenReturn(Boolean.TRUE);
-        when(tagModelMapper.toClientModel(entityModel))
-                .thenReturn(clientModel);
-        assertEquals(clientModel, tagService.delete(TAG_ID));
-        verify(tagDao).isExist(TAG_ID);
-        verify(tagDao).findById(TAG_ID);
-        verify(tagModelMapper).toClientModel(entityModel);
-    }
-
-    @Test
-    void deleteShouldThrowResourceWithIdNotFoundException() {
-        when(tagDao.isExist(TAG_ID))
-                .thenReturn(false);
-        assertThrows(ResourceWithIdNotFoundException.class,
-                () -> tagService.delete(TAG_ID));
-        verify(tagDao).isExist(TAG_ID);
-        verify(tagDao, never()).delete(TAG_ID);
-    }
-
-    @Test
-    void deleteShouldThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> tagService.delete(null));
-    }
-
-    @Test
-    void findAllShouldReturnResult() {
-        doReturn(entities)
-                .when(tagDao).findAll();
-        doReturn(clientModel)
-                .when(tagModelMapper).toClientModel(entityModel);
-        List<TagClientModel> actualClientModels = tagService.findAll();
-        assertEquals(clientModels, actualClientModels);
-        verify(tagDao).findAll();
-        verify(tagModelMapper, times(LIST_SIZE)).toClientModel(entityModel);
-    }
-
-    @Test
-    void createShouldThrowIllegalArgumentExceptionIfNull() {
-        assertThrows(IllegalArgumentException.class, () -> tagService.create(null));
-    }
-
-    @Test
-    void createShouldReturnResult() {
-        doNothing().when(validator).validateForCreate(clientModel);
-        doReturn(entityModel)
-                .when(tagModelMapper).toEntity(clientModel);
-        doReturn(TAG_ID)
-                .when(tagDao).create(entityModel);
-        TagClientModel actualClientModel = tagService.create(clientModel);
-        assertEquals(actualClientModel, clientModel);
-        verify(tagModelMapper, times(1)).toEntity(clientModel);
-        verify(tagDao, times(1)).create(entityModel);
-    }
-
-    @Test
-    void findAllTagsBoundToGiftCertificateShouldReturnResult() {
-        when(tagDao.findAllTagsBoundToGiftCertificate(GIFT_CERTIFICATE_ID))
-                .thenReturn(entities);
-        when(tagModelMapper.toClientModel(entityModel))
-                .thenReturn(clientModel);
-        assertEquals(clientModels, tagService.findAllTagsBoundToGiftCertificate(
-                GIFT_CERTIFICATE_ID));
-        verify(tagDao).findAllTagsBoundToGiftCertificate(GIFT_CERTIFICATE_ID);
-        verify(tagModelMapper, times(LIST_SIZE)).toClientModel(entityModel);
-    }
-
-    @Test
-    void findAllTagsBoundToGiftCertificateShouldThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> tagService.findAllTagsBoundToGiftCertificate(null));
-    }
-
-    @Test
-    void updateExistingGiftCertificateTagsShouldBoundTags() {
-        doNothing().when(validator).validateForUpdate(clientModel);
-        when(tagDao.isExist(TAG_ID))
-                .thenReturn(Boolean.TRUE);
-        when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
-                .thenReturn(Boolean.FALSE);
-        doNothing().when(tagDao).boundTagToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
-        List<TagClientModel> actual = tagService.updateExistingGiftCertificateTags(
-                GIFT_CERTIFICATE_ID, clientModels);
-        assertEquals(clientModels, actual);
-        verify(validator, times(LIST_SIZE)).validateForUpdate(clientModel);
-        verify(tagDao, times(LIST_SIZE)).isExist(TAG_ID);
-        verify(tagDao, times(LIST_SIZE)).isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
-        verify(tagDao, times(LIST_SIZE)).boundTagToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
-    }
-
-    @Test
-    void updateExistingGiftCertificateTagsShouldUnboundTags() {
-        doNothing().when(validator).validateForUpdate(tagForUnbound);
-        when(tagDao.isExist(TAG_ID))
-                .thenReturn(Boolean.TRUE);
-        when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
-                .thenReturn(Boolean.TRUE);
-        doNothing().when(tagDao).unboundTagFromGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
-        List<TagClientModel> actual = tagService.updateExistingGiftCertificateTags(
-                GIFT_CERTIFICATE_ID, tagsForUnbound);
-        List<TagClientModel> expected = Collections.emptyList();
-        assertEquals(expected, actual);
-        verify(validator, times(LIST_SIZE)).validateForUpdate(tagForUnbound);
-        verify(tagDao, times(LIST_SIZE)).isExist(TAG_ID);
-        verify(tagDao, times(LIST_SIZE)).isTagBoundToGiftCertificate(
-                TAG_ID, GIFT_CERTIFICATE_ID);
-        verify(tagDao, times(LIST_SIZE)).unboundTagFromGiftCertificate
-                (TAG_ID, GIFT_CERTIFICATE_ID);
-    }
-
-    @Test
-    void updateExistingGiftCertificateTagsShouldNotBoundIfAlreadyBound() {
-        doNothing().when(validator).validateForUpdate(clientModel);
-        when(tagDao.isExist(TAG_ID))
-                .thenReturn(Boolean.TRUE);
-        when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
-                .thenReturn(Boolean.TRUE);
-        List<TagClientModel> actual = tagService.updateExistingGiftCertificateTags(
-                GIFT_CERTIFICATE_ID, clientModels);
-        assertEquals(clientModels, actual);
-        verify(tagDao, times(LIST_SIZE)).isExist(TAG_ID);
-        verify(tagDao, times(LIST_SIZE)).isTagBoundToGiftCertificate(
-                TAG_ID, GIFT_CERTIFICATE_ID);
-        verify(tagDao, never()).boundTagToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
-    }
-
-    @Test
-    void updateExistingGiftCertificateTagsShouldNotUnboundIfAlreadyUnbound() {
-        doNothing().when(validator).validateForUpdate(tagForUnbound);
-        when(tagDao.isExist(TAG_ID))
-                .thenReturn(Boolean.TRUE);
-        when(tagDao.isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID))
-                .thenReturn(Boolean.FALSE);
-        List<TagClientModel> actual = tagService.updateExistingGiftCertificateTags(
-                GIFT_CERTIFICATE_ID, tagsForUnbound);
-        List<TagClientModel> expected = Collections.emptyList();
-        assertEquals(expected, actual);
-        verify(tagDao, times(LIST_SIZE)).isExist(TAG_ID);
-        verify(tagDao, times(LIST_SIZE)).isTagBoundToGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
-        verify(tagDao, never()).unboundTagFromGiftCertificate(TAG_ID, GIFT_CERTIFICATE_ID);
-    }
-
-    @Test
-    void updateExistingGiftCertificateTagsShouldThrowInvalidFieldException() {
-        doThrow(InvalidFieldValueException.class)
-                .when(validator).validateForUpdate(tagForUnbound);
-        assertThrows(InvalidFieldValueException.class,
-                () -> tagService.updateExistingGiftCertificateTags(GIFT_CERTIFICATE_ID, tagsForUnbound));
-    }
-
-    @Test
-    void updateExistingGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfGiftCertificateIdNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> tagService.updateExistingGiftCertificateTags(null, clientModels));
-    }
-
-    @Test
-    void updateExistingGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfTagsNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> tagService.updateExistingGiftCertificateTags(GIFT_CERTIFICATE_ID, null));
-    }
-
-    @Test
-    void updateExistingGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfTagsHasNullValues() {
-        assertThrows(IllegalArgumentException.class,
-                () -> tagService.updateExistingGiftCertificateTags(GIFT_CERTIFICATE_ID, nullTagsList));
-    }
-
-    @Test
-    void updateNewGiftCertificateTagsShouldThrowInvalidFieldException() {
-        doThrow(InvalidFieldValueException.class)
-                .when(validator).validateForUpdate(clientModel);
-        assertThrows(InvalidFieldValueException.class,
-                () -> tagService.updateNewGiftCertificateTags(GIFT_CERTIFICATE_ID, clientModels));
-    }
-
-    @Test
-    void updateNewGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfGiftCertificateIdNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> tagService.updateNewGiftCertificateTags(null, clientModels));
-    }
-
-    @Test
-    void updateNewGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfTagsNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> tagService.updateNewGiftCertificateTags(GIFT_CERTIFICATE_ID, null));
-    }
-
-    @Test
-    void updateNewGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfTagsHasNullValues() {
-        assertThrows(IllegalArgumentException.class,
-                () -> tagService.updateNewGiftCertificateTags(GIFT_CERTIFICATE_ID, nullTagsList));
-    }
-
-    @Test
-    void isExistsShouldReturnTrue() {
-        when(tagDao.isExist(TAG_ID))
-                .thenReturn(Boolean.TRUE);
-        assertTrue(tagService.isExist(TAG_ID));
-        verify(tagDao).isExist(TAG_ID);
-    }
-
-    @Test
-    void isExistsShouldReturnFalse() {
-        when(tagDao.isExist(TAG_ID))
-                .thenReturn(Boolean.FALSE);
-        assertFalse(tagService.isExist(TAG_ID));
-        verify(tagDao).isExist(TAG_ID);
+        when(dao.findById(id)).thenReturn(Optional.of(tagEntity));
+        when(mapper.toClientModel(tagEntity)).thenReturn(tagClientModel);
+        doNothing().when(dao).delete(id);
+        assertEquals(tagClientModel, service.delete(id));
+        verify(dao).findById(id);
+        verify(mapper).toClientModel(tagEntity);
+        verify(dao).delete(id);
     }
 
     @Test
     void isExistShouldReturnFalseIfNull() {
-        when(tagDao.isExist(nullable(Long.class)))
-                .thenReturn(Boolean.FALSE);
-        assertFalse(tagService.isExist(nullable(Long.class)));
-        verify(tagDao).isExist(nullable(Long.class));
+        assertFalse(service.isExist(null));
+    }
+
+    @Test
+    void isExistShouldReturnFalse() {
+        when(dao.isExist(id)).thenReturn(false);
+        assertFalse(service.isExist(id));
+        verify(dao).isExist(id);
+    }
+
+    @Test
+    void isExistShouldReturnTrue() {
+        when(dao.isExist(id)).thenReturn(true);
+        assertTrue(service.isExist(id));
+        verify(dao).isExist(id);
+    }
+
+    @Test
+    void createShouldThrowIllegalArgumentExceptionIfNull() {
+        assertThrows(IllegalArgumentException.class, () -> service.create(null));
+    }
+
+    @Test
+    void createShouldThrowResourceWithNameExistsException() {
+        doNothing().when(preparator).prepareForCreate(tagClientModel);
+        when(mapper.toEntity(tagClientModel)).thenReturn(tagEntity);
+        when(dao.getEntityClass()).thenReturn(TagEntity.class);
+        when(dao.create(tagEntity)).thenThrow(DataIntegrityViolationException.class);
+        ResourceWithNameExistsException exception =
+                assertThrows(ResourceWithNameExistsException.class, () -> service.create(tagClientModel));
+        assertEquals(name, exception.getNameValue());
+        verify(preparator).prepareForCreate(tagClientModel);
+        verify(mapper).toEntity(tagClientModel);
+        verify(dao).getEntityClass();
+        verify(dao).create(tagEntity);
+    }
+
+    @Test
+    void createShouldReturnResult() {
+        doNothing().when(preparator).prepareForCreate(tagClientModel);
+        when(mapper.toEntity(tagClientModel)).thenReturn(tagEntity);
+        when(dao.create(tagEntity)).thenReturn(tagEntity);
+        when(mapper.toClientModel(tagEntity)).thenReturn(tagClientModel);
+        assertEquals(tagClientModel, service.create(tagClientModel));
+        verify(preparator).prepareForCreate(tagClientModel);
+        verify(mapper).toEntity(tagClientModel);
+        verify(dao).create(tagEntity);
+    }
+
+    @Test
+    void findAllTagsBoundToGiftCertificateShouldThrowIllegalArgumentExceptionIfNull() {
+        assertThrows(IllegalArgumentException.class, () -> service.findAllTagsBoundToGiftCertificate(null));
+    }
+
+    @Test
+    void findAllTagsBoundToGiftCertificateShouldReturnResult() {
+
+        when(dao.findAllTagsBoundToGiftCertificate(certificateId)).thenReturn(entityTagList);
+        when(mapper.toClientModel(tagEntity)).thenReturn(tagClientModel);
+        service.findAllTagsBoundToGiftCertificate(certificateId);
+        verify(dao).findAllTagsBoundToGiftCertificate(certificateId);
+        verify(mapper, times(entityTagList.size())).toClientModel(tagEntity);
+    }
+
+    @Test
+    void updateExistingGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfCertificateIdNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> service.updateExistingGiftCertificateTags(null, clientModelList));
+    }
+
+    @Test
+    void updateExistingGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfTagListNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> service.updateExistingGiftCertificateTags(certificateId, null));
+    }
+
+    @Test
+    void updateExistingGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfTagListContainsNull() {
+        clientModelList.add(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> service.updateExistingGiftCertificateTags(certificateId, clientModelList));
+    }
+
+    @Test
+    void updateExistingGiftCertificateTagsShouldThrowResourceWithIdNotFoundExceptionIsTagNotExist() {
+        List<TagClientModel> tagList = new ArrayList<>();
+        tagList.add(tagClientModel);
+        tagList.add(tagClientModel);
+        doReturn(false).when(dao).isExist(id);
+        assertThrows(ResourceWithIdNotFoundException.class,
+                () -> service.updateExistingGiftCertificateTags(certificateId, tagList));
+        verify(dao).isExist(id);
+    }
+
+    @Test
+    void updateExistingGiftCertificateTagsShouldBoundTags() {
+        List<TagClientModel> tagList = new ArrayList<>();
+        tagList.add(tagClientModel);
+        tagList.add(tagClientModel);
+        doReturn(true).when(dao).isExist(id);
+        when(dao.isTagBoundToGiftCertificate(id, certificateId)).thenReturn(false);
+        doNothing().when(dao).boundTagToGiftCertificate(id, certificateId);
+        service.updateExistingGiftCertificateTags(certificateId, tagList);
+        verify(dao, times(tagList.size())).isExist(id);
+        verify(dao, times(tagList.size())).isTagBoundToGiftCertificate(id, certificateId);
+        verify(dao, times(tagList.size())).boundTagToGiftCertificate(id, certificateId);
+    }
+
+    @Test
+    void updateExistingGiftCertificateTagsShouldUnboundTags() {
+        List<TagClientModel> tagList = new ArrayList<>();
+        long tagId = 1L;
+        TagClientModel tagToUnbound = new TagClientModel(tagId, null);
+        tagList.add(tagToUnbound);
+        tagList.add(tagToUnbound);
+        doReturn(true).when(dao).isExist(tagId);
+        when(dao.isTagBoundToGiftCertificate(tagId, certificateId)).thenReturn(true);
+        doNothing().when(dao).unboundTagFromGiftCertificate(tagId, certificateId);
+        service.updateExistingGiftCertificateTags(certificateId, tagList);
+        verify(dao, times(tagList.size())).isExist(tagId);
+        verify(dao, times(tagList.size())).isTagBoundToGiftCertificate(tagId, certificateId);
+        verify(dao, times(tagList.size())).unboundTagFromGiftCertificate(tagId, certificateId);
+    }
+
+    @Test
+    void updateExistingGiftCertificateTagsShouldNotBoundTagsIfAlreadyBound() {
+        List<TagClientModel> tagList = new ArrayList<>();
+        tagList.add(tagClientModel);
+        tagList.add(tagClientModel);
+        doReturn(true).when(dao).isExist(id);
+        when(dao.isTagBoundToGiftCertificate(id, certificateId)).thenReturn(true);
+        service.updateExistingGiftCertificateTags(certificateId, tagList);
+        verify(dao, times(tagList.size())).isExist(id);
+        verify(dao, times(tagList.size())).isTagBoundToGiftCertificate(id, certificateId);
+        verify(dao, never()).boundTagToGiftCertificate(id, certificateId);
+    }
+
+    @Test
+    void updateExistingGiftCertificateTagsShouldNotUnboundTagsIfAlreadyUnbound() {
+        List<TagClientModel> tagList = new ArrayList<>();
+        long tagId = 1L;
+        TagClientModel tagToUnbound = new TagClientModel(tagId, null);
+        tagList.add(tagToUnbound);
+        tagList.add(tagToUnbound);
+        doReturn(true).when(dao).isExist(tagId);
+        when(dao.isTagBoundToGiftCertificate(tagId, certificateId)).thenReturn(false);
+        service.updateExistingGiftCertificateTags(certificateId, tagList);
+        verify(dao, times(tagList.size())).isExist(tagId);
+        verify(dao, times(tagList.size())).isTagBoundToGiftCertificate(tagId, certificateId);
+        verify(dao, never()).unboundTagFromGiftCertificate(tagId, certificateId);
+    }
+
+    @Test
+    void updateNewGiftCertificateTagsShouldBoundTags() {
+        List<TagClientModel> tagList = new ArrayList<>();
+        tagList.add(tagClientModel);
+        tagList.add(tagClientModel);
+        doReturn(true).when(dao).isExist(id);
+        when(dao.isTagBoundToGiftCertificate(id, certificateId)).thenReturn(false);
+        doNothing().when(dao).boundTagToGiftCertificate(id, certificateId);
+        service.updateNewGiftCertificateTags(certificateId, tagList);
+        verify(dao, times(tagList.size())).isExist(id);
+        verify(dao, times(tagList.size())).isTagBoundToGiftCertificate(id, certificateId);
+        verify(dao, times(tagList.size())).boundTagToGiftCertificate(id, certificateId);
+    }
+
+    @Test
+    void updateNewGiftCertificateTagsShouldNotBoundTagsIfAlreadyBound() {
+        List<TagClientModel> tagList = new ArrayList<>();
+        tagList.add(tagClientModel);
+        tagList.add(tagClientModel);
+        doReturn(true).when(dao).isExist(id);
+        when(dao.isTagBoundToGiftCertificate(id, certificateId)).thenReturn(true);
+        service.updateNewGiftCertificateTags(certificateId, tagList);
+        verify(dao, times(tagList.size())).isExist(id);
+        verify(dao, times(tagList.size())).isTagBoundToGiftCertificate(id, certificateId);
+        verify(dao, never()).boundTagToGiftCertificate(id, certificateId);
+    }
+
+    @Test
+    void updateNewGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfCertificateIdNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> service.updateNewGiftCertificateTags(null, clientModelList));
+    }
+
+    @Test
+    void updateNewGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfTagListNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> service.updateNewGiftCertificateTags(certificateId, null));
+    }
+
+    @Test
+    void updateNewGiftCertificateTagsShouldThrowIllegalArgumentExceptionIfTagListContainsNull() {
+        clientModelList.add(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> service.updateNewGiftCertificateTags(certificateId, clientModelList));
+    }
+
+    @Test
+    void findMostPopularTagShouldReturnNull() {
+        when(dao.findMostPopularTag()).thenReturn(null);
+        when(mapper.toClientModel(nullable(TagEntity.class))).thenReturn(null);
+        assertNull(service.findMostPopularTag());
+        verify(dao).findMostPopularTag();
+    }
+
+    @Test
+    void findMostPopularTagShouldReturnResult() {
+        when(dao.findMostPopularTag()).thenReturn(tagEntity);
+        when(mapper.toClientModel(tagEntity)).thenReturn(tagClientModel);
+        assertEquals(tagClientModel, service.findMostPopularTag());
+        verify(dao).findMostPopularTag();
+        verify(mapper).toClientModel(tagEntity);
     }
 }

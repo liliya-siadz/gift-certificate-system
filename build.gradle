@@ -1,28 +1,30 @@
+group = 'com.epam.esm'
+version = '0.0.1-SNAPSHOT'
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.5.6"
+    }
+}
+
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'war'
-    apply plugin: 'project-report'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
 
     repositories {
         mavenCentral()
-    }
-
-    dependencies {
-        implementation 'org.springframework:spring-webmvc:5.3.10'
-        implementation 'org.springframework:spring-web:5.3.10'
-        implementation 'org.springframework:spring-beans:5.3.10'
-        implementation 'org.springframework:spring-context:5.3.10'
-        implementation 'org.springframework:spring-core:5.3.10'
-        compileOnly 'org.projectlombok:lombok:1.18.22'
-        annotationProcessor 'org.projectlombok:lombok:1.18.22'
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-        testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.0'
-        testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
-        testImplementation 'org.mockito:mockito-core:4.0.0'
-        testImplementation 'org.springframework:spring-mock:2.0.8'
-        testImplementation 'org.springframework:spring-test:5.3.11'
-        implementation 'org.springframework:spring-tx:5.3.11'
     }
 
     java {
@@ -33,5 +35,19 @@ subprojects {
     test {
         useJUnitPlatform()
     }
-}
 
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-web:2.5.6'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    }
+
+    sourceSets {
+        main {
+            output.resourcesDir = "build/classes/java/main/com/epam/esm"
+        }
+    }
+}
