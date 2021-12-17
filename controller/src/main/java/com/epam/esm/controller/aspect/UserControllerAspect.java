@@ -4,6 +4,10 @@ import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.controller.controller.UserController;
+<<<<<<< HEAD
+=======
+import com.epam.esm.controller.hateoas.HateoasLinker;
+>>>>>>> 79b8fef (1) Jwt token created; 2) Signup and login functions realized)
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

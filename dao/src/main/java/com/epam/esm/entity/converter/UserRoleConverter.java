@@ -14,6 +14,10 @@ public class UserRoleConverter implements AttributeConverter<UserRole, String> {
 
     @Override
     public UserRole convertToEntityAttribute(String dbData) {
+<<<<<<< HEAD
         return UserRole.valueOf(dbData);
+=======
+        return UserRole.USER;
+>>>>>>> 79b8fef (1) Jwt token created; 2) Signup and login functions realized)
     }
 }

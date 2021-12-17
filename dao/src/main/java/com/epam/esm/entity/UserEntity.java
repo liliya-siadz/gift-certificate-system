@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+<<<<<<< HEAD
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -17,6 +18,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+=======
+import javax.persistence.*;
+>>>>>>> 79b8fef (1) Jwt token created; 2) Signup and login functions realized)
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

@@ -2,6 +2,9 @@ package com.epam.esm.mapper;
 
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.entity.PageableEntity;
+import com.epam.esm.entity.security.UserRole;
+import org.mapstruct.Mapping;
+import org.mapstruct.ValueMapping;
 
 /**
  * Mapper for entity to client model mapping and otherwise .
