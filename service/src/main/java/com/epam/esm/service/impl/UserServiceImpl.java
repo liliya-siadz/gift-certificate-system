@@ -64,4 +64,12 @@ public class UserServiceImpl extends AbstractService<UserEntity, UserClientModel
                     ResourceNames.getResourceName(dao.getEntityClass()), model.getName(), exception);
         }
     }
+
+    @Override
+    public UserClientModel findByName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Parameter 'name' is null.");
+        }
+        return mapper.toClientModel(dao.findByName(name));
+    }
 }

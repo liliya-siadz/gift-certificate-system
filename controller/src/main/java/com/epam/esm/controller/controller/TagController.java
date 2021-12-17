@@ -1,10 +1,11 @@
-package com.epam.esm.controller;
+package com.epam.esm.controller.controller;
 
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
 import com.epam.esm.service.impl.TagServiceImpl;
 import com.epam.esm.validator.group.CreateChecks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,6 +87,7 @@ public class TagController {
      * @return Tag that was created
      */
     @PostMapping
+    @PreAuthorize("hasAuthority('tags:create')")
     public TagClientModel create(@RequestBody @Validated(CreateChecks.class) TagClientModel tag) {
         return service.create(tag);
     }

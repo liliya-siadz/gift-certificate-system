@@ -1,4 +1,4 @@
-package com.epam.esm.controller;
+package com.epam.esm.controller.controller;
 
 import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
