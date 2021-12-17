@@ -2,7 +2,7 @@ package com.epam.esm.controller.aspect;
 
 import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.controller.OrderController;
+import com.epam.esm.controller.controller.OrderController;
 import com.epam.esm.controller.hateoas.HateoasLinker;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -14,7 +14,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Aspect for controller class {@link com.epam.esm.controller.OrderController}
+ * Aspect for controller class {@link OrderController}
  * calls HATEOAS linker on returning client models  .
  */
 @Aspect
@@ -44,7 +44,7 @@ public class OrderControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.OrderController.getAll(..)))")
+    @Around("execution(* com.epam.esm.controller.controller.OrderController.getAll(..)))")
     public Object addLinksToGetAll(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         PageableClientModel<OrderClientModel> page = (PageableClientModel<OrderClientModel>)
                 proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
@@ -62,8 +62,8 @@ public class OrderControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.OrderController.getById(..))"
-            + "|| execution(* com.epam.esm.controller.OrderController.create(..))")
+    @Around("execution(* com.epam.esm.controller.controller.OrderController.getById(..))"
+            + "|| execution(* com.epam.esm.controller.controller.OrderController.create(..))")
     public Object addLinksToResponseModel(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         OrderClientModel order = (OrderClientModel) proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         hateoasLinker.addLinks(order);

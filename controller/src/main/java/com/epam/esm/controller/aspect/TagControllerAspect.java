@@ -2,7 +2,7 @@ package com.epam.esm.controller.aspect;
 
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
-import com.epam.esm.controller.TagController;
+import com.epam.esm.controller.controller.TagController;
 import com.epam.esm.controller.hateoas.HateoasLinker;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -44,7 +44,7 @@ public class TagControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.TagController.getAll(..)))")
+    @Around("execution(* com.epam.esm.controller.controller.TagController.getAll(..)))")
     public Object addLinksToGetAll(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         PageableClientModel<TagClientModel> page = (PageableClientModel<TagClientModel>) proceedingJoinPoint
                 .proceed(proceedingJoinPoint.getArgs());
@@ -62,9 +62,9 @@ public class TagControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.TagController.getById(..))"
-            + "|| execution(* com.epam.esm.controller.TagController.create(..))"
-            + "|| execution(* com.epam.esm.controller.TagController.findMostPopularTag())")
+    @Around("execution(* com.epam.esm.controller.controller.TagController.getById(..))"
+            + "|| execution(* com.epam.esm.controller.controller.TagController.create(..))"
+            + "|| execution(* com.epam.esm.controller.controller.TagController.findMostPopularTag())")
     public Object addLinks(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Object[] args = proceedingJoinPoint.getArgs();
         TagClientModel tag = (TagClientModel)

@@ -2,7 +2,7 @@ package com.epam.esm.controller.aspect;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.controller.GiftCertificateController;
+import com.epam.esm.controller.controller.GiftCertificateController;
 import com.epam.esm.controller.hateoas.HateoasLinker;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -46,7 +46,7 @@ public class GiftCertificateControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.GiftCertificateController.getAll(..)))")
+    @Around("execution(* com.epam.esm.controller.controller.GiftCertificateController.getAll(..)))")
     public Object addLinksToGetAll(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         PageableClientModel<GiftCertificateClientModel> page = (PageableClientModel<GiftCertificateClientModel>)
                 proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
@@ -70,7 +70,7 @@ public class GiftCertificateControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.GiftCertificateController.search(..)) "
+    @Around("execution(* com.epam.esm.controller.controller.GiftCertificateController.search(..)) "
             + " && args(tagName, name, description, sortField, sortDirection, pageSize, pageNumber)")
     public Object addLinksToSearch(ProceedingJoinPoint proceedingJoinPoint,
                                    String tagName, String name, String description,
@@ -95,7 +95,7 @@ public class GiftCertificateControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.GiftCertificateController.searchByTags(..)) "
+    @Around("execution(* com.epam.esm.controller.controller.GiftCertificateController.searchByTags(..)) "
             + "&& args(tags, pageSize, pageNumber)")
     public Object addLinksToSearchByTags(ProceedingJoinPoint proceedingJoinPoint, List<String> tags,
                                          Integer pageSize, Integer pageNumber) throws Throwable {
@@ -109,18 +109,18 @@ public class GiftCertificateControllerAspect {
 
     /**
      * Adds links to returning value of methods {@link GiftCertificateController#create},
-     * {@link com.epam.esm.controller.GiftCertificateController#getById},
-     * {@link com.epam.esm.controller.GiftCertificateController#update},
-     * {@link com.epam.esm.controller.GiftCertificateController#updatePrice} .
+     * {@link GiftCertificateController#getById},
+     * {@link GiftCertificateController#update},
+     * {@link GiftCertificateController#updatePrice} .
      *
      * @param proceedingJoinPoint joint point for method
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.GiftCertificateController.create(..))"
-            + "|| execution(* com.epam.esm.controller.GiftCertificateController.getById(..))"
-            + "|| execution(* com.epam.esm.controller.GiftCertificateController.update(..))"
-            + "|| execution(* com.epam.esm.controller.GiftCertificateController.updatePrice(..))")
+    @Around("execution(* com.epam.esm.controller.controller.GiftCertificateController.create(..))"
+            + "|| execution(* com.epam.esm.controller.controller.GiftCertificateController.getById(..))"
+            + "|| execution(* com.epam.esm.controller.controller.GiftCertificateController.update(..))"
+            + "|| execution(* com.epam.esm.controller.controller.GiftCertificateController.updatePrice(..))")
     public Object addLinks(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         GiftCertificateClientModel certificate = (GiftCertificateClientModel) proceedingJoinPoint
                 .proceed(proceedingJoinPoint.getArgs());

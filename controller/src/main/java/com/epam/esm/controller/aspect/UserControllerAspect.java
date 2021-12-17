@@ -3,7 +3,7 @@ package com.epam.esm.controller.aspect;
 import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
-import com.epam.esm.controller.UserController;
+import com.epam.esm.controller.controller.UserController;
 import com.epam.esm.controller.hateoas.HateoasLinker;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -45,7 +45,7 @@ public class UserControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.UserController.getAll(..))")
+    @Around("execution(* com.epam.esm.controller.controller.UserController.getAll(..))")
     public Object addLinksToGetAll(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         PageableClientModel<UserClientModel> page =
                 (PageableClientModel<UserClientModel>) proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
@@ -62,7 +62,7 @@ public class UserControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.UserController.getUserOrders(..))"
+    @Around("execution(* com.epam.esm.controller.controller.UserController.getUserOrders(..))"
             + " && args(id, pageSize, pageNumber)")
     public Object addLinksToGetUserOrders(ProceedingJoinPoint proceedingJoinPoint, Long id,
                                           Integer pageSize, Integer pageNumber) throws Throwable {
@@ -81,7 +81,7 @@ public class UserControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.UserController.getById(..))")
+    @Around("execution(* com.epam.esm.controller.controller.UserController.getById(..))")
     public Object addLinks(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         UserClientModel user = (UserClientModel) proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         hateoasLinker.addLinks(user);
@@ -95,7 +95,7 @@ public class UserControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.UserController.getUserOrderById(..))")
+    @Around("execution(* com.epam.esm.controller.controller.UserController.getUserOrderById(..))")
     public Object addLinksToGetUserOrderById(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         OrderClientModel order = (OrderClientModel) proceedingJoinPoint
                 .proceed(proceedingJoinPoint.getArgs());

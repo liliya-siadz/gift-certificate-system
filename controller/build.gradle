@@ -6,6 +6,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.6'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas:2.6.0'
     implementation 'org.springframework.boot:spring-boot-starter-aop:2.6.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.6.1'
     implementation project(':service')
 }
 
