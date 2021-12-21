@@ -1,15 +1,15 @@
 package com.epam.esm.entity.security;
 
 public enum Privilege {
+    GIFT_CERTIFICATES_CREATE("gift_certificates:create"),
+    GIFT_CERTIFICATES_DELETE("gift_certificates:delete"),
+    GIFT_CERTIFICATES_UPDATE("gift_certificates:update"),
+    ORDERS_READ("orders:read"),
     TAGS_CREATE("tags:create"),
     TAGS_DELETE("tags:delete"),
-    CERTIFICATES_CREATE("certificates:create"),
-    CERTIFICATES_UPDATE("certificates:update"),
-    CERTIFICATES_DELETE("certificates:delete"),
     USERS_READ("users:read"),
-    ORDERS_CREATE("orders:create"),
-    ORDERS_READ("orders:read"),
-    AUTH_SIGN_UP("auth:sign_up");
+    ORDERS_READ_BY_ID("orders:read"),
+    ORDERS_CREATE("orders:create");
 
     private final String action;
 

@@ -4,11 +4,9 @@ import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.controller.controller.UserController;
-import com.epam.esm.controller.hateoas.HateoasLinker;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -20,23 +18,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @Aspect
 @Component
-public class UserControllerAspect {
-
-    /**
-     * Adds links to client models .
-     */
-    private final HateoasLinker hateoasLinker;
-
-    /**
-     * Constructs <code>UserControllerAspect</code> class
-     * with injected HATEOAS linker .
-     *
-     * @param hateoasLinker {@link #hateoasLinker}
-     */
-    @Autowired
-    public UserControllerAspect(HateoasLinker hateoasLinker) {
-        this.hateoasLinker = hateoasLinker;
-    }
+public class UserControllerAspect extends ControllerAspect {
 
     /**
      * Adds links to returning value of method {@link UserController#getAll} .

@@ -12,13 +12,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for processing REST-api  sign up and login requests .
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
+
+    /**
+     * Service for User resources .
+     */
     private final UserService userService;
+
+    /**
+     * Jwt token provider .
+     */
     private final JwtTokenProvider jwtTokenProvider;
+
+    /**
+     * Processes authentication requests .
+     */
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * Constructs <code>AuthenticationController</code> class
+     * with injected service, jwt token provider and authentication manager .
+     *
+     * @param userService           {@link #userService}
+     * @param jwtTokenProvider      {@link #jwtTokenProvider}
+     * @param authenticationManager {@link #authenticationManager}
+     */
     @Autowired
     public AuthenticationController(UserService userService, JwtTokenProvider jwtTokenProvider,
                                     AuthenticationManager authenticationManager) {
@@ -27,19 +50,30 @@ public class AuthenticationController {
         this.authenticationManager = authenticationManager;
     }
 
+    /**
+     * Processes user's signup request, creates User resource .
+     *
+     * @param user client model of User resource to sing up
+     * @return created client model of User
+     */
     @PostMapping("/signup")
-    public UserClientModel signUp(@RequestBody UserClientModel user) {
+    public UserClientModel signup(@RequestBody UserClientModel user) {
         return userService.create(user);
     }
 
+    /**
+     * Processes login operations, authenticates User and creates
+     * Jwt token for User .
+     *
+     * @param authentication client model for authentication process
+     * @return result of authentication(login) process
+     */
     @PostMapping("/login")
     public Authentication authenticate(@RequestBody Authentication authentication) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authentication.getUsername(), authentication.getPassword()));
         UserClientModel user = userService.findByName(authentication.getUsername());
         String token = jwtTokenProvider.createToken(user.getName(), user.getRole());
-        authentication.setPassword("**********");
-        authentication.setJwtToken(token);
-        return authentication;
+        return new Authentication(authentication.getUsername(), "******", token);
     }
 }
