@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-<<<<<<< HEAD
 /**
  * Controller for processing REST-api  sign up and login requests .
  */
@@ -43,7 +42,7 @@ public class AuthenticationController {
      * @param jwtTokenProvider      {@link #jwtTokenProvider}
      * @param authenticationManager {@link #authenticationManager}
      */
-=======
+
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -51,7 +50,6 @@ public class AuthenticationController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
->>>>>>> 79b8fef (1) Jwt token created; 2) Signup and login functions realized)
     @Autowired
     public AuthenticationController(UserService userService, JwtTokenProvider jwtTokenProvider,
                                     AuthenticationManager authenticationManager) {
@@ -60,7 +58,6 @@ public class AuthenticationController {
         this.authenticationManager = authenticationManager;
     }
 
-<<<<<<< HEAD
     /**
      * Processes user's signup request, creates User resource .
      *
@@ -79,25 +76,18 @@ public class AuthenticationController {
      * @param authentication client model for authentication process
      * @return result of authentication(login) process
      */
-=======
+
     @PostMapping("/signup")
     public UserClientModel signUp(@RequestBody UserClientModel user) {
         return userService.create(user);
     }
 
->>>>>>> 79b8fef (1) Jwt token created; 2) Signup and login functions realized)
     @PostMapping("/login")
     public Authentication authenticate(@RequestBody Authentication authentication) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authentication.getUsername(), authentication.getPassword()));
         UserClientModel user = userService.findByName(authentication.getUsername());
         String token = jwtTokenProvider.createToken(user.getName(), user.getRole());
-<<<<<<< HEAD
         return new Authentication(authentication.getUsername(), "******", token);
-=======
-        authentication.setPassword("**********");
-        authentication.setJwtToken(token);
-        return authentication;
->>>>>>> 79b8fef (1) Jwt token created; 2) Signup and login functions realized)
     }
 }
