@@ -6,6 +6,7 @@ import com.epam.esm.clientmodel.UserClientModel;
 import com.epam.esm.service.impl.OrderServiceImpl;
 import com.epam.esm.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,6 +63,7 @@ public class UserController {
      * @return page of Tag resources of passed quantity
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('users:read')")
     public PageableClientModel<UserClientModel> getAll(
             @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
             @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
@@ -77,6 +79,7 @@ public class UserController {
      * @return User that was found
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('users:read') || #id.equals(authentication.principal.id)")
     public UserClientModel getById(@PathVariable @Positive Long id) {
         return service.findById(id);
     }
@@ -92,6 +95,7 @@ public class UserController {
      * @return page of Orders resources for target User
      */
     @GetMapping("/{id}/orders")
+    @PreAuthorize("hasAuthority('users:read') || #id.equals(authentication.principal.id)")
     public PageableClientModel<OrderClientModel> getUserOrders(
             @PathVariable @NotNull @Positive Long id,
             @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
@@ -108,7 +112,8 @@ public class UserController {
      * @param orderId id of target Order
      * @return Order that was found
      */
-    @GetMapping("/{userId}/orders/{orderId}")
+    @GetMapping("/{userId}/orders/{orderId} || #userId.equals(authentication.principal.id)")
+    @PreAuthorize("hasAuthority('users:read')")
     public OrderClientModel getUserOrderById(
             @PathVariable @NotNull @Positive Long userId,
             @PathVariable @NotNull @Positive Long orderId) {

@@ -101,6 +101,7 @@ public class TagController {
      * @return Tag that was deleted
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('tags:delete')")
     public TagClientModel deleteById(@PathVariable @NotNull @Positive Long id) {
         return service.delete(id);
     }

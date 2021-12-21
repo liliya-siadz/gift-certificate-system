@@ -3,11 +3,9 @@ package com.epam.esm.controller.aspect;
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.controller.controller.GiftCertificateController;
-import com.epam.esm.controller.hateoas.HateoasLinker;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,23 +19,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @Aspect
 @Component
-public class GiftCertificateControllerAspect {
-
-    /**
-     * Adds links to client models .
-     */
-    private final HateoasLinker hateoasLinker;
-
-    /**
-     * Constructs <code>GiftCertificateControllerAspect</code> class
-     * with injected HATEOAS linker .
-     *
-     * @param hateoasLinker {@link #hateoasLinker}
-     */
-    @Autowired
-    public GiftCertificateControllerAspect(HateoasLinker hateoasLinker) {
-        this.hateoasLinker = hateoasLinker;
-    }
+public class GiftCertificateControllerAspect extends ControllerAspect {
 
     /**
      * Adds links to returning value of method {@link GiftCertificateController#getAll .
