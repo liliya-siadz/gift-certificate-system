@@ -1,4 +1,4 @@
-package com.epam.esm.controller;
+package com.epam.esm.controller.controller;
 
 import com.epam.esm.clientmodel.GiftCertificateClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
@@ -9,6 +9,7 @@ import com.epam.esm.validator.group.UpdateChecks;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,6 +67,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was created
      */
     @PostMapping
+    @PreAuthorize("hasAuthority('gift_certificates:create')")
     public GiftCertificateClientModel create(
             @RequestBody @Validated({IdChecks.class, CreateChecks.class}) GiftCertificateClientModel certificate) {
         return service.create(certificate);
@@ -109,6 +111,7 @@ public class GiftCertificateController {
      * @return Gift Certificate that was deleted
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('gift_certificates:delete')")
     public GiftCertificateClientModel deleteById(@PathVariable @Range(min = 1, max = 2147483647) Long id) {
         return service.delete(id);
     }
@@ -124,6 +127,7 @@ public class GiftCertificateController {
      * @return Gift Certificate with updated and actual values
      */
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('gift_certificates:update')")
     public GiftCertificateClientModel update(@PathVariable @Range(min = 1, max = 2147483647) Long id,
                                              @RequestBody @Validated({IdChecks.class, UpdateChecks.class})
                                                      GiftCertificateClientModel certificate) {
@@ -140,6 +144,7 @@ public class GiftCertificateController {
      * @return Gift Certificate with updated price
      */
     @PatchMapping("/update-price/{id}")
+    @PreAuthorize("hasAuthority('gift_certificates:update')")
     public GiftCertificateClientModel updatePrice(@PathVariable @Range(min = 1, max = 2147483647) Long id,
                                                   @RequestParam @NotNull @Positive BigDecimal price) {
         return service.updatePrice(id, price);

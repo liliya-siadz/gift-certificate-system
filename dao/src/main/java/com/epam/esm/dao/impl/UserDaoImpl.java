@@ -7,6 +7,11 @@ import com.epam.esm.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+
 /**
  * Implementation of interface {@link UserDao}
  * for presenting access to repository operations with User .
@@ -37,5 +42,22 @@ public class UserDaoImpl extends AbstractDao<UserEntity> implements UserDao {
     @Override
     public String[] getPrimaryKeyAttributeName() {
         return new String[]{"id"};
+    }
+
+    @Override
+    public UserEntity findByName(String name) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> query = criteriaBuilder.createQuery(UserEntity.class);
+        Root<UserEntity> user = query.from(UserEntity.class);
+        query.select(user).where(criteriaBuilder.equal(user.get("name"), name));
+        return entityManager.createQuery(query).getSingleResult();
+    }
+
+    @Override
+    @Transactional
+    public UserEntity create(UserEntity entity) {
+        entityManager.persist(entity);
+        Object id = entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+        return entityManager.find(getEntityClass(), id);
     }
 }

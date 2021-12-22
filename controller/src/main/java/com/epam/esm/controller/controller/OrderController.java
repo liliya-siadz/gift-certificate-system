@@ -1,10 +1,11 @@
-package com.epam.esm.controller;
+package com.epam.esm.controller.controller;
 
 import com.epam.esm.clientmodel.OrderClientModel;
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.validator.group.OrderChecks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,6 +57,7 @@ public class OrderController {
      * @return page of Order resources of passed quantity
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('orders:read')")
     public PageableClientModel<OrderClientModel> getAll(
             @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
             @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
@@ -71,6 +73,7 @@ public class OrderController {
      * @return Order that was created
      */
     @PostMapping
+    @PreAuthorize("hasAuthority('orders:create') && #order.userId.equals(authentication.principal.userId)")
     public OrderClientModel create(
             @RequestBody @Validated({OrderChecks.class}) OrderClientModel order) {
         return service.create(order);
@@ -85,6 +88,7 @@ public class OrderController {
      * @return Order that was found
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('orders:read')")
     public OrderClientModel getById(@PathVariable @Positive Long id) {
         return service.findById(id);
     }
