@@ -66,5 +66,14 @@ CREATE TABLE orders_gift_certificates (
 
   ALTER TABLE orders_gift_certificates
   ADD CONSTRAINT gift_certificate_id_fk
-  FOREIGN KEY (gift_certificate_id )
+  FOREIGN KEY (gift_certificate_id)
   REFERENCES gift_certificate(id) ON DELETE CASCADE;
+
+CREATE TABLE role (
+	id varchar(100) primary key;
+);
+    ALTER TABLE public.user
+    ADD COLUMN role varchar(100) not null,
+    ADD COLUMN password varchar(200) not null,
+    ADD CONSTRAINT role_fk FOREIGN KEY (role) REFERENCES role(role)
+    ON DELETE RESTRICT;

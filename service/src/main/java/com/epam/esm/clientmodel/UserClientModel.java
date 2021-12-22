@@ -41,4 +41,14 @@ public class UserClientModel extends RepresentationModel<UserClientModel> {
      * User's orders .
      */
     private List<OrderClientModel> orders = new ArrayList<>();
+
+    /**
+     * Represents user's role .
+     */
+    private String role;
+
+    /**
+     * Represents user's password .
+     */
+    private String password;
 }

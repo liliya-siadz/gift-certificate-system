@@ -2,12 +2,10 @@ package com.epam.esm.controller.aspect;
 
 import com.epam.esm.clientmodel.PageableClientModel;
 import com.epam.esm.clientmodel.TagClientModel;
-import com.epam.esm.controller.TagController;
-import com.epam.esm.controller.hateoas.HateoasLinker;
+import com.epam.esm.controller.controller.TagController;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -19,23 +17,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @Aspect
 @Component
-public class TagControllerAspect {
-
-    /**
-     * Adds links to client models .
-     */
-    private final HateoasLinker hateoasLinker;
-
-    /**
-     * Constructs <code>TagControllerAspect</code> class
-     * with injected HATEOAS linker .
-     *
-     * @param hateoasLinker {@link #hateoasLinker}
-     */
-    @Autowired
-    public TagControllerAspect(HateoasLinker hateoasLinker) {
-        this.hateoasLinker = hateoasLinker;
-    }
+public class TagControllerAspect extends ControllerAspect {
 
     /**
      * Adds links to returning value of method {@link TagController#getAll} .
@@ -44,7 +26,7 @@ public class TagControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.TagController.getAll(..)))")
+    @Around("execution(* com.epam.esm.controller.controller.TagController.getAll(..)))")
     public Object addLinksToGetAll(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         PageableClientModel<TagClientModel> page = (PageableClientModel<TagClientModel>) proceedingJoinPoint
                 .proceed(proceedingJoinPoint.getArgs());
@@ -62,9 +44,9 @@ public class TagControllerAspect {
      * @return result of executed method with added HATEOAS links
      * @throws Throwable if invoked method throws anything
      */
-    @Around("execution(* com.epam.esm.controller.TagController.getById(..))"
-            + "|| execution(* com.epam.esm.controller.TagController.create(..))"
-            + "|| execution(* com.epam.esm.controller.TagController.findMostPopularTag())")
+    @Around("execution(* com.epam.esm.controller.controller.TagController.getById(..))"
+            + "|| execution(* com.epam.esm.controller.controller.TagController.create(..))"
+            + "|| execution(* com.epam.esm.controller.controller.TagController.findMostPopularTag())")
     public Object addLinks(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Object[] args = proceedingJoinPoint.getArgs();
         TagClientModel tag = (TagClientModel)
