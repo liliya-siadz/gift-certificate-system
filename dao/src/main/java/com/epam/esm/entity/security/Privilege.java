@@ -1,5 +1,8 @@
 package com.epam.esm.entity.security;
 
+/**
+ * Describes users privileges .
+ */
 public enum Privilege {
     GIFT_CERTIFICATES_CREATE("gift_certificates:create"),
     GIFT_CERTIFICATES_DELETE("gift_certificates:delete"),
@@ -11,12 +14,25 @@ public enum Privilege {
     ORDERS_READ_BY_ID("orders:read"),
     ORDERS_CREATE("orders:create");
 
+    /**
+     * Privilege action's name .
+     */
     private final String action;
 
+    /**
+     * Constructs <code>Privilege</code> enum .
+     *
+     * @param action {@link #action}
+     */
     Privilege(String action) {
         this.action = action;
     }
 
+    /**
+     * Retrieves privilege action's name .
+     *
+     * @return privilege action's name
+     */
     public String getAction() {
         return action;
     }

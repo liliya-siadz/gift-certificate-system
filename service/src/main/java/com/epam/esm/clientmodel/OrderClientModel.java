@@ -7,6 +7,7 @@ import com.epam.esm.validator.group.OrderChecks;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.hateoas.RepresentationModel;
@@ -25,6 +26,7 @@ import java.util.List;
  */
 @Data
 @Builder
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderClientModel extends RepresentationModel<OrderClientModel> {

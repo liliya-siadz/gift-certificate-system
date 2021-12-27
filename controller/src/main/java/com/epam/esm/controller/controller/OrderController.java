@@ -73,7 +73,7 @@ public class OrderController {
      * @return Order that was created
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('orders:create') && #order.userId.equals(authentication.principal.userId)")
+    @PreAuthorize("hasAuthority('orders:create') && #order.userId.equals(authentication.principal.id)")
     public OrderClientModel create(
             @RequestBody @Validated({OrderChecks.class}) OrderClientModel order) {
         return service.create(order);

@@ -112,8 +112,8 @@ public class UserController {
      * @param orderId id of target Order
      * @return Order that was found
      */
-    @GetMapping("/{userId}/orders/{orderId} || #userId.equals(authentication.principal.id)")
-    @PreAuthorize("hasAuthority('users:read')")
+    @GetMapping("/{userId}/orders/{orderId}")
+    @PreAuthorize("hasAuthority('users:read') || #userId.equals(authentication.principal.id)")
     public OrderClientModel getUserOrderById(
             @PathVariable @NotNull @Positive Long userId,
             @PathVariable @NotNull @Positive Long orderId) {

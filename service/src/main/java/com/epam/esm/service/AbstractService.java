@@ -1,13 +1,12 @@
 package com.epam.esm.service;
 
 import com.epam.esm.clientmodel.PageableClientModel;
-import com.epam.esm.dao.Dao;
 import com.epam.esm.exception.ResourceWithIdNotFoundException;
 import com.epam.esm.mapper.Mapper;
+import com.epam.esm.repository.Repository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 import static com.epam.esm.service.ResourceNames.getResourceName;
 
@@ -19,28 +18,26 @@ import static com.epam.esm.service.ResourceNames.getResourceName;
  */
 @Component
 public abstract class AbstractService<T, S> implements BaseService<S> {
-    protected static final int DEFAULT_PAGE_SIZE = 5;
-    protected static final int DEFAULT_PAGE_NUMBER = 1;
 
     /**
      * Dao class for repository operations .
      */
-    private Dao<T> dao;
+    protected Repository<T> repository;
 
     /**
      * Mapper for mapping from entity to client model and otherwise .
      */
-    private Mapper<T, S> mapper;
+    protected Mapper<T, S> mapper;
 
     /**
      * Constructs <code>AbstractService</code> class
      * with passed dao, mapper and validator .
      *
-     * @param dao    {@link #dao}
-     * @param mapper {@link #mapper}
+     * @param repository {@link #repository}
+     * @param mapper     {@link #mapper}
      */
-    public AbstractService(Dao dao, Mapper mapper) {
-        this.dao = dao;
+    public AbstractService(Repository<T> repository, Mapper mapper) {
+        this.repository = repository;
         this.mapper = mapper;
     }
 
@@ -52,7 +49,7 @@ public abstract class AbstractService<T, S> implements BaseService<S> {
         if ((pageSize == null) || (pageNumber == null)) {
             throw new IllegalArgumentException("Parameter 'pageSize' or 'pageNumber' is null.");
         }
-        return mapper.toClientModel(dao.findAll(pageSize, pageNumber));
+        return mapper.toClientModel(repository.findAll(PageRequest.of(--pageNumber, pageSize)));
     }
 
     @Override
@@ -60,32 +57,25 @@ public abstract class AbstractService<T, S> implements BaseService<S> {
         if (id == null) {
             throw new IllegalArgumentException("Id is null.");
         } else {
-            Optional<T> optionalEntity = dao.findById(id);
-            if (optionalEntity.isPresent()) {
-                return mapper.toClientModel(optionalEntity.get());
-            } else {
-                throw new ResourceWithIdNotFoundException(getResourceName(dao.getEntityClass()), id);
-            }
+            return mapper.toClientModel(repository.findById(id).orElseThrow(() -> new ResourceWithIdNotFoundException
+                    (getResourceName(repository.getEntityClass()), id)));
         }
     }
 
     @Override
     @Transactional
     public S delete(Long id) {
-        if(id == null) {
+        if (id == null) {
             throw new IllegalArgumentException("Parameter 'id' is null.");
         }
-        Optional<T> optionalEntity = dao.findById(id);
-        if (!optionalEntity.isPresent()) {
-            throw new ResourceWithIdNotFoundException(getResourceName(dao.getEntityClass()), id);
-        }
-        S model = mapper.toClientModel(optionalEntity.get());
-        dao.delete(id);
+        S model = mapper.toClientModel(repository.findById(id).orElseThrow(() -> new ResourceWithIdNotFoundException
+                (getResourceName(repository.getEntityClass()), id)));
+        repository.deleteById(id);
         return model;
     }
 
     @Override
     public boolean isExist(Long id) {
-        return ((id != null) && (dao.isExist(id)));
+        return ((id != null) && (repository.existsById(id)));
     }
 }

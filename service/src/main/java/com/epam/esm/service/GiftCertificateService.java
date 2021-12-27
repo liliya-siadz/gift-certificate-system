@@ -14,32 +14,18 @@ public interface GiftCertificateService extends UpdatableService<GiftCertificate
     /**
      * Searches (also could sort) Gift Certificates that fit to passed parameters .
      *
-     * @param tagName       full name of Tag that bounds to target Gift Certificate
+     * @param tagNames      names of Tags that bound to Gift Certificates
      * @param name          part of name of target Gift Certificate
      * @param description   part of description of target Gift Certificate
      * @param sortField     property of sorting Gift Certificate
-     *                      accessible values in {@link com.epam.esm.dao.builder.sort.SortField#sortFields}
      * @param sortDirection direction of sorting Gift Certificates
-     *                      accessible values in {@link com.epam.esm.dao.builder.sort.SortDirection#values()}
      * @param pageNumber    page number of found result of Users
      * @param pageSize      quantity of Users on a page (page size)
      * @return one page of found Gift Certificates
-     * see {@link com.epam.esm.dao.GiftCertificateDao#search}
      */
-    PageableClientModel<GiftCertificateClientModel> search(String tagName, String name, String description,
+    PageableClientModel<GiftCertificateClientModel> search(List<String> tagNames, String name, String description,
                                                            String sortField, String sortDirection,
                                                            Integer pageSize, Integer pageNumber);
-
-    /**
-     * Searches Gift Certificates by bound Tags .
-     *
-     * @param tags       names of Tags that bound to Gift Certificates
-     * @param pageNumber page number of found result of Users
-     * @param pageSize   quantity of Users on a page (page size)
-     * @return one page of found Gift Certificates
-     * see {@link com.epam.esm.dao.GiftCertificateDao#search}
-     */
-    PageableClientModel<GiftCertificateClientModel> search(List<String> tags, Integer pageSize, Integer pageNumber);
 
     /**
      * Updates price of Gift Certificate with passed id .
@@ -49,13 +35,4 @@ public interface GiftCertificateService extends UpdatableService<GiftCertificate
      * @return updated client model of Gift Certificate
      */
     GiftCertificateClientModel updatePrice(Long id, BigDecimal price);
-
-    /**
-     * Updates Gift Certificate relations with specified Order with passed id,
-     * by bounding them to the Order .
-     *
-     * @param orderId      id of target Order
-     * @param certificates list of Gift Certificate to bound with the Order
-     */
-    void updateNewOrderCertificates(Long orderId, List<GiftCertificateClientModel> certificates);
 }

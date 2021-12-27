@@ -5,6 +5,9 @@ import com.epam.esm.entity.security.UserRole;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
+/**
+ * Converts entity attribute state of User into database column representation .
+ */
 @Converter
 public class UserRoleConverter implements AttributeConverter<UserRole, String> {
     @Override

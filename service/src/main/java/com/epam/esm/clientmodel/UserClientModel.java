@@ -4,6 +4,7 @@ import com.epam.esm.validator.group.OrderChecks;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 @Data
 @Builder
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserClientModel extends RepresentationModel<UserClientModel> {
