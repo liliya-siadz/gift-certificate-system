@@ -25,7 +25,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 public class DaoConfig {
-    @Bean
+    @Bean(name = "transactionManager")
     public PlatformTransactionManager hibernateTransactionManager(LocalSessionFactoryBean localSessionFactoryBean) {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
         transactionManager.setSessionFactory(localSessionFactoryBean.getObject());
@@ -37,7 +37,7 @@ public class DaoConfig {
         return entityManagerFactory.createEntityManager();
     }
 
-    @Bean
+    @Bean(name="entityManagerFactory")
     public LocalSessionFactoryBean localSessionFactoryBean(DataSource dataSource) {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);

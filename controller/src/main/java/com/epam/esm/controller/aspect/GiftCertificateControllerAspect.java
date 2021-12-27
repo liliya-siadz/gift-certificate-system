@@ -42,7 +42,7 @@ public class GiftCertificateControllerAspect extends ControllerAspect {
      * Adds links to returning value of method {@link GiftCertificateController#search} .
      *
      * @param proceedingJoinPoint joint point for method
-     * @param tagName             argument 'tagName' for method
+     * @param tagNames            argument 'tagName' for method
      * @param name                argument 'name' for method
      * @param description         argument 'description' for method
      * @param sortField           argument 'sortField' for method
@@ -53,39 +53,17 @@ public class GiftCertificateControllerAspect extends ControllerAspect {
      * @throws Throwable if invoked method throws anything
      */
     @Around("execution(* com.epam.esm.controller.controller.GiftCertificateController.search(..)) "
-            + " && args(tagName, name, description, sortField, sortDirection, pageSize, pageNumber)")
+            + " && args(tagNames, name, description, sortField, sortDirection, pageSize, pageNumber)")
     public Object addLinksToSearch(ProceedingJoinPoint proceedingJoinPoint,
-                                   String tagName, String name, String description,
+                                   List<String> tagNames, String name, String description,
                                    String sortField, String sortDirection,
                                    Integer pageSize, Integer pageNumber) throws Throwable {
         PageableClientModel<GiftCertificateClientModel> page = (PageableClientModel<GiftCertificateClientModel>)
                 proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
         page.getElements().forEach(hateoasLinker::addLinks);
         hateoasLinker.addLinks(linkTo(methodOn(GiftCertificateController.class)
-                .search(tagName, name, description, sortField, sortDirection, pageSize, pageNumber))
+                .search(tagNames, name, description, sortField, sortDirection, pageSize, pageNumber))
                 .withSelfRel().expand(), page);
-        return page;
-    }
-
-    /**
-     * Adds links to returning value of method {@link GiftCertificateController#searchByTags} .
-     *
-     * @param proceedingJoinPoint joint point for method
-     * @param tags                argument 'tags' for method
-     * @param pageSize            argument 'pageSize' for method
-     * @param pageNumber          argument 'pageNumber' for method
-     * @return result of executed method with added HATEOAS links
-     * @throws Throwable if invoked method throws anything
-     */
-    @Around("execution(* com.epam.esm.controller.controller.GiftCertificateController.searchByTags(..)) "
-            + "&& args(tags, pageSize, pageNumber)")
-    public Object addLinksToSearchByTags(ProceedingJoinPoint proceedingJoinPoint, List<String> tags,
-                                         Integer pageSize, Integer pageNumber) throws Throwable {
-        PageableClientModel<GiftCertificateClientModel> page = (PageableClientModel<GiftCertificateClientModel>)
-                proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
-        page.getElements().forEach(hateoasLinker::addLinks);
-        hateoasLinker.addLinks(linkTo(methodOn(GiftCertificateController.class)
-                .searchByTags(tags, pageSize, pageNumber)).withSelfRel().expand(), page);
         return page;
     }
 

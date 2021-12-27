@@ -153,7 +153,7 @@ public class GiftCertificateController {
     /**
      * Searches (also could sort) Gift Certificates resources that fit to passed parameters .
      *
-     * @param tagName       full name of Tag that bounds to target Gift Certificate
+     * @param tagNames      full name of Tag that bounds to target Gift Certificate
      * @param name          part of name of target Gift Certificate
      * @param description   part of description of target Gift Certificate
      * @param sortField     property of sorting Gift Certificate
@@ -165,36 +165,15 @@ public class GiftCertificateController {
      */
     @GetMapping("/search")
     public PageableClientModel<GiftCertificateClientModel> search(
-            @RequestParam(required = false) @Length(min = 1, max = 200) @Pattern(regexp = ".*[a-zA-Z]+.*")
-                    String tagName,
-            @RequestParam(required = false) @Length(min = 1, max = 200) @Pattern(regexp = ".*[a-zA-Z]+.*")
-                    String name,
-            @RequestParam(required = false) @Length(min = 1, max = 2000) @Pattern(regexp = ".*[a-zA-Z]+.*")
-                    String description,
+            @RequestParam(required = false) List<@Pattern(regexp = ".*[a-zA-Z]+.*") String> tagNames,
+            @RequestParam(required = false) @Length(min = 1, max = 200)
+            @Pattern(regexp = ".*[a-zA-Z]+.*") String name,
+            @RequestParam(required = false) @Length(min = 1, max = 2000)
+            @Pattern(regexp = ".*[a-zA-Z]+.*") String description,
             @RequestParam(required = false) String sortField,
             @RequestParam(required = false) String sortDirection,
             @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
             @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
-        return service.search(tagName, name, description, sortField, sortDirection, pageSize, pageNumber);
-    }
-
-    /**
-     * Searches Gift Certificates resources by bound Tags .
-     * <p>
-     * Handles GET http-request.
-     *
-     * @param tags       names of Tags that bound to Gift Certificates
-     * @param pageNumber page number of found result of Users
-     * @param pageSize   quantity of Users on a page (page size)
-     * @return one page of found Gift Certificates
-     * see {@link com.epam.esm.service.GiftCertificateService#search}
-     */
-    @GetMapping("/search-by-tags")
-    public PageableClientModel<GiftCertificateClientModel> searchByTags(
-            @RequestParam(required = false) @NotNull @Size(min = 1)
-                    List<@Pattern(regexp = ".*[a-zA-Z]+.*") String> tags,
-            @RequestParam(required = false, defaultValue = "5") @Min(1) Integer pageSize,
-            @RequestParam(required = false, defaultValue = "1") @Min(1) Integer pageNumber) {
-        return service.search(tags, pageSize, pageNumber);
+        return service.search(tagNames, name, description, sortField, sortDirection, pageSize, pageNumber);
     }
 }
